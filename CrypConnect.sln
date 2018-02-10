@@ -9,6 +9,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdParty", "3rdParty", "{52
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptopiaApi", "CryptopiaApi-Csharp\CryptopiaApi\CryptopiaApi\CryptopiaApi\CryptopiaApi.csproj", "{30296406-237D-4B4B-8B5A-BDD18F0C2F53}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Binance.API.Csharp.Client", "Binance.API.Csharp.Client\Binance.API.Csharp.Client\Binance.API.Csharp.Client.csproj", "{EC2A020E-338A-46EE-9D08-C158CBD49C92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Binance.API.Csharp.Client.Domain", "Binance.API.Csharp.Client\Binance.API.Csharp.Client.Domain\Binance.API.Csharp.Client.Domain.csproj", "{E255F763-A2FE-43A8-9331-019796C935C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Binance.API.Csharp.Client.Models", "Binance.API.Csharp.Client\Binance.API.Csharp.Client.Models\Binance.API.Csharp.Client.Models.csproj", "{7CF40EB8-D81D-40B5-B849-17E5662175D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrypConnectTests", "CrypConnectTests\CrypConnectTests.csproj", "{1828B97B-4983-4763-B012-DA004EC10975}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hardly.Common", "HardlyCommon\Hardly.Common.csproj", "{00174C6B-A135-42A7-AF86-CA81806820A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +33,36 @@ Global
 		{30296406-237D-4B4B-8B5A-BDD18F0C2F53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30296406-237D-4B4B-8B5A-BDD18F0C2F53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30296406-237D-4B4B-8B5A-BDD18F0C2F53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC2A020E-338A-46EE-9D08-C158CBD49C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC2A020E-338A-46EE-9D08-C158CBD49C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC2A020E-338A-46EE-9D08-C158CBD49C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC2A020E-338A-46EE-9D08-C158CBD49C92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E255F763-A2FE-43A8-9331-019796C935C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E255F763-A2FE-43A8-9331-019796C935C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E255F763-A2FE-43A8-9331-019796C935C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E255F763-A2FE-43A8-9331-019796C935C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CF40EB8-D81D-40B5-B849-17E5662175D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CF40EB8-D81D-40B5-B849-17E5662175D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CF40EB8-D81D-40B5-B849-17E5662175D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CF40EB8-D81D-40B5-B849-17E5662175D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1828B97B-4983-4763-B012-DA004EC10975}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1828B97B-4983-4763-B012-DA004EC10975}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1828B97B-4983-4763-B012-DA004EC10975}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1828B97B-4983-4763-B012-DA004EC10975}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00174C6B-A135-42A7-AF86-CA81806820A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00174C6B-A135-42A7-AF86-CA81806820A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00174C6B-A135-42A7-AF86-CA81806820A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00174C6B-A135-42A7-AF86-CA81806820A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{30296406-237D-4B4B-8B5A-BDD18F0C2F53} = {528B303F-0399-470E-988E-03AF81C6126F}
+		{EC2A020E-338A-46EE-9D08-C158CBD49C92} = {528B303F-0399-470E-988E-03AF81C6126F}
+		{E255F763-A2FE-43A8-9331-019796C935C7} = {528B303F-0399-470E-988E-03AF81C6126F}
+		{7CF40EB8-D81D-40B5-B849-17E5662175D6} = {528B303F-0399-470E-988E-03AF81C6126F}
+		{00174C6B-A135-42A7-AF86-CA81806820A5} = {528B303F-0399-470E-988E-03AF81C6126F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {335C3BA7-8125-4E74-9D77-85C2FAB58160}

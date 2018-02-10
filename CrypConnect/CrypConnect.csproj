@@ -35,12 +35,35 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinanceExchange.cs" />
+    <Compile Include="CryptopiaExchange.cs" />
+    <Compile Include="Exchange.cs" />
+    <Compile Include="ExchangeName.cs" />
+    <Compile Include="Extensions\BinanceExtensions.cs" />
+    <Compile Include="Extensions\CryptopiaExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TradingPair.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Binance.API.Csharp.Client\Binance.API.Csharp.Client.Domain\Binance.API.Csharp.Client.Domain.csproj">
+      <Project>{e255f763-a2fe-43a8-9331-019796c935c7}</Project>
+      <Name>Binance.API.Csharp.Client.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Binance.API.Csharp.Client\Binance.API.Csharp.Client.Models\Binance.API.Csharp.Client.Models.csproj">
+      <Project>{7cf40eb8-d81d-40b5-b849-17e5662175d6}</Project>
+      <Name>Binance.API.Csharp.Client.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Binance.API.Csharp.Client\Binance.API.Csharp.Client\Binance.API.Csharp.Client.csproj">
+      <Project>{ec2a020e-338a-46ee-9d08-c158cbd49c92}</Project>
+      <Name>Binance.API.Csharp.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CryptopiaApi-Csharp\CryptopiaApi\CryptopiaApi\CryptopiaApi\CryptopiaApi.csproj">
       <Project>{30296406-237d-4b4b-8b5a-bdd18f0c2f53}</Project>
       <Name>CryptopiaApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HardlyCommon\Hardly.Common.csproj">
+      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
+      <Name>Hardly.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
