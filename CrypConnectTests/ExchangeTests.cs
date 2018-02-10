@@ -28,5 +28,14 @@ namespace CryptoExchanges.Tests
 
       Assert.IsTrue(tradingPairList.Count > 100);
     }
+
+    [TestMethod()]
+    public async Task EtherDeltaTradingPairs()
+    {
+      Exchange exchange = Exchange.LoadExchange(ExchangeName.EtherDelta);
+      List<TradingPair> tradingPairList = await exchange.GetAllTradingPairs();
+
+      Assert.IsTrue(tradingPairList.Count > 100);
+    }
   }
 }

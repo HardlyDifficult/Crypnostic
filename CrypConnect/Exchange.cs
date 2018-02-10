@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace CryptoExchanges
 {
+  /// <summary>
+  /// TODO rate limit
+  /// </summary>
   public abstract class Exchange
   {
     public static Exchange LoadExchange(
@@ -14,10 +17,12 @@ namespace CryptoExchanges
     {
       switch (exchangeName)
       {
-        case ExchangeName.Cryptopia:
-          return new CryptopiaExchange();
         case ExchangeName.Binance:
           return new BinanceExchange();
+        case ExchangeName.Cryptopia:
+          return new CryptopiaExchange();
+        case ExchangeName.EtherDelta:
+          return new EtherDeltaExchange();
         default:
           Debug.Fail("Missing Exchange");
           return null;

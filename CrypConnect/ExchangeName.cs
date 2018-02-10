@@ -8,6 +8,7 @@ namespace CryptoExchanges
 {
   public enum ExchangeName
   {
-    Cryptopia, Binance
+    Binance, Cryptopia, EtherDelta,
+    Kucoin
   }
 }

@@ -1,4 +1,7 @@
 # CrypConnect
+
+![Logo](Logo.png)
+
 WIP - C# API for various Crypto Exchanges
 
 
