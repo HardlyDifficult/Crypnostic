@@ -16,7 +16,6 @@ namespace CryptoExchanges
     public CryptopiaExchange()
     {
       publicApi = new CryptopiaApiPublic();
-
     }
 
     public override async Task<List<TradingPair>> GetAllTradingPairs()

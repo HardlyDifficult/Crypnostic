@@ -37,5 +37,14 @@ namespace CryptoExchanges.Tests
 
       Assert.IsTrue(tradingPairList.Count > 100);
     }
+
+    [TestMethod()]
+    public async Task KucoinTradingPairs()
+    {
+      Exchange exchange = Exchange.LoadExchange(ExchangeName.Kucoin);
+      List<TradingPair> tradingPairList = await exchange.GetAllTradingPairs();
+
+      Assert.IsTrue(tradingPairList.Count > 100);
+    }
   }
 }

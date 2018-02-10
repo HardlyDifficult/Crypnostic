@@ -23,6 +23,8 @@ namespace CryptoExchanges
           return new CryptopiaExchange();
         case ExchangeName.EtherDelta:
           return new EtherDeltaExchange();
+        case ExchangeName.Kucoin:
+          return new KucoinExchange();
         default:
           Debug.Fail("Missing Exchange");
           return null;
