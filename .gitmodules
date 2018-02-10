@@ -1,0 +1,4 @@
+[submodule "CryptopiaApi-Csharp"]
+	path = CryptopiaApi-Csharp
+	url = https://github.com/CryptopiaNZ/CryptopiaApi-Csharp.git
+	branch = master

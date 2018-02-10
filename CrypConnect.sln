@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2024
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrypConnect", "CrypConnect\CrypConnect.csproj", "{C4EA014D-BD4D-4A1A-B517-3656EBA47723}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdParty", "3rdParty", "{528B303F-0399-470E-988E-03AF81C6126F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptopiaApi", "CryptopiaApi-Csharp\CryptopiaApi\CryptopiaApi\CryptopiaApi\CryptopiaApi.csproj", "{30296406-237D-4B4B-8B5A-BDD18F0C2F53}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C4EA014D-BD4D-4A1A-B517-3656EBA47723}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4EA014D-BD4D-4A1A-B517-3656EBA47723}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4EA014D-BD4D-4A1A-B517-3656EBA47723}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4EA014D-BD4D-4A1A-B517-3656EBA47723}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30296406-237D-4B4B-8B5A-BDD18F0C2F53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30296406-237D-4B4B-8B5A-BDD18F0C2F53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30296406-237D-4B4B-8B5A-BDD18F0C2F53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30296406-237D-4B4B-8B5A-BDD18F0C2F53}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{30296406-237D-4B4B-8B5A-BDD18F0C2F53} = {528B303F-0399-470E-988E-03AF81C6126F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {335C3BA7-8125-4E74-9D77-85C2FAB58160}
+	EndGlobalSection
+EndGlobal
