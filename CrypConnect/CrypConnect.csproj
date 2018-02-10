@@ -42,15 +42,15 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Kucoin\KucoinExchange.cs" />
-    <Compile Include="EtherDeltaExchange.cs" />
-    <Compile Include="BinanceExchange.cs" />
-    <Compile Include="CryptopiaExchange.cs" />
+    <Compile Include="Exchanges\Binance\BinanceProductJson.cs" />
+    <Compile Include="Exchanges\Kucoin\KucoinExchange.cs" />
+    <Compile Include="Exchanges\EtherDelta\EtherDeltaExchange.cs" />
+    <Compile Include="Exchanges\Binance\BinanceExchange.cs" />
+    <Compile Include="Exchanges\Cryptopia\CryptopiaExchange.cs" />
     <Compile Include="Exchange.cs" />
     <Compile Include="ExchangeName.cs" />
-    <Compile Include="Extensions\BinanceExtensions.cs" />
-    <Compile Include="Extensions\CryptopiaExtensions.cs" />
-    <Compile Include="Kucoin\KucoinMarketJson.cs" />
+    <Compile Include="Exchanges\Kucoin\KucoinMarketJson.cs" />
+    <Compile Include="Exchanges\Kucoin\KucoinTickerNameListJson.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TradingPair.cs" />
   </ItemGroup>

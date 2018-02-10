@@ -15,7 +15,7 @@ namespace CryptoExchanges.Tests
     public async Task BinanceTradingPairs()
     {
       Exchange exchange = Exchange.LoadExchange(ExchangeName.Binance);
-      List<TradingPair> tradingPairList = await exchange.GetAllTradingPairs();
+      List<TradingPair> tradingPairList = await exchange.GetAllPairs();
 
       Assert.IsTrue(tradingPairList.Count > 100);
     }
@@ -24,7 +24,7 @@ namespace CryptoExchanges.Tests
     public async Task CryptopiaTradingPairs()
     {
       Exchange exchange = Exchange.LoadExchange(ExchangeName.Cryptopia);
-      List<TradingPair> tradingPairList = await exchange.GetAllTradingPairs();
+      List<TradingPair> tradingPairList = await exchange.GetAllPairs();
 
       Assert.IsTrue(tradingPairList.Count > 100);
     }
@@ -33,7 +33,7 @@ namespace CryptoExchanges.Tests
     public async Task EtherDeltaTradingPairs()
     {
       Exchange exchange = Exchange.LoadExchange(ExchangeName.EtherDelta);
-      List<TradingPair> tradingPairList = await exchange.GetAllTradingPairs();
+      List<TradingPair> tradingPairList = await exchange.GetAllPairs();
 
       Assert.IsTrue(tradingPairList.Count > 100);
     }
@@ -42,7 +42,7 @@ namespace CryptoExchanges.Tests
     public async Task KucoinTradingPairs()
     {
       Exchange exchange = Exchange.LoadExchange(ExchangeName.Kucoin);
-      List<TradingPair> tradingPairList = await exchange.GetAllTradingPairs();
+      List<TradingPair> tradingPairList = await exchange.GetAllPairs();
 
       Assert.IsTrue(tradingPairList.Count > 100);
     }

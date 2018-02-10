@@ -3,21 +3,22 @@
   public class TradingPair
   {
     public readonly ExchangeName exchange;
-    public readonly string baseCoin;
-    public readonly string quoteCoin;
+    
+    public readonly string baseCoinFullName;
+    public readonly string quoteCoinFullName;
     public readonly decimal AskPrice;
     public readonly decimal BidPrice;
 
     public TradingPair(
       ExchangeName exchange,
-      string baseCoin,
-      string quoteCoin,
+      string baseCoinFullName,
+      string quoteCoinFullName,
       decimal AskPrice,
       decimal BidPrice)
     {
       this.exchange = exchange;
-      this.baseCoin = baseCoin;
-      this.quoteCoin = quoteCoin;
+      this.baseCoinFullName = baseCoinFullName;
+      this.quoteCoinFullName = quoteCoinFullName;
       this.AskPrice = AskPrice;
       this.BidPrice = BidPrice;
     }

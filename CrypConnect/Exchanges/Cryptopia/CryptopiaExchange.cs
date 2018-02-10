@@ -1,40 +1,44 @@
-﻿using Cryptopia.API;
+﻿using System;
+using Cryptopia.API;
 using Cryptopia.API.DataObjects;
 using Cryptopia.API.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using HD;
 
 namespace CryptoExchanges
 {
   internal class CryptopiaExchange : Exchange
   {
-    CryptopiaApiPublic publicApi;
+    readonly CryptopiaApiPublic publicApi;
 
     public CryptopiaExchange()
+      : base(ExchangeName.Cryptopia)
     {
       publicApi = new CryptopiaApiPublic();
     }
 
-    public override async Task<List<TradingPair>> GetAllTradingPairs()
+    protected override async void LoadTickerNames()
     {
-      MarketsResponse response = await publicApi.GetMarkets(new MarketsRequest());
-      if(response.Success == false)
+      CurrenciesResponse currenciesResponse = await publicApi.GetCurrencies();
+
+      for (int i = 0; i < currenciesResponse.Data.Count; i++)
       {
-        return null;
+        CurrencyResult product = currenciesResponse.Data[i];
+        AddTicker(product.Symbol, product.Name);
       }
+    }
 
-      List<TradingPair> tradingPairList = new List<TradingPair>();
+    protected override async Task<List<TradingPair>> GetAllTradingPairs()
+    {
+      const string tradingPairSeparator = "/";
 
-      for (int i = 0; i < response.Data.Count; i++)
-      {
-        MarketResult result = response.Data[i];
-        tradingPairList.Add(result.ToTradingPair());
-      }
-
-      return tradingPairList;
+      MarketsResponse tickerList = await publicApi.GetMarkets(new MarketsRequest());
+      return AddTradingPairs(tickerList.Data, (MarketResult ticker) =>
+        (baseCoin: ticker.Label.GetAfter(tradingPairSeparator),
+        quoteCoin: ticker.Label.GetBefore(tradingPairSeparator),
+        askPrice: ticker.AskPrice,
+        bidPrice: ticker.BidPrice));
     }
   }
 }

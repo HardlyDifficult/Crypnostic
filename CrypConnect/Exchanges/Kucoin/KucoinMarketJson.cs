@@ -8,10 +8,10 @@ namespace CryptoExchanges.Kucoin
     public string code { get; set; }
     public string msg { get; set; }
     public long timestamp { get; set; }
-    public Datum[] data { get; set; }
+    public KucoinTradingPairJson[] data { get; set; }
   }
 
-  public class Datum
+  public class KucoinTradingPairJson
   {
     public string coinType { get; set; }
     public bool trading { get; set; }

@@ -7,11 +7,18 @@ using System.Threading.Tasks;
 
 namespace CryptoExchanges
 {
-  /// <summary>
-  /// TODO rate limit
-  /// </summary>
   public abstract class Exchange
   {
+    #region Data
+    public readonly ExchangeName exchangeName;
+
+    protected readonly Dictionary<string, string>
+      tickerToFullName = new Dictionary<string, string>();
+
+    protected static readonly Random random = new Random();
+    #endregion
+
+    #region Init
     public static Exchange LoadExchange(
       ExchangeName exchangeName)
     {
@@ -31,6 +38,75 @@ namespace CryptoExchanges
       }
     }
 
-    public abstract Task<List<TradingPair>> GetAllTradingPairs();
+    protected Exchange(
+      ExchangeName exchangeName)
+    {
+      this.exchangeName = exchangeName;
+    }
+    #endregion
+
+    #region Public API
+    public async Task<List<TradingPair>> GetAllPairs()
+    {
+      if (tickerToFullName.Count == 0)
+      {
+        LoadTickerNames();
+      }
+
+      return await GetAllTradingPairs();
+    }
+    #endregion
+
+    #region Helpers
+    protected abstract void LoadTickerNames();
+
+    protected abstract Task<List<TradingPair>> GetAllTradingPairs();
+
+    protected void AddTicker(
+      string ticker,
+      string fullName)
+    {
+      if (tickerToFullName.ContainsKey(ticker))
+      { // Ignore dupes
+        return;
+      }
+      tickerToFullName.Add(ticker, fullName);
+    }
+
+    protected List<TradingPair> AddTradingPairs<T>(
+      IEnumerable<T> tickerList,
+      Func<T,
+        (string baseCoin, string quoteCoin, decimal askPrice, decimal bidPrice)> typeMapFunc)
+    {
+      if (tickerList == null)
+      {
+        return null;
+      }
+      List<TradingPair> tradingPairList = new List<TradingPair>();
+
+      foreach (T ticker in tickerList)
+      {
+        (string baseCoin, string quoteCoin, decimal askPrice, decimal bidPrice) = typeMapFunc(ticker);
+        if (tickerToFullName.TryGetValue(baseCoin, out string baseCoinFullName) == false)
+        {
+          continue;
+        }
+        if (tickerToFullName.TryGetValue(quoteCoin, out string quoteCoinFullName) == false)
+        {
+          continue;
+        }
+
+        TradingPair pair = new TradingPair(
+          exchangeName,
+          baseCoinFullName,
+          quoteCoinFullName,
+          askPrice,
+          bidPrice);
+        tradingPairList.Add(pair);
+      }
+
+      return tradingPairList;
+    }
+    #endregion
   }
 }

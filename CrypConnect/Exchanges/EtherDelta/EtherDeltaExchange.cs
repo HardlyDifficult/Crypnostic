@@ -9,24 +9,28 @@ namespace CryptoExchanges
   internal class EtherDeltaExchange : Exchange
   {
     protected readonly IRestClient restClient;
-    readonly Random random = new Random();
 
     public EtherDeltaExchange()
+      : base(ExchangeName.EtherDelta)
     {
       restClient = new RestClient("https://api.etherdelta.com");
     }
 
-    public override async Task<List<TradingPair>> GetAllTradingPairs()
+    protected override void LoadTickerNames()
+    {
+      // TODO how do we do this for EtherDelta?
+    }
+
+    protected override async Task<List<TradingPair>> GetAllTradingPairs()
     {
       Dictionary<string, Dictionary<string, object>> tickerList;
-      // TODO move to retry logic everyone can use
       while (true)
       {
         try
         {
-          tickerList = 
+          tickerList =
             restClient.Get<Dictionary<string, Dictionary<string, object>>>(
-              "returnTicker"); 
+              "returnTicker");
 
           if (tickerList != null)
           {
@@ -39,23 +43,12 @@ namespace CryptoExchanges
         }
       }
 
-      List<TradingPair> tradingPairList = new List<TradingPair>();
-
-      foreach (KeyValuePair<string, Dictionary<string, object>> ticker in tickerList)
-      {
-        try
-        {
-          string coin = ticker.Key.GetAfter("_");
-          decimal askPrice = Convert.ToDecimal(ticker.Value["ask"]);
-          decimal bidPrice = Convert.ToDecimal(ticker.Value["bid"]);
-          
-          tradingPairList.Add(new TradingPair(ExchangeName.EtherDelta, "ETH", 
-            coin, askPrice, bidPrice));
-        }
-        catch { }
-      }
-
-      return tradingPairList;
+      return AddTradingPairs(tickerList,
+        (KeyValuePair<string, Dictionary<string, object>> ticker) =>
+          (baseCoin: "ETH",
+          quoteCoin: ticker.Key.GetAfter("_"),
+          askPrice: Convert.ToDecimal(ticker.Value["ask"]),
+          bidPrice: Convert.ToDecimal(ticker.Value["bid"])));
     }
   }
 }

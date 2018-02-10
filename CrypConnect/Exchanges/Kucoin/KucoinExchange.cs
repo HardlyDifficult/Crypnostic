@@ -4,61 +4,41 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
 using CryptoExchanges.Kucoin;
+using CryptoExchanges.Exchanges.Kucoin;
 
 namespace CryptoExchanges
 {
   internal class KucoinExchange : Exchange
   {
-    protected readonly IRestClient restClient;
-    readonly Random random = new Random();
+    readonly IRestClient restClient;
 
     public KucoinExchange()
+      : base(ExchangeName.Kucoin)
     {
       restClient = new RestClient("https://api.kucoin.com");
     }
 
-    public override async Task<List<TradingPair>> GetAllTradingPairs()
+    protected override void LoadTickerNames()
     {
-      KucoinMarketInfo tickerList;
-      // TODO move to retry logic everyone can use
-      while (true)
+      KucoinTickerNameListJson productList =
+        restClient.Get<KucoinTickerNameListJson>("v1/market/open/coins");
+
+      for (int i = 0; i < productList.data.Length; i++)
       {
-        try
-        {
-          tickerList = 
-            restClient.Get<KucoinMarketInfo>("v1/open/tick"); 
-
-          if (tickerList != null)
-          {
-            break;
-          }
-        }
-        catch
-        {
-          await Task.Delay(3500 + random.Next(2000));
-        }
+        KucoinTickerNameJson product = productList.data[i];
+        AddTicker(product.coin, product.name);
       }
+    }
 
-      List<TradingPair> tradingPairList = new List<TradingPair>();
-
-      foreach (Datum ticker in tickerList.data)
-      {
-        try
-        {
-          decimal askPrice = new decimal(ticker.sell);
-          decimal bidPrice = new decimal(ticker.buy);
-
-          tradingPairList.Add(new TradingPair(
-            ExchangeName.Kucoin, 
-            ticker.coinTypePair, 
-            ticker.coinType, 
-            askPrice, 
-            bidPrice));
-        }
-        catch { }
-      }
-
-      return tradingPairList;
+    protected override async Task<List<TradingPair>> GetAllTradingPairs()
+    {
+      KucoinMarketInfo tickerList =
+            restClient.Get<KucoinMarketInfo>("v1/open/tick");
+      return AddTradingPairs(tickerList.data, (KucoinTradingPairJson ticker) =>
+        (baseCoin: ticker.coinTypePair,
+          quoteCoin: ticker.coinType,
+          askPrice: new decimal(ticker.sell),
+          bidPrice: new decimal(ticker.buy)));
     }
   }
 }
