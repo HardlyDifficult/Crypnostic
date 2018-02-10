@@ -1,5 +1,3 @@
-# CrypConnect
-
 <img src="Logo.png" width=300px />
 
 
