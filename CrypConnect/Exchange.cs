@@ -49,6 +49,28 @@ namespace CryptoExchanges
     #endregion
 
     #region Public API
+    public decimal? GetConversion(
+      string fromOrQuoteCoinFullName, // ETH or BTC
+      string toOrBaseCoinFullName, // BTC or BNB
+      bool sellVsBuy)
+    {
+      // TODO prefer this exchange if we can
+      Coin fromCoin = exchangeMonitor.FindCoin(fromOrQuoteCoinFullName);
+
+      TradingPair pair = fromCoin?.Best(sellVsBuy, toOrBaseCoinFullName, true);
+      if (pair == null)
+      {
+        fromCoin = exchangeMonitor.FindCoin(toOrBaseCoinFullName);
+        pair = fromCoin?.Best(sellVsBuy, fromOrQuoteCoinFullName);
+        if (pair == null)
+        {
+          return null;
+        }
+      }
+
+      return sellVsBuy ? pair.bidPrice : pair.askPrice;
+    }
+
     public async Task GetAllPairs()
     {
       if (tickerToFullName.Count == 0)
@@ -89,14 +111,14 @@ namespace CryptoExchanges
       foreach (T ticker in tickerList)
       {
         (string baseCoin, string quoteCoin, decimal askPrice, decimal bidPrice) = typeMapFunc(ticker);
-        if(baseCoin == null || quoteCoin == null)
+        if (baseCoin == null || quoteCoin == null)
         {
           continue;
         }
         Console.WriteLine(quoteCoin);
         if (tickerToFullName.TryGetValue(baseCoin, out string baseCoinFullName) == false)
         {
-          Console.WriteLine("Missing"); // TODO
+          Console.WriteLine($"Missing base: {baseCoin}"); // TODO
           continue;
         }
         if (tickerToFullName.TryGetValue(quoteCoin, out string quoteCoinFullName) == false)
@@ -106,7 +128,7 @@ namespace CryptoExchanges
         }
 
         TradingPair pair = new TradingPair(
-          exchangeName,
+          this,
           baseCoinFullName,
           quoteCoinFullName,
           askPrice,

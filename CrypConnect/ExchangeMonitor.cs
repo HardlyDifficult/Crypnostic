@@ -10,12 +10,17 @@ namespace CryptoExchanges
   {
     public static readonly Random random = new Random();
 
+    /// <summary>
+    /// In priority order, so first exchange is my most preferred trading platform.
+    /// </summary>
     readonly Exchange[] exchangeList;
 
     /// <summary>
     /// CoinFullName (lowercase) to Coin
     /// </summary>
     readonly Dictionary<string, Coin> coinList = new Dictionary<string, Coin>();
+
+    readonly HashSet<string> blacklistedCoinFullNameList = new HashSet<string>();
 
     public ExchangeMonitor(
       params ExchangeName[] exchangeNameList)
@@ -29,10 +34,24 @@ namespace CryptoExchanges
       }
     }
 
+    public void BlacklistCoins(
+      params string[] coinFullNames)
+    {
+      for (int i = 0; i < coinFullNames.Length; i++)
+      {
+        string coinName = coinFullNames[i];
+        if (blacklistedCoinFullNameList.Add(coinName))
+        {
+          coinList.Remove(coinName);
+        }
+      }
+
+    }
+
     public Coin FindCoin(
       string coinFullName)
     {
-      if(coinList.TryGetValue(coinFullName.ToLowerInvariant(), out Coin coin) == false)
+      if (coinList.TryGetValue(coinFullName.ToLowerInvariant(), out Coin coin) == false)
       {
         return null;
       }
@@ -54,7 +73,13 @@ namespace CryptoExchanges
     public void AddPair(
       TradingPair pair)
     {
-      if(coinList.TryGetValue(pair.quoteCoinFullName.ToLowerInvariant(), out Coin coin) == false)
+      if (blacklistedCoinFullNameList.Contains(pair.quoteCoinFullName)
+        || blacklistedCoinFullNameList.Contains(pair.baseCoinFullName))
+      {
+        return;
+      }
+
+      if (coinList.TryGetValue(pair.quoteCoinFullName.ToLowerInvariant(), out Coin coin) == false)
       {
         coin = new Coin(pair.quoteCoinFullName);
         coinList.Add(pair.quoteCoinFullName.ToLowerInvariant(), coin);

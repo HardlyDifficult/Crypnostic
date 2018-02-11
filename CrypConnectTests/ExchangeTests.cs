@@ -16,10 +16,15 @@ namespace CryptoExchanges.Tests
     {
       ExchangeMonitor monitor = new ExchangeMonitor(
         ExchangeName.Binance,
+        ExchangeName.Cryptopia,
         ExchangeName.Kucoin);
+      // TODO how-to deal with USDT vs TetherUS
+      monitor.BlacklistCoins("USDT", "TetherUS", "Bitcoin Cash");
       await monitor.CompleteFirstLoad();
 
-      Coin nanoCoin = monitor.FindCoin("Nano");
+      Coin nanoCoin = monitor.FindCoin("OmiseGO");
+      TradingPair bestBtc = nanoCoin.Best(true, "Bitcoin");
+      TradingPair bestEth = nanoCoin.Best(true, "Ethereum");
       Console.WriteLine();
       //Assert.IsTrue(nanoCoin.bestAsk > 0);
 

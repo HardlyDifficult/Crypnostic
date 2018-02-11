@@ -21,6 +21,8 @@ namespace CryptoExchanges
 
     protected override async void LoadTickerNames()
     {
+      // TODO consider the market status, missing from the JSON object ATM
+      // TODO also do this for every other exchange
       CurrenciesResponse currenciesResponse = await publicApi.GetCurrencies();
 
       for (int i = 0; i < currenciesResponse.Data.Count; i++)
@@ -36,10 +38,12 @@ namespace CryptoExchanges
 
       MarketsResponse tickerList = await publicApi.GetMarkets(new MarketsRequest());
       AddTradingPairs(tickerList.Data, (MarketResult ticker) =>
-        (baseCoin: ticker.Label.GetAfter(tradingPairSeparator),
+      {
+        return (baseCoin: ticker.Label.GetAfter(tradingPairSeparator),
         quoteCoin: ticker.Label.GetBefore(tradingPairSeparator),
         askPrice: ticker.AskPrice,
-        bidPrice: ticker.BidPrice));
+        bidPrice: ticker.BidPrice);
+      });
     }
   }
 }
