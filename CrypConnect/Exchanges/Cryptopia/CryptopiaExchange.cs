@@ -12,8 +12,9 @@ namespace CryptoExchanges
   {
     readonly CryptopiaApiPublic publicApi;
 
-    public CryptopiaExchange()
-      : base(ExchangeName.Cryptopia)
+    public CryptopiaExchange(
+      ExchangeMonitor exchangeMonitor)
+      : base(exchangeMonitor, ExchangeName.Cryptopia)
     {
       publicApi = new CryptopiaApiPublic();
     }
@@ -29,12 +30,12 @@ namespace CryptoExchanges
       }
     }
 
-    protected override async Task<List<TradingPair>> GetAllTradingPairs()
+    protected override async Task GetAllTradingPairs()
     {
       const string tradingPairSeparator = "/";
 
       MarketsResponse tickerList = await publicApi.GetMarkets(new MarketsRequest());
-      return AddTradingPairs(tickerList.Data, (MarketResult ticker) =>
+      AddTradingPairs(tickerList.Data, (MarketResult ticker) =>
         (baseCoin: ticker.Label.GetAfter(tradingPairSeparator),
         quoteCoin: ticker.Label.GetBefore(tradingPairSeparator),
         askPrice: ticker.AskPrice,

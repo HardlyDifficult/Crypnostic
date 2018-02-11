@@ -6,8 +6,8 @@
     
     public readonly string baseCoinFullName;
     public readonly string quoteCoinFullName;
-    public readonly decimal AskPrice;
-    public readonly decimal BidPrice;
+    public readonly decimal askPrice;
+    public readonly decimal bidPrice;
 
     public TradingPair(
       ExchangeName exchange,
@@ -19,8 +19,13 @@
       this.exchange = exchange;
       this.baseCoinFullName = baseCoinFullName;
       this.quoteCoinFullName = quoteCoinFullName;
-      this.AskPrice = AskPrice;
-      this.BidPrice = BidPrice;
+      this.askPrice = AskPrice;
+      this.bidPrice = BidPrice;
+    }
+
+    public override string ToString()
+    {
+      return $"{quoteCoinFullName}/{baseCoinFullName} {bidPrice}-{askPrice}";
     }
   }
 }

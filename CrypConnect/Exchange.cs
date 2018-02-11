@@ -10,28 +10,29 @@ namespace CryptoExchanges
   public abstract class Exchange
   {
     #region Data
+    protected readonly ExchangeMonitor exchangeMonitor;
+
     public readonly ExchangeName exchangeName;
 
     protected readonly Dictionary<string, string>
       tickerToFullName = new Dictionary<string, string>();
-
-    protected static readonly Random random = new Random();
     #endregion
 
     #region Init
     public static Exchange LoadExchange(
+      ExchangeMonitor exchangeMonitor,
       ExchangeName exchangeName)
     {
       switch (exchangeName)
       {
         case ExchangeName.Binance:
-          return new BinanceExchange();
+          return new BinanceExchange(exchangeMonitor);
         case ExchangeName.Cryptopia:
-          return new CryptopiaExchange();
+          return new CryptopiaExchange(exchangeMonitor);
         case ExchangeName.EtherDelta:
-          return new EtherDeltaExchange();
+          return new EtherDeltaExchange(exchangeMonitor);
         case ExchangeName.Kucoin:
-          return new KucoinExchange();
+          return new KucoinExchange(exchangeMonitor);
         default:
           Debug.Fail("Missing Exchange");
           return null;
@@ -39,28 +40,30 @@ namespace CryptoExchanges
     }
 
     protected Exchange(
+      ExchangeMonitor exchangeMonitor,
       ExchangeName exchangeName)
     {
+      this.exchangeMonitor = exchangeMonitor;
       this.exchangeName = exchangeName;
     }
     #endregion
 
     #region Public API
-    public async Task<List<TradingPair>> GetAllPairs()
+    public async Task GetAllPairs()
     {
       if (tickerToFullName.Count == 0)
       {
         LoadTickerNames();
       }
 
-      return await GetAllTradingPairs();
+      await GetAllTradingPairs();
     }
     #endregion
 
     #region Helpers
     protected abstract void LoadTickerNames();
 
-    protected abstract Task<List<TradingPair>> GetAllTradingPairs();
+    protected abstract Task GetAllTradingPairs();
 
     protected void AddTicker(
       string ticker,
@@ -73,26 +76,32 @@ namespace CryptoExchanges
       tickerToFullName.Add(ticker, fullName);
     }
 
-    protected List<TradingPair> AddTradingPairs<T>(
+    protected void AddTradingPairs<T>(
       IEnumerable<T> tickerList,
       Func<T,
         (string baseCoin, string quoteCoin, decimal askPrice, decimal bidPrice)> typeMapFunc)
     {
       if (tickerList == null)
       {
-        return null;
+        return;
       }
-      List<TradingPair> tradingPairList = new List<TradingPair>();
 
       foreach (T ticker in tickerList)
       {
         (string baseCoin, string quoteCoin, decimal askPrice, decimal bidPrice) = typeMapFunc(ticker);
+        if(baseCoin == null || quoteCoin == null)
+        {
+          continue;
+        }
+        Console.WriteLine(quoteCoin);
         if (tickerToFullName.TryGetValue(baseCoin, out string baseCoinFullName) == false)
         {
+          Console.WriteLine("Missing"); // TODO
           continue;
         }
         if (tickerToFullName.TryGetValue(quoteCoin, out string quoteCoinFullName) == false)
         {
+          Console.WriteLine("Missing");// TODO
           continue;
         }
 
@@ -102,10 +111,9 @@ namespace CryptoExchanges
           quoteCoinFullName,
           askPrice,
           bidPrice);
-        tradingPairList.Add(pair);
-      }
 
-      return tradingPairList;
+        exchangeMonitor.AddPair(pair);
+      }
     }
     #endregion
   }

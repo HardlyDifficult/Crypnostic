@@ -6,6 +6,7 @@ using RestSharp;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
+using System.Diagnostics;
 
 namespace CryptoExchanges
 {
@@ -15,8 +16,9 @@ namespace CryptoExchanges
 
     readonly BinanceClient client;
 
-    public BinanceExchange()
-      : base(ExchangeName.Binance)
+    public BinanceExchange(
+      ExchangeMonitor exchangeMonitor)
+      : base(exchangeMonitor, ExchangeName.Binance)
     {
       restClient = new RestClient("https://www.binance.com");
 
@@ -26,7 +28,7 @@ namespace CryptoExchanges
 
     protected override void LoadTickerNames()
     {
-      BinanceProductListJson productList = 
+      BinanceProductListJson productList =
         restClient.Get<BinanceProductListJson>("exchange/public/product");
 
       for (int i = 0; i < productList.data.Length; i++)
@@ -37,14 +39,31 @@ namespace CryptoExchanges
       }
     }
 
-    protected override async Task<List<TradingPair>> GetAllTradingPairs()
+    protected override async Task GetAllTradingPairs()
     {
       IEnumerable<OrderBookTicker> tickerList = await client.GetOrderBookTicker();
-      return AddTradingPairs(tickerList, (OrderBookTicker ticker) => 
-        (baseCoin: ticker.Symbol.Substring(3),
-          quoteCoin: ticker.Symbol.Substring(0, 3),
+      AddTradingPairs(tickerList, (OrderBookTicker ticker) =>
+      {
+        string baseCoinTicker = null;
+        foreach (KeyValuePair<string, string> tickerToName in tickerToFullName)
+        {
+          if (ticker.Symbol.EndsWith(tickerToName.Key))
+          {
+            baseCoinTicker = tickerToName.Key;
+          }
+        }
+        Debug.Assert(ticker.Symbol == "123456" || baseCoinTicker != null);
+
+        string quoteCoinTicker = ticker.Symbol.Substring(0, ticker.Symbol.Length - baseCoinTicker?.Length ?? 0);
+
+        Debug.Assert(ticker.Symbol == "123456" || quoteCoinTicker != null);
+        Debug.Assert(ticker.Symbol == "123456" || quoteCoinTicker + baseCoinTicker == ticker.Symbol);
+
+        return (baseCoin: baseCoinTicker,
+          quoteCoin: quoteCoinTicker,
           askPrice: ticker.AskPrice,
-          bidPrice: ticker.BidPrice));
+          bidPrice: ticker.BidPrice);
+      });
     }
   }
 }

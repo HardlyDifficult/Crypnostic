@@ -12,8 +12,9 @@ namespace CryptoExchanges
   {
     readonly IRestClient restClient;
 
-    public KucoinExchange()
-      : base(ExchangeName.Kucoin)
+    public KucoinExchange(
+      ExchangeMonitor exchangeMonitor)
+      : base(exchangeMonitor, ExchangeName.Kucoin)
     {
       restClient = new RestClient("https://api.kucoin.com");
     }
@@ -30,11 +31,11 @@ namespace CryptoExchanges
       }
     }
 
-    protected override async Task<List<TradingPair>> GetAllTradingPairs()
+    protected override async Task GetAllTradingPairs()
     {
       KucoinMarketInfo tickerList =
             restClient.Get<KucoinMarketInfo>("v1/open/tick");
-      return AddTradingPairs(tickerList.data, (KucoinTradingPairJson ticker) =>
+      AddTradingPairs(tickerList.data, (KucoinTradingPairJson ticker) =>
         (baseCoin: ticker.coinTypePair,
           quoteCoin: ticker.coinType,
           askPrice: new decimal(ticker.sell),

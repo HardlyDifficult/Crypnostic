@@ -10,8 +10,9 @@ namespace CryptoExchanges
   {
     protected readonly IRestClient restClient;
 
-    public EtherDeltaExchange()
-      : base(ExchangeName.EtherDelta)
+    public EtherDeltaExchange(
+      ExchangeMonitor exchangeMonitor)
+      : base(exchangeMonitor, ExchangeName.EtherDelta)
     {
       restClient = new RestClient("https://api.etherdelta.com");
     }
@@ -21,7 +22,7 @@ namespace CryptoExchanges
       // TODO how do we do this for EtherDelta?
     }
 
-    protected override async Task<List<TradingPair>> GetAllTradingPairs()
+    protected override async Task GetAllTradingPairs()
     {
       Dictionary<string, Dictionary<string, object>> tickerList;
       while (true)
@@ -39,11 +40,11 @@ namespace CryptoExchanges
         }
         catch
         {
-          await Task.Delay(3500 + random.Next(2000));
+          await Task.Delay(3500 + ExchangeMonitor.random.Next(2000));
         }
       }
 
-      return AddTradingPairs(tickerList,
+      AddTradingPairs(tickerList,
         (KeyValuePair<string, Dictionary<string, object>> ticker) =>
           (baseCoin: "ETH",
           quoteCoin: ticker.Key.GetAfter("_"),
