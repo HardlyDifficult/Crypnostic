@@ -24,15 +24,13 @@ namespace CryptoExchanges
     /// <param name="exchangeMonitor"></param>
     public KucoinExchange(
       ExchangeMonitor exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.Kucoin,
-          TimeSpan.FromMilliseconds(.5 * TimeSpan.FromDays(1).TotalMilliseconds / 1_000_000))
+      : base(exchangeMonitor, ExchangeName.Kucoin, 1_000_000 / 1_440)
     {
       restClient = new RestClient("https://api.kucoin.com");
     }
 
     protected override async Task LoadTickerNames()
     {
-      throw new Exception();
       await throttle.WaitTillReady();
 
       KucoinTickerNameListJson productList =
@@ -41,7 +39,7 @@ namespace CryptoExchanges
       for (int i = 0; i < productList.data.Length; i++)
       {
         KucoinTickerNameJson product = productList.data[i];
-        AddTicker(product.coin, product.name);
+        AddTicker(product.coin, Coin.FromName(product.name));
       }
     }
 
@@ -52,8 +50,8 @@ namespace CryptoExchanges
       KucoinMarketInfo tickerList =
             restClient.Get<KucoinMarketInfo>("v1/open/tick");
       AddTradingPairs(tickerList.data, (KucoinTradingPairJson ticker) =>
-        (baseCoin: ticker.coinTypePair,
-          quoteCoin: ticker.coinType,
+        (baseCoinTicker: ticker.coinTypePair,
+          quoteCoinTicker: ticker.coinType,
           askPrice: new decimal(ticker.sell),
           bidPrice: new decimal(ticker.buy)));
     }

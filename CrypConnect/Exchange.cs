@@ -2,26 +2,38 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
 namespace CryptoExchanges
 {
+  /// <summary>
+  /// TODO
+  ///  - Listing status for all but Cryptopia
+  ///  - Periodically refresh the listing status
+  /// </summary>
   public abstract class Exchange
   {
+    #region Public Data
+    public readonly ExchangeName exchangeName;
+    #endregion
+
     #region Data
     protected readonly ExchangeMonitor exchangeMonitor;
 
-    public readonly ExchangeName exchangeName;
-
-    protected readonly Dictionary<string, string>
-      tickerToFullName = new Dictionary<string, string>();
+    internal protected readonly Dictionary<string, Coin>
+      tickerLowerToCoin = new Dictionary<string, Coin>();
 
     protected readonly Throttle throttle;
 
     readonly Timer timerRefreshData;
+
+    // TODO use this
+    readonly HashSet<Coin> inactiveCoinFullNames = new HashSet<Coin>();
+
+    // TODO use this
+    protected readonly HashSet<(Coin quoteCoin, Coin baseCoin)> inactivePairs
+      = new HashSet<(Coin quoteCoin, Coin baseCoin)>();
     #endregion
 
     #region Init
@@ -50,12 +62,14 @@ namespace CryptoExchanges
     protected Exchange(
       ExchangeMonitor exchangeMonitor,
       ExchangeName exchangeName,
-      TimeSpan timeBetweenRequests)
+      int maxRequestsPerMinute)
     {
       this.exchangeMonitor = exchangeMonitor;
       this.exchangeName = exchangeName;
 
-      throttle = new Throttle(timeBetweenRequests);
+      // Set the throttle to half the stated max requests per min
+      throttle = new Throttle(TimeSpan.FromMilliseconds(
+        2 * TimeSpan.FromMinutes(1).TotalMilliseconds / maxRequestsPerMinute));
 
       timerRefreshData = new Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
       timerRefreshData.AutoReset = false;
@@ -65,19 +79,19 @@ namespace CryptoExchanges
 
     #region Public API
     public decimal? GetConversion(
-      string fromOrQuoteCoinFullName,
-      string toOrBaseCoinFullName,
+      Coin quoteCoin,
+      Coin baseCoin,
       bool sellVsBuy)
     {
-      // TODO prefer this exchange if we can
-      Coin fromCoin = exchangeMonitor.FindCoin(fromOrQuoteCoinFullName);
+      Debug.Assert(quoteCoin != null);
+      Debug.Assert(baseCoin != null);
 
-      // TODO types
-      (TradingPair pair, decimal todo) = fromCoin?.Best(sellVsBuy, toOrBaseCoinFullName, true) ?? (null, 0);
+      // TODO prefer this exchange if we can
+      TradingPair pair = quoteCoin.Best(sellVsBuy, baseCoin, true);
       if (pair == null)
       {
-        fromCoin = exchangeMonitor.FindCoin(toOrBaseCoinFullName);
-        (pair, todo) = fromCoin?.Best(sellVsBuy, fromOrQuoteCoinFullName) ?? (null, 0);
+        // TODO what's going on here? Something seems wrong.
+        pair = baseCoin.Best(sellVsBuy, quoteCoin);
         if (pair == null)
         {
           return null;
@@ -89,7 +103,7 @@ namespace CryptoExchanges
 
     public async Task GetAllPairs()
     {
-      if (tickerToFullName.Count == 0)
+      if (tickerLowerToCoin.Count == 0)
       {
         while (true)
         {
@@ -97,11 +111,13 @@ namespace CryptoExchanges
           {
             await LoadTickerNames();
           }
-          catch
+          catch (Exception e)
           { // Auto retry on fail
+            Console.WriteLine(e.ToString()); // TODO
+
             if (exchangeMonitor.shouldStop == false)
             {
-              await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.random.Next(30)));
+              await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.instance.random.Next(30)));
               continue;
             }
           }
@@ -124,7 +140,7 @@ namespace CryptoExchanges
         { // Auto retry on fail
           if (exchangeMonitor.shouldStop == false)
           {
-            await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.random.Next(30)));
+            await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.instance.random.Next(30)));
             continue;
           }
         }
@@ -146,21 +162,44 @@ namespace CryptoExchanges
 
     protected abstract Task GetAllTradingPairs();
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="ticker"></param>
+    /// <param name="fullName"></param>
+    /// <param name="isCoinActive">TODO for other exchanges</param>
     protected void AddTicker(
       string ticker,
-      string fullName)
+      Coin coin,
+      bool isCoinActive = true)
     {
-      if (tickerToFullName.ContainsKey(ticker))
-      { // Ignore dupes
+      if (coin == null)
+      { // Coin may be blacklisted
         return;
       }
-      tickerToFullName.Add(ticker, fullName);
+
+      if (isCoinActive)
+      {
+        inactiveCoinFullNames.Remove(coin);
+      }
+      else
+      {
+        inactiveCoinFullNames.Add(coin);
+      }
+
+      if (tickerLowerToCoin.ContainsKey(ticker))
+      { // Ignore dupes
+        Debug.Assert(tickerLowerToCoin[ticker] == coin);
+        return;
+      }
+
+      tickerLowerToCoin.Add(ticker.ToLowerInvariant(), coin);
     }
 
     protected void AddTradingPairs<T>(
       IEnumerable<T> tickerList,
       Func<T,
-        (string baseCoin, string quoteCoin, decimal askPrice, decimal bidPrice)> typeMapFunc)
+        (string baseCoinTicker, string quoteCoinTicker, decimal askPrice, decimal bidPrice)> typeMapFunc)
     {
       if (tickerList == null)
       {
@@ -169,28 +208,35 @@ namespace CryptoExchanges
 
       foreach (T ticker in tickerList)
       {
-        (string baseCoin, string quoteCoin, decimal askPrice, decimal bidPrice) = typeMapFunc(ticker);
-        if (baseCoin == null || quoteCoin == null)
+        (string baseCoinTicker, string quoteCoinTicker, decimal askPrice, decimal bidPrice)
+          = typeMapFunc(ticker);
+
+        if (string.IsNullOrWhiteSpace(baseCoinTicker)
+          || string.IsNullOrWhiteSpace(quoteCoinTicker))
         {
           continue;
         }
-        if (tickerToFullName.TryGetValue(baseCoin, out string baseCoinFullName) == false)
+
+        if (tickerLowerToCoin.TryGetValue(baseCoinTicker.ToLowerInvariant(),
+          out Coin baseCoin) == false)
         { // May be missing due to coin filtering (e.g. no Tether)
           continue;
         }
-        if (tickerToFullName.TryGetValue(quoteCoin, out string quoteCoinFullName) == false)
+        if (tickerLowerToCoin.TryGetValue(quoteCoinTicker.ToLowerInvariant(),
+          out Coin quoteCoin) == false)
         { // May be missing due to book's listing status
           continue;
         }
 
         TradingPair pair = new TradingPair(
           this,
-          baseCoinFullName,
-          quoteCoinFullName,
+          baseCoin,
+          quoteCoin,
           askPrice,
           bidPrice);
 
-        exchangeMonitor.AddPair(pair);
+        // TODO
+        pair.quoteCoin.AddPair(pair);
       }
     }
     #endregion

@@ -22,8 +22,7 @@ namespace CryptoExchanges
     /// <param name="exchangeMonitor"></param>
     public EtherDeltaExchange(
       ExchangeMonitor exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.EtherDelta,
-          TimeSpan.FromMilliseconds(.5 * TimeSpan.FromDays(1).TotalMilliseconds / 1_000_000))
+      : base(exchangeMonitor, ExchangeName.EtherDelta, 1_000_000 / 1_440)
     {
       restClient = new RestClient("https://api.etherdelta.com");
     }
@@ -53,14 +52,14 @@ namespace CryptoExchanges
         }
         catch
         {
-          await Task.Delay(3500 + ExchangeMonitor.random.Next(2000));
+          await Task.Delay(3500 + ExchangeMonitor.instance.random.Next(2000));
         }
       }
 
       AddTradingPairs(tickerList,
         (KeyValuePair<string, Dictionary<string, object>> ticker) =>
-          (baseCoin: "ETH",
-          quoteCoin: ticker.Key.GetAfter("_"),
+          (baseCoinTicker: "ETH",
+          quoteCoinTicker: ticker.Key.GetAfter("_"),
           askPrice: Convert.ToDecimal(ticker.Value["ask"]),
           bidPrice: Convert.ToDecimal(ticker.Value["bid"])));
     }

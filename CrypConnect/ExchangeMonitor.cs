@@ -1,67 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace CryptoExchanges
 {
   public class ExchangeMonitor
   {
-    public static readonly Random random = new Random();
+    #region Internal/Private Data
+    internal static ExchangeMonitor instance;
+
+    internal readonly Random random = new Random();
 
     /// <summary>
     /// In priority order, so first exchange is my most preferred trading platform.
     /// </summary>
     readonly Exchange[] exchangeList;
 
-    /// <summary>
-    /// CoinFullName (lowercase) to Coin
-    /// </summary>
-    readonly Dictionary<string, Coin> coinList = new Dictionary<string, Coin>();
-
-    readonly HashSet<string> blacklistedCoinFullNameList = new HashSet<string>();
-
     internal bool shouldStop
     {
       get; private set;
     }
+    #endregion
 
+    #region Init
     public ExchangeMonitor(
-      params ExchangeName[] exchangeNameList)
+      ExchangeMonitorConfig config)
     {
-      exchangeList = new Exchange[exchangeNameList.Length];
-      for (int i = 0; i < exchangeNameList.Length; i++)
+      Debug.Assert(instance == null);
+      instance = this;
+
+      exchangeList = new Exchange[config.supportedExchangeList.Length];
+      for (int i = 0; i < config.supportedExchangeList.Length; i++)
       {
-        ExchangeName name = exchangeNameList[i];
+        ExchangeName name = config.supportedExchangeList[i];
         Exchange exchange = Exchange.LoadExchange(this, name);
         exchangeList[i] = exchange;
       }
-    }
 
-    public void BlacklistCoins(
-      params string[] coinFullNames)
-    {
-      for (int i = 0; i < coinFullNames.Length; i++)
+      foreach (KeyValuePair<string, string> aliasToName in config.coinAliasToName)
       {
-        string coinName = coinFullNames[i];
-        if (blacklistedCoinFullNameList.Add(coinName))
-        {
-          coinList.Remove(coinName);
-        }
+        Debug.Assert(Coin.aliasLowerToFullNameLower != null);
+        Coin.aliasLowerToFullNameLower.Add(aliasToName.Key.ToLowerInvariant(), 
+          aliasToName.Value.ToLowerInvariant());
       }
 
-    }
-
-    public Coin FindCoin(
-      string coinFullName)
-    {
-      if (coinList.TryGetValue(coinFullName.ToLowerInvariant(), out Coin coin) == false)
+      foreach (string blacklistedCoin in config.blacklistedCoins)
       {
-        return null;
+        Coin.blacklistedFullNameLowerList.Add(blacklistedCoin.ToLowerInvariant());
       }
-
-      return coin;
     }
 
     public async Task CompleteFirstLoad()
@@ -80,22 +67,23 @@ namespace CryptoExchanges
       // TODO cancel token on pending requests where we can?
       shouldStop = true;
     }
+    #endregion
 
-    public void AddPair(
-      TradingPair pair)
+    #region Public Read API
+    public Exchange FindExchange(
+      ExchangeName onExchange)
     {
-      if (blacklistedCoinFullNameList.Contains(pair.quoteCoinFullName)
-        || blacklistedCoinFullNameList.Contains(pair.baseCoinFullName))
+      for (int i = 0; i < exchangeList.Length; i++)
       {
-        return;
+        Exchange exchange = exchangeList[i];
+        if(exchange.exchangeName == onExchange)
+        {
+          return exchange;
+        }
       }
 
-      if (coinList.TryGetValue(pair.quoteCoinFullName.ToLowerInvariant(), out Coin coin) == false)
-      {
-        coin = new Coin(pair.quoteCoinFullName);
-        coinList.Add(pair.quoteCoinFullName.ToLowerInvariant(), coin);
-      }
-      coin.AddPair(pair);
+      return null;
     }
+    #endregion
   }
 }

@@ -5,10 +5,11 @@ namespace CryptoExchanges
   public class TradingPair
   {
     public readonly Exchange exchange;
-    
-    public readonly string baseCoinFullName;
-    public readonly string quoteCoinFullName;
-    
+
+    public readonly Coin baseCoin;
+
+    public readonly Coin quoteCoin;
+
     /// <summary>
     /// The cost to purchase.
     /// </summary>
@@ -21,39 +22,54 @@ namespace CryptoExchanges
 
     public TradingPair(
       Exchange exchange,
-      string baseCoinFullName,
-      string quoteCoinFullName,
+      Coin baseCoin,
+      Coin quoteCoin,
       decimal AskPrice,
       decimal BidPrice)
     {
       this.exchange = exchange;
-      this.baseCoinFullName = baseCoinFullName;
-      this.quoteCoinFullName = quoteCoinFullName;
+      this.baseCoin = baseCoin;
+      this.quoteCoin = quoteCoin;
       this.askPrice = AskPrice;
       this.bidPrice = BidPrice;
     }
 
-    public override string ToString()
-    {
-      return $"{quoteCoinFullName}/{baseCoinFullName} {bidPrice}-{askPrice}";
-    }
-
-    // 0.001 BTC / SPANK (current Pair) -> 10 BNB / SPANK (goal)
     /// 1) Use conversion from same exchange
     /// 2) Else use conversion from a prioritized list of exchanges?
     public decimal? GetConversionTo(
-      string baseCoinFullName,
+      Coin targetBaseCoin,
       bool sellVsBuy)
     {
-      if(this.baseCoinFullName.Equals(baseCoinFullName, 
-        StringComparison.InvariantCultureIgnoreCase))
+      if (this.baseCoin == targetBaseCoin)
       {
         return 1;
       }
+
       return exchange.GetConversion(
-        fromOrQuoteCoinFullName: this.baseCoinFullName, // e.g. ETH
-        toOrBaseCoinFullName: baseCoinFullName,// e.g. BTC
-        sellVsBuy: sellVsBuy); 
+        quoteCoin: this.baseCoin,
+        baseCoin: targetBaseCoin,
+        sellVsBuy: sellVsBuy);
+    }
+
+    public decimal? GetValueIn(
+      bool sellVsBuy,
+      Coin baseCoin)
+    {
+      decimal? conversionRate = GetConversionTo(baseCoin, sellVsBuy);
+      if (conversionRate == null)
+      {
+        return null;
+      }
+
+      decimal value = sellVsBuy ? bidPrice : askPrice;
+      value *= conversionRate.Value;
+
+      return value;
+    }
+
+    public override string ToString()
+    {
+      return $"{quoteCoin}/{baseCoin} {bidPrice}-{askPrice}";
     }
   }
 }

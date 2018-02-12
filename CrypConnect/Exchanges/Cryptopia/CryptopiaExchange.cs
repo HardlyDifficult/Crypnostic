@@ -30,8 +30,7 @@ namespace CryptoExchanges
     public CryptopiaExchange(
       ExchangeMonitor exchangeMonitor,
       bool includeMaintainceStatus)
-      : base(exchangeMonitor, ExchangeName.Cryptopia,
-          TimeSpan.FromMilliseconds(.5 * TimeSpan.FromDays(1).TotalMilliseconds / 1_000_000))
+      : base(exchangeMonitor, ExchangeName.Cryptopia, 1_000_000 / 1_440)
     {
       this.includeMaintainceStatus = includeMaintainceStatus;
       publicApi = new CryptopiaApiPublic();
@@ -40,19 +39,34 @@ namespace CryptoExchanges
     protected override async Task LoadTickerNames()
     {
       await throttle.WaitTillReady();
-      // TODO consider the market status, missing from the JSON object ATM
-      // TODO also do this for every other exchange
       CurrenciesResponse currenciesResponse = await publicApi.GetCurrencies();
-
       for (int i = 0; i < currenciesResponse.Data.Count; i++)
       {
         CurrencyResult product = currenciesResponse.Data[i];
+        bool isCoinActive = true;
         if (product.ListingStatus != "Active"
           || includeMaintainceStatus == false && product.Status != "OK")
         {
-          continue;
+          isCoinActive = false;
         }
-        AddTicker(product.Symbol, product.Name);
+        AddTicker(product.Symbol, Coin.FromName(product.Name), isCoinActive);
+      }
+
+      await throttle.WaitTillReady();
+      TradePairsResponse tradePairsResponse = await publicApi.GetTradePairs();
+      for (int i = 0; i < tradePairsResponse.Data.Count; i++)
+      {
+        TradePairResult tradePair = tradePairsResponse.Data[i];
+        (Coin, Coin) entry = (Coin.FromName(tradePair.Currency), 
+          Coin.FromName(tradePair.BaseCurrency));
+        if (tradePair.Status == "OK")
+        {
+          inactivePairs.Remove(entry);
+        }
+        else
+        {
+          inactivePairs.Add(entry);
+        }
       }
     }
 
@@ -64,8 +78,8 @@ namespace CryptoExchanges
       MarketsResponse tickerList = await publicApi.GetMarkets(new MarketsRequest());
       AddTradingPairs(tickerList.Data, (MarketResult ticker) =>
       {
-        return (baseCoin: ticker.Label.GetAfter(tradingPairSeparator),
-        quoteCoin: ticker.Label.GetBefore(tradingPairSeparator),
+        return (baseCoinTicker: ticker.Label.GetAfter(tradingPairSeparator),
+        quoteCoinTicker: ticker.Label.GetBefore(tradingPairSeparator),
         askPrice: ticker.AskPrice,
         bidPrice: ticker.BidPrice);
       });

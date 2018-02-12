@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrypConnectTests", "CrypCon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hardly.Common", "HardlyCommon\Hardly.Common.csproj", "{00174C6B-A135-42A7-AF86-CA81806820A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrypConnectExamples", "CrypConnectExamples\CrypConnectExamples.csproj", "{F11BDE06-24BA-4898-AF21-5187754B9A27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,14 @@ Global
 		{00174C6B-A135-42A7-AF86-CA81806820A5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{00174C6B-A135-42A7-AF86-CA81806820A5}.Taker|Any CPU.ActiveCfg = Release|Any CPU
 		{00174C6B-A135-42A7-AF86-CA81806820A5}.Taker|Any CPU.Build.0 = Release|Any CPU
+		{F11BDE06-24BA-4898-AF21-5187754B9A27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F11BDE06-24BA-4898-AF21-5187754B9A27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F11BDE06-24BA-4898-AF21-5187754B9A27}.Maker|Any CPU.ActiveCfg = Release|Any CPU
+		{F11BDE06-24BA-4898-AF21-5187754B9A27}.Maker|Any CPU.Build.0 = Release|Any CPU
+		{F11BDE06-24BA-4898-AF21-5187754B9A27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F11BDE06-24BA-4898-AF21-5187754B9A27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F11BDE06-24BA-4898-AF21-5187754B9A27}.Taker|Any CPU.ActiveCfg = Release|Any CPU
+		{F11BDE06-24BA-4898-AF21-5187754B9A27}.Taker|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Coin.cs" />
+    <Compile Include="ExchangeMonitorConfig.cs" />
     <Compile Include="Exchanges\Binance\BinanceProductJson.cs" />
     <Compile Include="Exchanges\Kucoin\KucoinExchange.cs" />
     <Compile Include="Exchanges\EtherDelta\EtherDeltaExchange.cs" />

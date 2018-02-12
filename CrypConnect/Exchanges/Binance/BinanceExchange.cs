@@ -31,7 +31,7 @@ namespace CryptoExchanges
       ExchangeMonitor exchangeMonitor)
       : base(exchangeMonitor, 
           ExchangeName.Binance,
-          TimeSpan.FromMilliseconds(.5 * TimeSpan.FromMinutes(1).TotalMilliseconds / 1200.0))
+          1200)
     {
       restClient = new RestClient("https://www.binance.com");
 
@@ -50,8 +50,8 @@ namespace CryptoExchanges
       for (int i = 0; i < productList.data.Length; i++)
       {
         BinanceProductJson product = productList.data[i];
-        AddTicker(product.baseAsset, product.baseAssetName);
-        AddTicker(product.quoteAsset, product.quoteAssetName);
+        AddTicker(product.baseAsset, Coin.FromName(product.baseAssetName));
+        AddTicker(product.quoteAsset, Coin.FromName(product.quoteAssetName));
       }
     }
 
@@ -63,7 +63,7 @@ namespace CryptoExchanges
       AddTradingPairs(tickerList, (OrderBookTicker ticker) =>
       {
         string baseCoinTicker = null;
-        foreach (KeyValuePair<string, string> tickerToName in tickerToFullName)
+        foreach (KeyValuePair<string, Coin> tickerToName in tickerLowerToCoin)
         {
           if (ticker.Symbol.EndsWith(tickerToName.Key))
           {
@@ -77,8 +77,8 @@ namespace CryptoExchanges
         Debug.Assert(ticker.Symbol == "123456" || quoteCoinTicker != null);
         Debug.Assert(ticker.Symbol == "123456" || quoteCoinTicker + baseCoinTicker == ticker.Symbol);
 
-        return (baseCoin: baseCoinTicker,
-          quoteCoin: quoteCoinTicker,
+        return (baseCoinTicker: baseCoinTicker,
+          quoteCoinTicker: quoteCoinTicker,
           askPrice: ticker.AskPrice,
           bidPrice: ticker.BidPrice);
       });
