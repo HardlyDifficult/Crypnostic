@@ -12,27 +12,34 @@ namespace CryptoExchanges.Tests
   public class ExchangeTests
   {
     /// <summary>
-    /// Goal: Alarm when a coin I own becomes profitable.
+    /// Goal: Alarm when reaching a price target for a specific coin.
     /// 
-    /// TODO how-to make specific alarm profiles?
+    /// TODO
+    ///  - Monitor 2 coins 
     /// </summary>
     [TestMethod()]
     public async Task AlarmOnPriceIncrease()
     {
       ExchangeMonitor monitor = new ExchangeMonitor(
-        //ExchangeName.Binance,
-        //ExchangeName.Cryptopia,
+        ExchangeName.Binance,
+        ExchangeName.Cryptopia,
         ExchangeName.Kucoin);
 
-      // TODO how-to deal with USDT vs TetherUS
-      monitor.BlacklistCoins("USDT", "TetherUS", "Tether", "Bitcoin Cash");
-      await monitor.CompleteFirstLoad();
+      { // TODO move these fields into the constructor?
+        // TODO how-to deal with USDT vs TetherUS (maybe a word map somewhere)
+        // TODO is Tether the only one impacted?
+        monitor.BlacklistCoins("USDT", "TetherUS", "Tether", "Bitcoin Cash");
+        await monitor.CompleteFirstLoad();
+      }
 
       Coin coinToMonitor = monitor.FindCoin("OmiseGO");
 
       decimal goalInEth;
       {
         // TODO need a better format than this tuple (maybe include all pairs required)
+        ///// Begs the question, do we want to support more hops... ever?
+        ///// I think if we recognize the exchanges base pairs as special this could be done.
+        // TODO do we add constants for the main coins like Ether and Bitcoin?
         (TradingPair bestEthPair, decimal valueInEth) = coinToMonitor.Best(true, "Ethereum");
         Assert.IsTrue(bestEthPair.askPrice > 0);
         Assert.IsTrue(valueInEth > 0);
@@ -41,8 +48,14 @@ namespace CryptoExchanges.Tests
       }
 
       // Add USD (Goal: Alarm when USD and ETH are up)
+      // Should just mean adding GDax
 
       bool increaseDetected = false;
+      // TODO this is a verbose event (if it's an update event, maybe fire per exchange instead?)
+      // Maybe in addition tothe coin price updated, there is an exchange updated event
+      // Maybe use Event Profiles?
+      /// -- Then a bot simply adds logic like play sound to wake me up
+      /// Challenge: ExchangeMonitor may have 5 exchanges but I only want alarms on a good price from EtherDelta
       coinToMonitor.onPriceUpdate += () =>
       {
         (TradingPair bestEthPair, decimal valueInEth) = coinToMonitor.Best(true, "Ethereum");
