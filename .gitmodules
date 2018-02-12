@@ -1,7 +1,3 @@
-[submodule "CryptopiaApi-Csharp"]
-	path = CryptopiaApi-Csharp
-	url = https://github.com/CryptopiaNZ/CryptopiaApi-Csharp.git
-	branch = master
 [submodule "Binance.API.Csharp.Client"]
 	path = Binance.API.Csharp.Client
 	url = https://github.com/morpheums/Binance.API.Csharp.Client.git
@@ -9,4 +5,8 @@
 [submodule "HardlyCommon"]
 	path = HardlyCommon
 	url = https://github.com/hardlydifficult/HardlyCommon
+	branch = master
+[submodule "CryptopiaApi-Csharp"]
+	path = CryptopiaApi-Csharp
+	url = https://github.com/hardlydifficult/CryptopiaApi-Csharp.git
 	branch = master
