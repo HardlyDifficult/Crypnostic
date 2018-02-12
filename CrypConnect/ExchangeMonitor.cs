@@ -22,6 +22,11 @@ namespace CryptoExchanges
 
     readonly HashSet<string> blacklistedCoinFullNameList = new HashSet<string>();
 
+    internal bool shouldStop
+    {
+      get; private set;
+    }
+
     public ExchangeMonitor(
       params ExchangeName[] exchangeNameList)
     {
@@ -68,6 +73,12 @@ namespace CryptoExchanges
       }
 
       await Task.WhenAll(exchangeTaskList);
+    }
+
+    public void Stop()
+    {
+      // TODO cancel token on pending requests where we can?
+      shouldStop = true;
     }
 
     public void AddPair(

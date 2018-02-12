@@ -11,30 +11,53 @@ namespace CryptoExchanges.Tests
   [TestClass()]
   public class ExchangeTests
   {
+    /// <summary>
+    /// Goal: Alarm when a coin I own becomes profitable.
+    /// 
+    /// TODO how-to make specific alarm profiles?
+    /// </summary>
     [TestMethod()]
-    public async Task WatchNanoPrice()
+    public async Task AlarmOnPriceIncrease()
     {
       ExchangeMonitor monitor = new ExchangeMonitor(
-        ExchangeName.Binance,
-        ExchangeName.Cryptopia,
+        //ExchangeName.Binance,
+        //ExchangeName.Cryptopia,
         ExchangeName.Kucoin);
+
       // TODO how-to deal with USDT vs TetherUS
-      monitor.BlacklistCoins("USDT", "TetherUS", "Bitcoin Cash");
+      monitor.BlacklistCoins("USDT", "TetherUS", "Tether", "Bitcoin Cash");
       await monitor.CompleteFirstLoad();
 
-      Coin nanoCoin = monitor.FindCoin("OmiseGO");
-      TradingPair bestBtc = nanoCoin.Best(true, "Bitcoin");
-      TradingPair bestEth = nanoCoin.Best(true, "Ethereum");
-      Console.WriteLine();
-      //Assert.IsTrue(nanoCoin.bestAsk > 0);
+      Coin coinToMonitor = monitor.FindCoin("OmiseGO");
 
-      //bool changeDetected = false;
-      //nanoCoin.onPriceUpdate += () => changeDetected = true;
+      decimal goalInEth;
+      {
+        // TODO need a better format than this tuple (maybe include all pairs required)
+        (TradingPair bestEthPair, decimal valueInEth) = coinToMonitor.Best(true, "Ethereum");
+        Assert.IsTrue(bestEthPair.askPrice > 0);
+        Assert.IsTrue(valueInEth > 0);
+        // Target a tiny price increase so that the test completes quickly
+        goalInEth = valueInEth * 1.0001m;
+      }
 
-      //while(changeDetected == false)
-      //{
-      //  await Task.Delay(TimeSpan.FromSeconds(1));
-      //}
+      // Add USD (Goal: Alarm when USD and ETH are up)
+
+      bool increaseDetected = false;
+      coinToMonitor.onPriceUpdate += () =>
+      {
+        (TradingPair bestEthPair, decimal valueInEth) = coinToMonitor.Best(true, "Ethereum");
+
+        if (valueInEth >= goalInEth)
+        { // Alarm when the price increases above the goal
+          increaseDetected = true;
+        }
+      };
+
+      while (increaseDetected == false)
+      {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+      }
+      monitor.Stop();
     }
 
 

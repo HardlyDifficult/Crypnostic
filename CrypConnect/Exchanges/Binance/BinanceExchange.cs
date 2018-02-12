@@ -10,15 +10,28 @@ using System.Diagnostics;
 
 namespace CryptoExchanges
 {
+  /// <summary>
+  /// TODO HTTP 429 return code is used when breaking a request rate limit.
+  /// </summary>
+  /// <remarks>
+  /// https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
+  /// </remarks>
   internal class BinanceExchange : Exchange
   {
     readonly IRestClient restClient;
 
     readonly BinanceClient client;
 
+    /// <summary>
+    /// Throttle:
+    ///   1200 requests per minute is the stated max.
+    ///   Targeting half that to avoid issues.
+    /// </summary>
     public BinanceExchange(
       ExchangeMonitor exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.Binance)
+      : base(exchangeMonitor, 
+          ExchangeName.Binance,
+          TimeSpan.FromMilliseconds(.5 * TimeSpan.FromMinutes(1).TotalMilliseconds / 1200.0))
     {
       restClient = new RestClient("https://www.binance.com");
 
@@ -26,8 +39,11 @@ namespace CryptoExchanges
       client = new BinanceClient(api);
     }
 
-    protected override void LoadTickerNames()
+    protected override async Task LoadTickerNames()
     {
+      await throttle.WaitTillReady();
+
+      // TODO should be async
       BinanceProductListJson productList =
         restClient.Get<BinanceProductListJson>("exchange/public/product");
 
@@ -41,6 +57,8 @@ namespace CryptoExchanges
 
     protected override async Task GetAllTradingPairs()
     {
+      await throttle.WaitTillReady();
+
       IEnumerable<OrderBookTicker> tickerList = await client.GetOrderBookTicker();
       AddTradingPairs(tickerList, (OrderBookTicker ticker) =>
       {

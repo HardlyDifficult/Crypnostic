@@ -6,20 +6,32 @@ using HD;
 
 namespace CryptoExchanges
 {
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <remarks>
+  /// https://github.com/etherdelta/etherdelta.github.io/blob/master/docs/API_OLD.md
+  /// </remarks>
   internal class EtherDeltaExchange : Exchange
   {
     protected readonly IRestClient restClient;
 
+    /// <summary>
+    /// No stated throttle limit, going with the same as Crytpopia
+    /// </summary>
+    /// <param name="exchangeMonitor"></param>
     public EtherDeltaExchange(
       ExchangeMonitor exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.EtherDelta)
+      : base(exchangeMonitor, ExchangeName.EtherDelta,
+          TimeSpan.FromMilliseconds(.5 * TimeSpan.FromDays(1).TotalMilliseconds / 1_000_000))
     {
       restClient = new RestClient("https://api.etherdelta.com");
     }
 
-    protected override void LoadTickerNames()
+    protected override async Task LoadTickerNames()
     {
       // TODO how do we do this for EtherDelta?
+      await Task.Delay(0);
     }
 
     protected override async Task GetAllTradingPairs()
@@ -29,6 +41,7 @@ namespace CryptoExchanges
       {
         try
         {
+          await throttle.WaitTillReady();
           tickerList =
             restClient.Get<Dictionary<string, Dictionary<string, object>>>(
               "returnTicker");

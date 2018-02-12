@@ -16,6 +16,7 @@ namespace CryptoExchanges
 
     readonly Dictionary<(ExchangeName, string baseCoinFullName), TradingPair> exchangeInfo
       = new Dictionary<(ExchangeName, string baseCoinFullName), TradingPair>();
+    public event Action onPriceUpdate;
 
 
     /// <summary>
@@ -37,7 +38,7 @@ namespace CryptoExchanges
     /// If specified, only consider trades on this exchange
     /// </param>
     /// <returns></returns>
-    public TradingPair Best(
+    public (TradingPair, decimal valueInBaseCoin) Best(
       bool sellVsBuy,
       string baseCoinFullName,
       bool exactMatchOnly = false,
@@ -82,7 +83,7 @@ namespace CryptoExchanges
         }
       }
 
-      return bestPair;
+      return (bestPair, bestValue ?? 0);
     }
 
     public Coin(
@@ -95,6 +96,7 @@ namespace CryptoExchanges
       TradingPair pair)
     {
       exchangeInfo[(pair.exchange.exchangeName, pair.baseCoinFullName)] = pair;
+      onPriceUpdate?.Invoke();
     }
 
     public override string ToString()

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using HD;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace CryptoExchanges
 {
@@ -16,6 +18,10 @@ namespace CryptoExchanges
 
     protected readonly Dictionary<string, string>
       tickerToFullName = new Dictionary<string, string>();
+
+    protected readonly Throttle throttle;
+
+    readonly Timer timerRefreshData;
     #endregion
 
     #region Init
@@ -28,7 +34,9 @@ namespace CryptoExchanges
         case ExchangeName.Binance:
           return new BinanceExchange(exchangeMonitor);
         case ExchangeName.Cryptopia:
-          return new CryptopiaExchange(exchangeMonitor);
+          return new CryptopiaExchange(
+            exchangeMonitor,
+            includeMaintainceStatus: false); // TODO an option for this?
         case ExchangeName.EtherDelta:
           return new EtherDeltaExchange(exchangeMonitor);
         case ExchangeName.Kucoin:
@@ -41,10 +49,17 @@ namespace CryptoExchanges
 
     protected Exchange(
       ExchangeMonitor exchangeMonitor,
-      ExchangeName exchangeName)
+      ExchangeName exchangeName,
+      TimeSpan timeBetweenRequests)
     {
       this.exchangeMonitor = exchangeMonitor;
       this.exchangeName = exchangeName;
+
+      throttle = new Throttle(timeBetweenRequests);
+
+      timerRefreshData = new Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
+      timerRefreshData.AutoReset = false;
+      timerRefreshData.Elapsed += Timer_Elapsed;
     }
     #endregion
 
@@ -57,11 +72,12 @@ namespace CryptoExchanges
       // TODO prefer this exchange if we can
       Coin fromCoin = exchangeMonitor.FindCoin(fromOrQuoteCoinFullName);
 
-      TradingPair pair = fromCoin?.Best(sellVsBuy, toOrBaseCoinFullName, true);
+      // TODO types
+      (TradingPair pair, decimal todo) = fromCoin?.Best(sellVsBuy, toOrBaseCoinFullName, true) ?? (null, 0);
       if (pair == null)
       {
         fromCoin = exchangeMonitor.FindCoin(toOrBaseCoinFullName);
-        pair = fromCoin?.Best(sellVsBuy, fromOrQuoteCoinFullName);
+        (pair, todo) = fromCoin?.Best(sellVsBuy, fromOrQuoteCoinFullName) ?? (null, 0);
         if (pair == null)
         {
           return null;
@@ -75,15 +91,28 @@ namespace CryptoExchanges
     {
       if (tickerToFullName.Count == 0)
       {
-        LoadTickerNames();
+        await LoadTickerNames();
       }
 
+      await GetAllTradingPairsWrapper();
+    }
+
+    async Task GetAllTradingPairsWrapper()
+    {
       await GetAllTradingPairs();
+      timerRefreshData.Start();
+    }
+
+    async void Timer_Elapsed(
+      object sender, 
+      ElapsedEventArgs e)
+    {
+      await GetAllTradingPairsWrapper();
     }
     #endregion
 
     #region Helpers
-    protected abstract void LoadTickerNames();
+    protected abstract Task LoadTickerNames();
 
     protected abstract Task GetAllTradingPairs();
 
@@ -115,15 +144,12 @@ namespace CryptoExchanges
         {
           continue;
         }
-        Console.WriteLine(quoteCoin);
         if (tickerToFullName.TryGetValue(baseCoin, out string baseCoinFullName) == false)
-        {
-          Console.WriteLine($"Missing base: {baseCoin}"); // TODO
+        { // May be missing due to coin filtering (e.g. no Tether)
           continue;
         }
         if (tickerToFullName.TryGetValue(quoteCoin, out string quoteCoinFullName) == false)
-        {
-          Console.WriteLine("Missing");// TODO
+        { // May be missing due to book's listing status
           continue;
         }
 

@@ -8,19 +8,32 @@ using CryptoExchanges.Exchanges.Kucoin;
 
 namespace CryptoExchanges
 {
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <remarks>
+  /// https://kucoinapidocs.docs.apiary.io/#
+  /// </remarks>
   internal class KucoinExchange : Exchange
   {
     readonly IRestClient restClient;
 
+    /// <summary>
+    /// No stated throttle limit, going with the same as Crytpopia
+    /// </summary>
+    /// <param name="exchangeMonitor"></param>
     public KucoinExchange(
       ExchangeMonitor exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.Kucoin)
+      : base(exchangeMonitor, ExchangeName.Kucoin,
+          TimeSpan.FromMilliseconds(.5 * TimeSpan.FromDays(1).TotalMilliseconds / 1_000_000))
     {
       restClient = new RestClient("https://api.kucoin.com");
     }
 
-    protected override void LoadTickerNames()
+    protected override async Task LoadTickerNames()
     {
+      await throttle.WaitTillReady();
+
       KucoinTickerNameListJson productList =
         restClient.Get<KucoinTickerNameListJson>("v1/market/open/coins");
 
@@ -33,6 +46,8 @@ namespace CryptoExchanges
 
     protected override async Task GetAllTradingPairs()
     {
+      await throttle.WaitTillReady();
+
       KucoinMarketInfo tickerList =
             restClient.Get<KucoinMarketInfo>("v1/open/tick");
       AddTradingPairs(tickerList.data, (KucoinTradingPairJson ticker) =>
