@@ -65,8 +65,8 @@ namespace CryptoExchanges
 
     #region Public API
     public decimal? GetConversion(
-      string fromOrQuoteCoinFullName, // ETH or BTC
-      string toOrBaseCoinFullName, // BTC or BNB
+      string fromOrQuoteCoinFullName,
+      string toOrBaseCoinFullName,
       bool sellVsBuy)
     {
       // TODO prefer this exchange if we can
@@ -91,7 +91,22 @@ namespace CryptoExchanges
     {
       if (tickerToFullName.Count == 0)
       {
-        await LoadTickerNames();
+        while (true)
+        {
+          try
+          {
+            await LoadTickerNames();
+          }
+          catch
+          { // Auto retry on fail
+            if (exchangeMonitor.shouldStop == false)
+            {
+              await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.random.Next(30)));
+              continue;
+            }
+          }
+          break;
+        }
       }
 
       await GetAllTradingPairsWrapper();
@@ -99,12 +114,27 @@ namespace CryptoExchanges
 
     async Task GetAllTradingPairsWrapper()
     {
-      await GetAllTradingPairs();
+      while (true)
+      {
+        try
+        {
+          await GetAllTradingPairs();
+        }
+        catch
+        { // Auto retry on fail
+          if (exchangeMonitor.shouldStop == false)
+          {
+            await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.random.Next(30)));
+            continue;
+          }
+        }
+        break;
+      }
       timerRefreshData.Start();
     }
 
     async void Timer_Elapsed(
-      object sender, 
+      object sender,
       ElapsedEventArgs e)
     {
       await GetAllTradingPairsWrapper();

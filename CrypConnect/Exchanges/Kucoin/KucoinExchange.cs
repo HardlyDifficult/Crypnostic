@@ -32,6 +32,7 @@ namespace CryptoExchanges
 
     protected override async Task LoadTickerNames()
     {
+      throw new Exception();
       await throttle.WaitTillReady();
 
       KucoinTickerNameListJson productList =
