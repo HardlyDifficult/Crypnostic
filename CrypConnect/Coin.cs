@@ -5,13 +5,6 @@ using HD;
 
 namespace CryptoExchanges
 {
-  /// <summary>
-  /// TODO
-  ///   - how can a bot walk the list of all coins?
-  ///   - how to walk all available pairs?
-  ///   - how to walk order book?
-  ///   (cache & consider last update time)
-  /// </summary>
   public class Coin
   {
     #region Public Static 
@@ -26,8 +19,16 @@ namespace CryptoExchanges
     /// Same as new Coin("Ethereum")
     /// </summary>
     public static readonly Coin ethereum;
+
+    public static IEnumerable<Coin> allCoins
+    {
+      get
+      {
+        return fullNameLowerToCoin.Values;
+      }
+    }
     #endregion
-    
+
     #region Static Data
     /// <summary>
     /// Populated by the ExchangeMonitor on construction.
@@ -45,8 +46,7 @@ namespace CryptoExchanges
     /// <summary>
     /// After considering aliases and blacklist.
     /// </summary>
-    /// TODO not public
-    public static readonly Dictionary<string, Coin> fullNameLowerToCoin
+    static readonly Dictionary<string, Coin> fullNameLowerToCoin
       = new Dictionary<string, Coin>();
     #endregion
 
@@ -66,6 +66,16 @@ namespace CryptoExchanges
       = new Dictionary<(ExchangeName, Coin baseCoin), TradingPair>();
     #endregion
 
+    #region Public Properties
+    public IEnumerable<TradingPair> allTradingPairs
+    {
+      get
+      {
+        return exchangeInfo.Values;
+      }
+    }
+    #endregion
+
     #region Init
     static Coin()
     {
@@ -73,7 +83,7 @@ namespace CryptoExchanges
       bitcoin = Coin.FromName("Bitcoin");
       ethereum = Coin.FromName("Ethereum");
     }
-
+    
     Coin(
       string fullName)
     {
@@ -130,15 +140,6 @@ namespace CryptoExchanges
     }
     #endregion
 
-    #region Public Write
-    public void AddPair(
-      TradingPair pair)
-    {
-      exchangeInfo[(pair.exchange.exchangeName, pair.baseCoin)] = pair;
-      onPriceUpdate?.Invoke(this);
-    }
-    #endregion
-
     #region Public Read
     /// <summary>
     /// </summary>
@@ -181,6 +182,15 @@ namespace CryptoExchanges
       }
 
       return bestPair;
+    }
+    #endregion
+
+    #region Internal Write
+    internal void AddPair(
+      TradingPair pair)
+    {
+      exchangeInfo[(pair.exchange.exchangeName, pair.baseCoin)] = pair;
+      onPriceUpdate?.Invoke(this);
     }
     #endregion
 

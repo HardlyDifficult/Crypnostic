@@ -46,9 +46,13 @@ namespace CryptoExchanges.Tests
 
       Coin monero = Coin.FromName("Monero");
       Assert.IsTrue(monero != null);
-
       TradingPair pair = monero.Best(doge, true);
       Assert.IsTrue(pair == null);
+
+      Coin omg = Coin.FromName("OmiseGo");
+      Assert.IsTrue(omg != null);
+      TradingPair omgPair = omg.Best(doge, true);
+      Assert.IsTrue(omgPair == null);
     }
 
     [TestMethod()]
@@ -66,5 +70,45 @@ namespace CryptoExchanges.Tests
         new ExchangeMonitorConfig(ExchangeName.Kucoin));
       Assert.IsTrue(Coin.ethereum.Best(Coin.bitcoin, true).askPrice > 0);
     }
+
+    [TestMethod()]
+    public void AllCoins()
+    {
+      monitor = new ExchangeMonitor(
+        new ExchangeMonitorConfig(
+          ExchangeName.Binance,
+          ExchangeName.Cryptopia,
+          ExchangeName.Kucoin));
+
+      int count = Coin.allCoins.Count();
+      Assert.IsTrue(count > 600); // Cryptopia is the largest with about 500
+    }
+
+    [TestMethod()]
+    public void AllExchanges()
+    {
+      monitor = new ExchangeMonitor(
+        new ExchangeMonitorConfig());
+
+      int count = Coin.allCoins.Count();
+      Assert.IsTrue(count > 600); // Cryptopia is the largest with about 500
+    }
+
+    [TestMethod()]
+    public void AllTradingPairs()
+    {
+      monitor = new ExchangeMonitor(
+        new ExchangeMonitorConfig(
+          ExchangeName.Binance,
+          ExchangeName.Cryptopia,
+          ExchangeName.Kucoin));
+
+      Coin omg = Coin.FromName("OmiseGO");
+      int count = omg.allTradingPairs.Count();
+      Assert.IsTrue(count >= 5); // ~2 each (BTC and ETH)
+    }
+
+
+
   }
 }

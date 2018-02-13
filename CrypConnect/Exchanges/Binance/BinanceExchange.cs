@@ -11,10 +11,10 @@ using System.Diagnostics;
 namespace CryptoExchanges
 {
   /// <summary>
-  /// TODO HTTP 429 return code is used when breaking a request rate limit.
   /// </summary>
   /// <remarks>
   /// https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
+  /// HTTP 429 return code is used when breaking a request rate limit.
   /// </remarks>
   internal class BinanceExchange : Exchange
   {
@@ -42,8 +42,7 @@ namespace CryptoExchanges
     protected override async Task LoadTickerNames()
     {
       await throttle.WaitTillReady();
-
-      // TODO should be async
+      
       BinanceProductListJson productList =
         restClient.Get<BinanceProductListJson>("exchange/public/product");
 

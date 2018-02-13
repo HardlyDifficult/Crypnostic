@@ -59,7 +59,7 @@ namespace CryptoExchanges
         TradePairResult tradePair = tradePairsResponse.Data[i];
         (Coin, Coin) entry = (Coin.FromName(tradePair.Currency), 
           Coin.FromName(tradePair.BaseCurrency));
-        if (tradePair.Status == "OK")
+        if (includeMaintainceStatus || tradePair.Status == "OK")
         {
           inactivePairs.Remove(entry);
         }

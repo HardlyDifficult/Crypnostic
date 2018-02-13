@@ -7,16 +7,16 @@ using System.Timers;
 
 namespace CryptoExchanges
 {
-  /// <summary>
-  /// TODO
-  ///  - Listing status for all but Cryptopia
-  ///  - Periodically refresh the listing status
-  ///  - Update event for the entire exchange
-  /// </summary>
   public abstract class Exchange
   {
     #region Public Data
     public readonly ExchangeName exchangeName;
+
+    /// <summary>
+    /// Called each time the exchange's prices are updated.
+    /// This is an alternative to each Coin's onPriceUpdate event.
+    /// </summary>
+    public event Action<Exchange> onPriceUpdate;
     #endregion
 
     #region Data
@@ -29,10 +29,8 @@ namespace CryptoExchanges
 
     readonly Timer timerRefreshData;
 
-    // TODO use this
     readonly HashSet<Coin> inactiveCoinFullNames = new HashSet<Coin>();
 
-    // TODO use this
     protected readonly HashSet<(Coin quoteCoin, Coin baseCoin)> inactivePairs
       = new HashSet<(Coin quoteCoin, Coin baseCoin)>();
     #endregion
@@ -40,7 +38,8 @@ namespace CryptoExchanges
     #region Init
     public static Exchange LoadExchange(
       ExchangeMonitor exchangeMonitor,
-      ExchangeName exchangeName)
+      ExchangeName exchangeName,
+      bool includeMaintainceStatus)
     {
       switch (exchangeName)
       {
@@ -49,7 +48,7 @@ namespace CryptoExchanges
         case ExchangeName.Cryptopia:
           return new CryptopiaExchange(
             exchangeMonitor,
-            includeMaintainceStatus: false); // TODO an option for this?
+            includeMaintainceStatus); 
         case ExchangeName.EtherDelta:
           return new EtherDeltaExchange(exchangeMonitor);
         case ExchangeName.Kucoin:
@@ -89,10 +88,8 @@ namespace CryptoExchanges
           {
             await LoadTickerNames();
           }
-          catch (Exception e)
+          catch
           { // Auto retry on fail
-            Console.WriteLine(e.ToString()); // TODO
-
             if (exchangeMonitor.shouldStop == false)
             {
               await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.instance.random.Next(30)));
@@ -124,6 +121,8 @@ namespace CryptoExchanges
         }
         break;
       }
+
+      onPriceUpdate?.Invoke(this);
       timerRefreshData.Start();
     }
 
@@ -185,7 +184,6 @@ namespace CryptoExchanges
       {
         return;
       }
-
       foreach (T ticker in tickerList)
       {
         (string baseCoinTicker, string quoteCoinTicker, decimal askPrice, decimal bidPrice)
@@ -207,16 +205,22 @@ namespace CryptoExchanges
         { // May be missing due to book's listing status
           continue;
         }
+        if (inactiveCoinFullNames.Contains(baseCoin)
+          || inactiveCoinFullNames.Contains(quoteCoin))
+        {
+          continue;
+        }
+        if (inactivePairs.Contains((quoteCoin, baseCoin)))
+        {
+          continue;
+        }
 
-        TradingPair pair = new TradingPair(
+        new TradingPair(
           this,
           baseCoin,
           quoteCoin,
           askPrice,
           bidPrice);
-
-        // TODO
-        pair.quoteCoin.AddPair(pair);
       }
     }
     #endregion

@@ -34,7 +34,7 @@ namespace CryptoExchanges
       for (int i = 0; i < config.supportedExchangeList.Length; i++)
       {
         ExchangeName name = config.supportedExchangeList[i];
-        Exchange exchange = Exchange.LoadExchange(this, name);
+        Exchange exchange = Exchange.LoadExchange(this, name, config.includeMaintainceStatus);
         exchangeList[i] = exchange;
       }
 
@@ -68,7 +68,6 @@ namespace CryptoExchanges
     {
       Debug.Assert(instance == this);
 
-      // TODO cancel token on pending requests where we can?
       shouldStop = true;
       instance = null;
     }

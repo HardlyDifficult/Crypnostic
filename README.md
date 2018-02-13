@@ -1,7 +1,7 @@
 <img src="Logo.png" width=300px  />
 
 
-WIP - C# API for various Crypto Exchanges
+WIP - C# Exchange-Agnostic API for various Crypto Exchanges
 
 Supported exchanges:
 
@@ -12,7 +12,12 @@ Supported exchanges:
 
 Features:
 
- - ...
+ - Auto-Refresh and Throttle
+ - Single Coin object per Cryptocurrency
+   - Best Ask/Bid for each Book/Exchange
+ - Events:
+   - Coin price updated
+ - Filters out Coins in Maintenance (Cryptopia only and does not refresh)
 
 ## Setup
 

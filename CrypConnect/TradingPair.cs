@@ -4,6 +4,7 @@ namespace CryptoExchanges
 {
   public class TradingPair
   {
+    #region Data
     public readonly Exchange exchange;
 
     public readonly Coin baseCoin;
@@ -19,8 +20,10 @@ namespace CryptoExchanges
     /// The price you would get by selling.
     /// </summary>
     public readonly decimal bidPrice;
+    #endregion
 
-    public TradingPair(
+    #region Init
+    internal TradingPair(
       Exchange exchange,
       Coin baseCoin,
       Coin quoteCoin,
@@ -32,11 +35,16 @@ namespace CryptoExchanges
       this.quoteCoin = quoteCoin;
       this.askPrice = AskPrice;
       this.bidPrice = BidPrice;
-    }
 
+      quoteCoin.AddPair(this);
+    }
+    #endregion
+
+    #region Class Stuff
     public override string ToString()
     {
       return $"{quoteCoin}/{baseCoin} {bidPrice}-{askPrice}";
     }
+    #endregion
   }
 }

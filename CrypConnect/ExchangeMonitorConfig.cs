@@ -8,6 +8,8 @@ namespace CryptoExchanges
   [Serializable]
   public class ExchangeMonitorConfig
   {
+    public  bool includeMaintainceStatus;
+
     internal readonly ExchangeName[] supportedExchangeList;
     
     internal readonly Dictionary<string, string> coinAliasToName 
@@ -21,11 +23,15 @@ namespace CryptoExchanges
     /// </summary>
     /// <param name="supportedExchangeList">
     /// List in priority order.  i.e. the first exchange will be considered before others.
+    /// Leave blank to support every exchange.
     /// </param>
     public ExchangeMonitorConfig(
       params ExchangeName[] supportedExchangeList)
     {
-      Debug.Assert(supportedExchangeList.Length > 0);
+      if(supportedExchangeList.Length == 0)
+      {
+        supportedExchangeList = (ExchangeName[])Enum.GetValues(typeof(ExchangeName));
+      }
 
       this.supportedExchangeList = supportedExchangeList;
     }
