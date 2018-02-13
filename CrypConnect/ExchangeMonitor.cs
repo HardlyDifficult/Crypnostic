@@ -41,7 +41,7 @@ namespace CryptoExchanges
       foreach (KeyValuePair<string, string> aliasToName in config.coinAliasToName)
       {
         Debug.Assert(Coin.aliasLowerToFullNameLower != null);
-        Coin.aliasLowerToFullNameLower.Add(aliasToName.Key.ToLowerInvariant(), 
+        Coin.aliasLowerToFullNameLower.Add(aliasToName.Key.ToLowerInvariant(),
           aliasToName.Value.ToLowerInvariant());
       }
 
@@ -49,9 +49,11 @@ namespace CryptoExchanges
       {
         Coin.blacklistedFullNameLowerList.Add(blacklistedCoin.ToLowerInvariant());
       }
+
+      CompleteFirstLoad().Wait();
     }
 
-    public async Task CompleteFirstLoad()
+    async Task CompleteFirstLoad()
     {
       Task[] exchangeTaskList = new Task[exchangeList.Length];
       for (int i = 0; i < exchangeList.Length; i++)
@@ -64,8 +66,11 @@ namespace CryptoExchanges
 
     public void Stop()
     {
+      Debug.Assert(instance == this);
+
       // TODO cancel token on pending requests where we can?
       shouldStop = true;
+      instance = null;
     }
     #endregion
 
@@ -76,7 +81,7 @@ namespace CryptoExchanges
       for (int i = 0; i < exchangeList.Length; i++)
       {
         Exchange exchange = exchangeList[i];
-        if(exchange.exchangeName == onExchange)
+        if (exchange.exchangeName == onExchange)
         {
           return exchange;
         }

@@ -11,6 +11,7 @@ namespace CryptoExchanges
   /// TODO
   ///  - Listing status for all but Cryptopia
   ///  - Periodically refresh the listing status
+  ///  - Update event for the entire exchange
   /// </summary>
   public abstract class Exchange
   {
@@ -78,29 +79,6 @@ namespace CryptoExchanges
     #endregion
 
     #region Public API
-    public decimal? GetConversion(
-      Coin quoteCoin,
-      Coin baseCoin,
-      bool sellVsBuy)
-    {
-      Debug.Assert(quoteCoin != null);
-      Debug.Assert(baseCoin != null);
-
-      // TODO prefer this exchange if we can
-      TradingPair pair = quoteCoin.Best(sellVsBuy, baseCoin, true);
-      if (pair == null)
-      {
-        // TODO what's going on here? Something seems wrong.
-        pair = baseCoin.Best(sellVsBuy, quoteCoin);
-        if (pair == null)
-        {
-          return null;
-        }
-      }
-
-      return sellVsBuy ? pair.bidPrice : pair.askPrice;
-    }
-
     public async Task GetAllPairs()
     {
       if (tickerLowerToCoin.Count == 0)
@@ -187,13 +165,15 @@ namespace CryptoExchanges
         inactiveCoinFullNames.Add(coin);
       }
 
+      ticker = ticker.ToLowerInvariant();
+
       if (tickerLowerToCoin.ContainsKey(ticker))
       { // Ignore dupes
         Debug.Assert(tickerLowerToCoin[ticker] == coin);
         return;
       }
 
-      tickerLowerToCoin.Add(ticker.ToLowerInvariant(), coin);
+      tickerLowerToCoin.Add(ticker, coin);
     }
 
     protected void AddTradingPairs<T>(

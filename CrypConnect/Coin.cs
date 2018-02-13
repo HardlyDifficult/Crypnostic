@@ -45,14 +45,15 @@ namespace CryptoExchanges
     /// <summary>
     /// After considering aliases and blacklist.
     /// </summary>
-    static readonly Dictionary<string, Coin> fullNameLowerToCoin
+    /// TODO not public
+    public static readonly Dictionary<string, Coin> fullNameLowerToCoin
       = new Dictionary<string, Coin>();
     #endregion
 
     #region Public Data
     public readonly string fullName;
 
-    public event Action onPriceUpdate;
+    public event Action<Coin> onPriceUpdate;
     #endregion
 
     #region Private Data
@@ -134,34 +135,24 @@ namespace CryptoExchanges
       TradingPair pair)
     {
       exchangeInfo[(pair.exchange.exchangeName, pair.baseCoin)] = pair;
-      onPriceUpdate?.Invoke();
+      onPriceUpdate?.Invoke(this);
     }
     #endregion
 
     #region Public Read
     /// <summary>
-    /// Finds the best offer.  Currently only supports 3 hops - do we need more?
-    /// 
-    /// e.g. it won't go OMG->Doge->BTC->ETH but will do OMG->Doge->BTC
     /// </summary>
     /// <param name="sellVsBuy">
     /// True: Sell this coin for baseCoin. False: Buy this coin with baseCoin.
     /// </param>
     /// <param name="baseCoinFullName"></param>
-    /// <param name="exactMatchOnly">
-    /// Only consider trades against the specified baseCoin.
-    /// Else, consider exchange rates to find the best offer 
-    /// (e.g. trading on the ETH book may lead to more BTC in the end then trading 
-    /// for BTC directly)
-    /// </param>
     /// <param name="exchangeName">
     /// If specified, only consider trades on this exchange
     /// </param>
     /// <returns></returns>
     public TradingPair Best(
-      bool sellVsBuy,
       Coin baseCoin,
-      bool exactMatchOnly = false,
+      bool sellVsBuy,
       ExchangeName? exchangeName = null)
     {
       TradingPair bestPair = null;
@@ -174,21 +165,15 @@ namespace CryptoExchanges
           continue;
         }
 
-        if (exactMatchOnly && pair.Value.baseCoin == baseCoin)
+        if (pair.Value.baseCoin != baseCoin)
         { // Filter by baseCoin (optional)
           continue;
         }
 
-        decimal? value = pair.Value.GetValueIn(sellVsBuy, baseCoin);
-        if (value == null)
-        {
-          continue;
-        }
-
-
+        decimal value = sellVsBuy ? pair.Value.bidPrice : pair.Value.askPrice;
         if (bestValue == null
-          || sellVsBuy && value.Value > bestValue.Value
-          || sellVsBuy == false && value.Value < bestValue.Value)
+          || sellVsBuy && value > bestValue.Value
+          || sellVsBuy == false && value < bestValue.Value)
         {
           bestValue = value;
           bestPair = pair.Value;

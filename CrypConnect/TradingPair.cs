@@ -34,39 +34,6 @@ namespace CryptoExchanges
       this.bidPrice = BidPrice;
     }
 
-    /// 1) Use conversion from same exchange
-    /// 2) Else use conversion from a prioritized list of exchanges?
-    public decimal? GetConversionTo(
-      Coin targetBaseCoin,
-      bool sellVsBuy)
-    {
-      if (this.baseCoin == targetBaseCoin)
-      {
-        return 1;
-      }
-
-      return exchange.GetConversion(
-        quoteCoin: this.baseCoin,
-        baseCoin: targetBaseCoin,
-        sellVsBuy: sellVsBuy);
-    }
-
-    public decimal? GetValueIn(
-      bool sellVsBuy,
-      Coin baseCoin)
-    {
-      decimal? conversionRate = GetConversionTo(baseCoin, sellVsBuy);
-      if (conversionRate == null)
-      {
-        return null;
-      }
-
-      decimal value = sellVsBuy ? bidPrice : askPrice;
-      value *= conversionRate.Value;
-
-      return value;
-    }
-
     public override string ToString()
     {
       return $"{quoteCoin}/{baseCoin} {bidPrice}-{askPrice}";

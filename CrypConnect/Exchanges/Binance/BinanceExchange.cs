@@ -63,20 +63,17 @@ namespace CryptoExchanges
       AddTradingPairs(tickerList, (OrderBookTicker ticker) =>
       {
         string baseCoinTicker = null;
+        string symbolLower = ticker.Symbol.ToLowerInvariant();
         foreach (KeyValuePair<string, Coin> tickerToName in tickerLowerToCoin)
         {
-          if (ticker.Symbol.EndsWith(tickerToName.Key))
+          if (symbolLower.EndsWith(tickerToName.Key))
           {
             baseCoinTicker = tickerToName.Key;
           }
         }
-        Debug.Assert(ticker.Symbol == "123456" || baseCoinTicker != null);
 
         string quoteCoinTicker = ticker.Symbol.Substring(0, ticker.Symbol.Length - baseCoinTicker?.Length ?? 0);
-
-        Debug.Assert(ticker.Symbol == "123456" || quoteCoinTicker != null);
-        Debug.Assert(ticker.Symbol == "123456" || quoteCoinTicker + baseCoinTicker == ticker.Symbol);
-
+       
         return (baseCoinTicker: baseCoinTicker,
           quoteCoinTicker: quoteCoinTicker,
           askPrice: ticker.AskPrice,

@@ -11,54 +11,60 @@ namespace CryptoExchanges.Tests
   [TestClass()]
   public class ExchangeTests
   {
-    /// <summary>
-    /// Goal: Alarm when reaching a price target for a specific coin.
-    /// 
-    /// TODO
-    ///  - Monitor 2 coins 
-    /// </summary>
-    //[TestMethod()]
-    //public async Task AlarmOnPriceIncrease()
-    //{
+    ExchangeMonitor monitor;
 
-    //}
-
-
-    //[TestMethod()]
-    //public async Task BinanceTradingPairs()
-    //{
-    //  Exchange exchange = Exchange.LoadExchange(ExchangeName.Binance);
-    //  List<TradingPair> tradingPairList = await exchange.GetAllPairs();
-
-    //  Assert.IsTrue(tradingPairList.Count > 100);
-    //}
-
-    //[TestMethod()]
-    //public async Task CryptopiaTradingPairs()
-    //{
-    //  Exchange exchange = Exchange.LoadExchange(ExchangeName.Cryptopia);
-    //  List<TradingPair> tradingPairList = await exchange.GetAllPairs();
-
-    //  Assert.IsTrue(tradingPairList.Count > 100);
-    //}
-
-    //[TestMethod()]
-    //public async Task EtherDeltaTradingPairs()
-    //{
-    //  Exchange exchange = Exchange.LoadExchange(ExchangeName.EtherDelta);
-    //  List<TradingPair> tradingPairList = await exchange.GetAllPairs();
-
-    //  Assert.IsTrue(tradingPairList.Count > 100);
-    //}
+    [TestCleanup]
+    public void Cleanup()
+    {
+      monitor.Stop();
+      monitor = null;
+    }
 
     [TestMethod()]
-    public async Task KucoinTradingPairs()
+    public void Binance()
     {
-      ExchangeMonitor monitor = new ExchangeMonitor(
+      monitor = new ExchangeMonitor(
+        new ExchangeMonitorConfig(ExchangeName.Binance));
+      Assert.IsTrue(Coin.ethereum.Best(Coin.bitcoin, true).askPrice > 0);
+    }
+
+    [TestMethod()]
+    public void Cryptopia()
+    {
+      monitor = new ExchangeMonitor(
+        new ExchangeMonitorConfig(ExchangeName.Cryptopia));
+      Assert.IsTrue(Coin.ethereum.Best(Coin.bitcoin, true).askPrice > 0);
+    }
+
+    [TestMethod()] 
+    public void CryptopiaClosedBooks()
+    {
+      monitor = new ExchangeMonitor(
+        new ExchangeMonitorConfig(ExchangeName.Cryptopia));
+      Coin doge = Coin.FromName("Dogecoin");
+      Assert.IsTrue(doge != null);
+
+      Coin monero = Coin.FromName("Monero");
+      Assert.IsTrue(monero != null);
+
+      TradingPair pair = monero.Best(doge, true);
+      Assert.IsTrue(pair == null);
+    }
+
+    [TestMethod()]
+    public void EtherDelta()
+    {
+      monitor = new ExchangeMonitor(
+        new ExchangeMonitorConfig(ExchangeName.EtherDelta));
+      Assert.IsTrue(Coin.FromName("OmiseGO").Best(Coin.ethereum, true).askPrice > 0);
+    }
+
+    [TestMethod()]
+    public void Kucoin()
+    {
+      monitor = new ExchangeMonitor(
         new ExchangeMonitorConfig(ExchangeName.Kucoin));
-      await monitor.CompleteFirstLoad();
-      Coin coin = Coin.ethereum;
-      Assert.IsTrue(coin.Best(true, Coin.bitcoin) != null);
+      Assert.IsTrue(Coin.ethereum.Best(Coin.bitcoin, true).askPrice > 0);
     }
   }
 }
