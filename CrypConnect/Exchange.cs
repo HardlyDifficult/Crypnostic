@@ -1,4 +1,5 @@
-﻿using HD;
+﻿using CryptoExchanges.Exchanges.GDax;
+using HD;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -53,6 +54,8 @@ namespace CryptoExchanges
           return new EtherDeltaExchange(exchangeMonitor);
         case ExchangeName.Kucoin:
           return new KucoinExchange(exchangeMonitor);
+        case ExchangeName.GDax:
+          return new GDaxExchange(exchangeMonitor);
         default:
           Debug.Fail("Missing Exchange");
           return null;
@@ -187,41 +190,49 @@ namespace CryptoExchanges
       foreach (T ticker in tickerList)
       {
         (string baseCoinTicker, string quoteCoinTicker, decimal askPrice, decimal bidPrice)
-          = typeMapFunc(ticker);
-
-        if (string.IsNullOrWhiteSpace(baseCoinTicker)
-          || string.IsNullOrWhiteSpace(quoteCoinTicker))
-        {
-          continue;
-        }
-
-        if (tickerLowerToCoin.TryGetValue(baseCoinTicker.ToLowerInvariant(),
-          out Coin baseCoin) == false)
-        { // May be missing due to coin filtering (e.g. no Tether)
-          continue;
-        }
-        if (tickerLowerToCoin.TryGetValue(quoteCoinTicker.ToLowerInvariant(),
-          out Coin quoteCoin) == false)
-        { // May be missing due to book's listing status
-          continue;
-        }
-        if (inactiveCoinFullNames.Contains(baseCoin)
-          || inactiveCoinFullNames.Contains(quoteCoin))
-        {
-          continue;
-        }
-        if (inactivePairs.Contains((quoteCoin, baseCoin)))
-        {
-          continue;
-        }
-
-        new TradingPair(
-          this,
-          baseCoin,
-          quoteCoin,
-          askPrice,
-          bidPrice);
+            = typeMapFunc(ticker);
+        AddTradingPair(baseCoinTicker, quoteCoinTicker, askPrice, bidPrice);
       }
+    }
+
+    public void AddTradingPair(
+      string baseCoinTicker, 
+      string quoteCoinTicker, 
+      decimal askPrice, 
+      decimal bidPrice)
+    {
+      if (string.IsNullOrWhiteSpace(baseCoinTicker)
+        || string.IsNullOrWhiteSpace(quoteCoinTicker))
+      {
+        return;
+      }
+
+      if (tickerLowerToCoin.TryGetValue(baseCoinTicker.ToLowerInvariant(),
+        out Coin baseCoin) == false)
+      { // May be missing due to coin filtering (e.g. no Tether)
+        return;
+      }
+      if (tickerLowerToCoin.TryGetValue(quoteCoinTicker.ToLowerInvariant(),
+        out Coin quoteCoin) == false)
+      { // May be missing due to book's listing status
+        return;
+      }
+      if (inactiveCoinFullNames.Contains(baseCoin)
+        || inactiveCoinFullNames.Contains(quoteCoin))
+      {
+        return;
+      }
+      if (inactivePairs.Contains((quoteCoin, baseCoin)))
+      {
+        return;
+      }
+
+      new TradingPair(
+        this,
+        baseCoin,
+        quoteCoin,
+        askPrice,
+        bidPrice);
     }
     #endregion
   }

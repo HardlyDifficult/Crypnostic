@@ -29,6 +29,17 @@ namespace CryptoExchanges.Tests
     }
 
     [TestMethod()]
+    public void GDax()
+    {
+      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.GDax);
+      config.AddCoinMap(
+        new[] { "Ethereum", "Ether" });
+
+      monitor = new ExchangeMonitor(config);
+      Assert.IsTrue(Coin.ethereum.Best(Coin.bitcoin, true).askPrice > 0);
+    }
+
+    [TestMethod()]
     public void Cryptopia()
     {
       monitor = new ExchangeMonitor(
@@ -60,7 +71,9 @@ namespace CryptoExchanges.Tests
     {
       monitor = new ExchangeMonitor(
         new ExchangeMonitorConfig(ExchangeName.EtherDelta));
-      Assert.IsTrue(Coin.FromName("OmiseGO").Best(Coin.ethereum, true).askPrice > 0);
+      Coin omg = Coin.FromName("OmiseGO");
+      TradingPair pair = omg.Best(Coin.ethereum, true);
+      Assert.IsTrue(pair.askPrice > 0);
     }
 
     [TestMethod()]

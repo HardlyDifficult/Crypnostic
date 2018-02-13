@@ -20,6 +20,12 @@ namespace CryptoExchanges
     /// </summary>
     public static readonly Coin ethereum;
 
+    /// <summary>
+    /// Reference to United States Dollar, for convenience.
+    /// Same as new Coin("United States Dollar")
+    /// </summary>
+    public static readonly Coin usd;
+
     public static IEnumerable<Coin> allCoins
     {
       get
@@ -82,6 +88,7 @@ namespace CryptoExchanges
       // Must be done in the constructor to allow the other data types to init
       bitcoin = Coin.FromName("Bitcoin");
       ethereum = Coin.FromName("Ethereum");
+      usd = Coin.FromName("United States Dollar");
     }
     
     Coin(

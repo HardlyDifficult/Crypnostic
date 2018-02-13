@@ -11,6 +11,14 @@ namespace CrypConnectExamples.PriceTarget
 
     readonly Dictionary<Coin, decimal> coinToTargetEthPrice
       = new Dictionary<Coin, decimal>();
+
+    decimal ethToUsd
+    {
+      get
+      {
+        return Coin.ethereum.Best(Coin.usd, sellVsBuy: true).bidPrice;
+      }
+    }
     #endregion
 
     #region Init
@@ -19,9 +27,11 @@ namespace CrypConnectExamples.PriceTarget
       ExchangeMonitorConfig config = new ExchangeMonitorConfig(
         ExchangeName.Binance,
         ExchangeName.Cryptopia,
-        ExchangeName.Kucoin);
+        ExchangeName.Kucoin,
+        ExchangeName.GDax);
 
       config.AddCoinMap(
+        new[] { "Ethereum", "Ether" },
         new[] { "TetherUS", "USDT", "Tether" },
         new[] { "TenX", "TenXPay" });
 
@@ -50,10 +60,11 @@ namespace CrypConnectExamples.PriceTarget
       if (currentValue >= goalInEth)
       { // Alarm when the price increases above the goal
         decimal percentProfit = currentValue / goalInEth - 1;
+        decimal usd = currentValue * ethToUsd;
         Console.WriteLine($@"
 
 ==============================================================
-Price is up for {coin.fullName} ({currentValue} ETH), make {percentProfit:p2}... GO GO GO!
+Price is up for {coin.fullName} ({currentValue} ETH / {usd:C}), make {percentProfit:p2}... GO GO GO!
 ==============================================================
 
 ");
@@ -77,11 +88,11 @@ Price is up for {coin.fullName} ({currentValue} ETH), make {percentProfit:p2}...
       decimal goalInEth;
       { // Target a tiny price increase so that the test completes quickly
         TradingPair bestEthPair = coinToMonitor.Best(Coin.ethereum, sellVsBuy: true);
-
         decimal originalValue = bestEthPair.bidPrice;
         goalInEth = originalValue * 1.0001m;
+        decimal usd = originalValue * ethToUsd;
 
-        Console.WriteLine($"Goal for {coinToMonitor.fullName}: {goalInEth} ETH (original: {originalValue})");
+        Console.WriteLine($"Goal for {coinToMonitor.fullName}: {goalInEth} ETH (original: {originalValue} / {usd:C})");
       }
       coinToTargetEthPrice.Add(coinToMonitor, goalInEth);
 

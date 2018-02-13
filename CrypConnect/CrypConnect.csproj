@@ -45,6 +45,9 @@
     <Compile Include="Coin.cs" />
     <Compile Include="ExchangeMonitorConfig.cs" />
     <Compile Include="Exchanges\Binance\BinanceProductJson.cs" />
+    <Compile Include="Exchanges\GDax\GDaxExchange.cs" />
+    <Compile Include="Exchanges\GDax\GDaxMarketJson.cs" />
+    <Compile Include="Exchanges\GDax\GDaxTickerNameListJson.cs" />
     <Compile Include="Exchanges\Kucoin\KucoinExchange.cs" />
     <Compile Include="Exchanges\EtherDelta\EtherDeltaExchange.cs" />
     <Compile Include="Exchanges\Binance\BinanceExchange.cs" />
