@@ -7,8 +7,9 @@ Supported exchanges:
 
  - Binance
  - Cryptopia
- - EtherDelta (pending testing)
  - Kucoin
+ - GDax
+ - EtherDelta (broken!)
 
 Features:
 
