@@ -17,7 +17,7 @@ namespace CryptoExchanges.Exchanges.GDax
     readonly IRestClient restClient;
 
     /// <summary>
-    /// No stated throttle limit, going with the same as Crytpopia
+    /// 
     /// </summary>
     /// <param name="exchangeMonitor"></param>
     public GDaxExchange(
@@ -57,8 +57,8 @@ namespace CryptoExchanges.Exchanges.GDax
           = restClient.Get<GDaxProductTickerJson>($"products/{product.id}/ticker");
 
         AddTradingPair(product.quote_currency, product.base_currency,
-          decimal.Parse(productTicker.bid),
-          decimal.Parse(productTicker.ask));
+          decimal.Parse(productTicker.ask),
+          decimal.Parse(productTicker.bid));
       }
     }
   }

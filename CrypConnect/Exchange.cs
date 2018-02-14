@@ -49,7 +49,7 @@ namespace CryptoExchanges
         case ExchangeName.Cryptopia:
           return new CryptopiaExchange(
             exchangeMonitor,
-            includeMaintainceStatus); 
+            includeMaintainceStatus);
         case ExchangeName.EtherDelta:
           return new EtherDeltaExchange(exchangeMonitor);
         case ExchangeName.Kucoin:
@@ -196,9 +196,9 @@ namespace CryptoExchanges
     }
 
     public void AddTradingPair(
-      string baseCoinTicker, 
-      string quoteCoinTicker, 
-      decimal askPrice, 
+      string baseCoinTicker,
+      string quoteCoinTicker,
+      decimal askPrice,
       decimal bidPrice)
     {
       if (string.IsNullOrWhiteSpace(baseCoinTicker)
@@ -206,6 +206,8 @@ namespace CryptoExchanges
       {
         return;
       }
+
+      Debug.Assert(askPrice == 0 || bidPrice == 0 || askPrice >= bidPrice);
 
       if (tickerLowerToCoin.TryGetValue(baseCoinTicker.ToLowerInvariant(),
         out Coin baseCoin) == false)
