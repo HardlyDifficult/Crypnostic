@@ -9,6 +9,8 @@ namespace CryptoExchanges
   public class ExchangeMonitor
   {
     #region Public Data
+    public event Action<Coin> onNewCoin;
+
     public IEnumerable<Coin> allCoins
     {
       get
@@ -99,6 +101,15 @@ namespace CryptoExchanges
 
       shouldStop = true;
       instance = null;
+    }
+    #endregion
+
+    #region Events
+    internal void OnNewCoin(
+      Coin coin)
+    {
+      fullNameLowerToCoin.Add(coin.fullNameLower, coin);
+      onNewCoin?.Invoke(coin);
     }
     #endregion
 

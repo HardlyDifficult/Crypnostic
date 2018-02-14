@@ -34,7 +34,7 @@ namespace CryptoExchanges.Exchanges.Binance
     //public int decimalPlaces { get; set; }
     //public string quoteAssetUnit { get; set; }
     //public string open { get; set; }
-    //public string status { get; set; }
+    public string status { get; set; }
     //public float minQty { get; set; }
   }
 

@@ -5,7 +5,8 @@ namespace CryptoExchanges
   public class TradingPair
   {
     #region Data
-    public event Action onUpdate;
+    public event Action onPriceUpdate;
+
     public event Action onStatusChange;
 
     public readonly Exchange exchange;
@@ -85,7 +86,7 @@ namespace CryptoExchanges
       this.askPrice = askPrice;
       this.bidPrice = bidPrice;
       this.lastUpdated = DateTime.Now;
-      onUpdate?.Invoke();
+      onPriceUpdate?.Invoke();
     }
     #endregion
 

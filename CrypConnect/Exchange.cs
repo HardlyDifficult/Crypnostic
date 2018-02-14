@@ -1,4 +1,5 @@
-﻿using CryptoExchanges.Exchanges.GDax;
+﻿using CryptoExchanges.Exchanges;
+using CryptoExchanges.Exchanges.GDax;
 using HD;
 using System;
 using System.Collections.Generic;
@@ -86,6 +87,7 @@ namespace CryptoExchanges
     #endregion
 
     #region Public API
+    /// TODO Periodic refresh (plus timestamp and event?)
     public async Task GetAllPairs()
     {
       if (tickerLowerToCoin.Count == 0)
@@ -143,20 +145,27 @@ namespace CryptoExchanges
     #endregion
 
     #region Helpers
+    /// <summary>
+    /// This is called during init and then refreshed periodically.
+    /// It should call AddTicker for each coin.
+    /// This may call UpdateTradingPair with status (unless that is done during GetAllTradingPairs)
+    /// </summary>
     protected abstract Task LoadTickerNames();
 
+    /// <summary>
+    /// This is called during init, after LoadTickerNames and then refreshed periodically.
+    /// Call AddTradingPair for each pair supported.
+    /// </summary>
     protected abstract Task GetAllTradingPairs();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="ticker"></param>
-    /// <param name="fullName"></param>
-    /// <param name="isCoinActive">TODO for other exchanges</param>
+    // TODO
+    ///     ///  - Event when the coin status changes
+    ///  - Event when a new coin is detected
+    ///  TODO for other exchanges
     protected void AddTicker(
       string ticker,
       Coin coin,
-      bool isCoinActive = true)
+      bool isCoinActive)
     {
       if (coin == null)
       { // Coin may be blacklisted
@@ -183,28 +192,12 @@ namespace CryptoExchanges
       tickerLowerToCoin.Add(ticker, coin);
     }
 
-    protected void AddTradingPairs<T>(
-      IEnumerable<T> tickerList,
-      Func<T,
-        (string baseCoinTicker, string quoteCoinTicker, decimal askPrice, decimal bidPrice)> typeMapFunc)
-    {
-      if (tickerList == null)
-      {
-        return;
-      }
-      foreach (T ticker in tickerList)
-      {
-        (string baseCoinTicker, string quoteCoinTicker, decimal askPrice, decimal bidPrice)
-            = typeMapFunc(ticker);
-        AddTradingPair(baseCoinTicker, quoteCoinTicker, askPrice, bidPrice);
-      }
-    }
-
     public void AddTradingPair(
       string baseCoinTicker,
       string quoteCoinTicker,
       decimal askPrice,
-      decimal bidPrice)
+      decimal bidPrice, 
+      bool? isInactive = null)
     {
       if (string.IsNullOrWhiteSpace(baseCoinTicker)
         || string.IsNullOrWhiteSpace(quoteCoinTicker))
@@ -228,10 +221,15 @@ namespace CryptoExchanges
         return;
       }
 
-      quoteCoin.AddPair(this,
+      TradingPair pair = quoteCoin.AddPair(this,
         baseCoin,
         askPrice,
         bidPrice);
+
+      if(isInactive != null)
+      {
+        pair.isInactive = isInactive.Value;
+      }
     }
     #endregion
   }

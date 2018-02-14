@@ -38,7 +38,9 @@ namespace CryptoExchanges.Exchanges.GDax
       for (int i = 0; i < productList.Count; i++)
       {
         GDaxTickerNameJson product = productList[i];
-        AddTicker(product.id, Coin.FromName(product.name));
+        bool isInactive = product.status.Equals("online",
+          StringComparison.InvariantCultureIgnoreCase) == false;
+        AddTicker(product.id, Coin.FromName(product.name), isInactive);
       }
     }
 
@@ -52,6 +54,8 @@ namespace CryptoExchanges.Exchanges.GDax
       for (int i = 0; i < productList.Count; i++)
       {
         GDaxProductJson product = productList[i];
+        bool isInactive = product.status.Equals("online", 
+          StringComparison.InvariantCultureIgnoreCase) == false;
 
         await throttle.WaitTillReady();
         GDaxProductTickerJson productTicker
@@ -59,7 +63,8 @@ namespace CryptoExchanges.Exchanges.GDax
 
         AddTradingPair(product.quote_currency, product.base_currency,
           decimal.Parse(productTicker.ask),
-          decimal.Parse(productTicker.bid));
+          decimal.Parse(productTicker.bid),
+          isInactive);
       }
     }
   }

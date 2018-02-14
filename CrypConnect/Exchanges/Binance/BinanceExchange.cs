@@ -29,7 +29,7 @@ namespace CryptoExchanges
     /// </summary>
     public BinanceExchange(
       ExchangeMonitor exchangeMonitor)
-      : base(exchangeMonitor, 
+      : base(exchangeMonitor,
           ExchangeName.Binance,
           1200)
     {
@@ -42,15 +42,21 @@ namespace CryptoExchanges
     protected override async Task LoadTickerNames()
     {
       await throttle.WaitTillReady();
-      
+
       BinanceProductListJson productList =
         restClient.Get<BinanceProductListJson>("exchange/public/product");
 
       for (int i = 0; i < productList.data.Length; i++)
       {
         BinanceProductJson product = productList.data[i];
-        AddTicker(product.baseAsset, Coin.FromName(product.baseAssetName));
-        AddTicker(product.quoteAsset, Coin.FromName(product.quoteAssetName));
+        bool isInactive = product.status.Equals("TRADING",
+          StringComparison.InvariantCultureIgnoreCase) == false;
+        Coin baseCoin = Coin.FromName(product.baseAssetName);
+        // TODO Binance: how-to determine the coin's status (e.g. deposit paused)
+        AddTicker(product.baseAsset, baseCoin, false);
+        Coin quoteCoin = Coin.FromName(product.quoteAssetName);
+        AddTicker(product.quoteAsset, quoteCoin, false);
+        quoteCoin.UpdatePairStatus(this, baseCoin, isInactive);
       }
     }
 
@@ -59,7 +65,8 @@ namespace CryptoExchanges
       await throttle.WaitTillReady();
 
       IEnumerable<OrderBookTicker> tickerList = await client.GetOrderBookTicker();
-      AddTradingPairs(tickerList, (OrderBookTicker ticker) =>
+
+      foreach (OrderBookTicker ticker in tickerList)
       {
         string baseCoinTicker = null;
         string symbolLower = ticker.Symbol.ToLowerInvariant();
@@ -72,12 +79,12 @@ namespace CryptoExchanges
         }
 
         string quoteCoinTicker = ticker.Symbol.Substring(0, ticker.Symbol.Length - baseCoinTicker?.Length ?? 0);
-       
-        return (baseCoinTicker: baseCoinTicker,
+
+        AddTradingPair(baseCoinTicker: baseCoinTicker,
           quoteCoinTicker: quoteCoinTicker,
           askPrice: ticker.AskPrice,
           bidPrice: ticker.BidPrice);
-      });
+      }
     }
   }
 }

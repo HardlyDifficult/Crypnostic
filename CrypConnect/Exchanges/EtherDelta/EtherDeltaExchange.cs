@@ -64,12 +64,14 @@ namespace CryptoExchanges
         }
       }
 
-      AddTradingPairs(tickerList,
-        (KeyValuePair<string, Dictionary<string, object>> ticker) =>
-          (baseCoinTicker: "ETH",
+      foreach (var ticker in tickerList)
+      {
+        AddTradingPair(baseCoinTicker: "ETH",
           quoteCoinTicker: ticker.Key.GetAfter("_"),
           askPrice: Convert.ToDecimal(ticker.Value["ask"]),
-          bidPrice: Convert.ToDecimal(ticker.Value["bid"])));
+          bidPrice: Convert.ToDecimal(ticker.Value["bid"]), // Can't be inactive
+          isInactive: false);
+      }
     }
   }
 }

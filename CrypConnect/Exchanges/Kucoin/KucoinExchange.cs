@@ -1,59 +1,50 @@
 ﻿using System;
-using RestSharp;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using HD;
-using CryptoExchanges.Kucoin;
 using CryptoExchanges.Exchanges.Kucoin;
 
-namespace CryptoExchanges
+namespace CryptoExchanges.Exchanges
 {
-  /// <summary>
-  /// 
-  /// </summary>
   /// <remarks>
   /// https://kucoinapidocs.docs.apiary.io/#
   /// </remarks>
-  internal class KucoinExchange : Exchange
+  internal class KucoinExchange : RestExchange
   {
-    readonly IRestClient restClient;
-
     /// <summary>
     /// No stated throttle limit, going with the same as Crytpopia
     /// </summary>
-    /// <param name="exchangeMonitor"></param>
     public KucoinExchange(
       ExchangeMonitor exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.Kucoin, 1_000_000 / 1_440)
-    {
-      restClient = new RestClient("https://api.kucoin.com");
-    }
+      : base(exchangeMonitor, ExchangeName.Kucoin, 1_000_000 / 1_440, "https://api.kucoin.com")
+    { }
 
     protected override async Task LoadTickerNames()
     {
-      await throttle.WaitTillReady();
-
-      KucoinTickerNameListJson productList =
-        restClient.Get<KucoinTickerNameListJson>("v1/market/open/coins");
-
-      for (int i = 0; i < productList.data.Length; i++)
+      KucoinProductListJson productList = await Get<KucoinProductListJson>(
+        "v1/market/open/coins");
+      foreach (KucoinProductListJson.ProductJson product in productList.data)
       {
-        KucoinTickerNameJson product = productList.data[i];
-        AddTicker(product.coin, Coin.FromName(product.name));
+        string ticker = product.coin;
+        string fullName = product.name;
+        Coin coin = Coin.FromName(fullName);
+        bool isInactive = product.enableDeposit == false || product.enableWithdraw == false;
+        AddTicker(ticker, coin, isInactive);
       }
     }
-
+    
     protected override async Task GetAllTradingPairs()
     {
-      await throttle.WaitTillReady();
+      KucoinTickerListJson tickerList = await Get<KucoinTickerListJson>("v1/open/tick");
 
-      KucoinMarketInfo tickerList =
-            restClient.Get<KucoinMarketInfo>("v1/open/tick");
-      AddTradingPairs(tickerList.data, (KucoinTradingPairJson ticker) =>
-        (baseCoinTicker: ticker.coinTypePair,
-          quoteCoinTicker: ticker.coinType,
-          askPrice: new decimal(ticker.sell),
-          bidPrice: new decimal(ticker.buy)));
+      foreach (KucoinTickerListJson.TickerJson ticker in tickerList.data)
+      {
+        string baseCoinTicker = ticker.coinTypePair;
+        string quoteCoinTicker = ticker.coinType;
+        decimal askPrice = new decimal(ticker.sell);
+        decimal bidPrice = new decimal(ticker.buy);
+        bool isInactive = ticker.trading == false;
+
+        AddTradingPair(baseCoinTicker, quoteCoinTicker, askPrice, bidPrice, isInactive);
+      }
     }
   }
 }

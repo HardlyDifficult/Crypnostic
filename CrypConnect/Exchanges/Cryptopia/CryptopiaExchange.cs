@@ -8,9 +8,6 @@ using HD;
 
 namespace CryptoExchanges
 {
-  /// <summary>
-  /// 
-  /// </summary>
   /// <remarks>
   /// https://www.cryptopia.co.nz/Forum/Thread/255
   /// </remarks>
@@ -51,7 +48,7 @@ namespace CryptoExchanges
       for (int i = 0; i < tradePairsResponse.Data.Count; i++)
       {
         TradePairResult tradePair = tradePairsResponse.Data[i];
-        (Coin, Coin) entry = (Coin.FromName(tradePair.Currency), 
+        (Coin, Coin) entry = (Coin.FromName(tradePair.Currency),
           Coin.FromName(tradePair.BaseCurrency));
         entry.Item1.UpdatePairStatus(this, entry.Item2, tradePair.Status != "OK");
       }
@@ -63,13 +60,13 @@ namespace CryptoExchanges
 
       await throttle.WaitTillReady();
       MarketsResponse tickerList = await publicApi.GetMarkets(new MarketsRequest());
-      AddTradingPairs(tickerList.Data, (MarketResult ticker) =>
+      foreach (MarketResult ticker in tickerList.Data)
       {
-        return (baseCoinTicker: ticker.Label.GetAfter(tradingPairSeparator),
-        quoteCoinTicker: ticker.Label.GetBefore(tradingPairSeparator),
-        askPrice: ticker.AskPrice,
-        bidPrice: ticker.BidPrice);
-      });
+        AddTradingPair(baseCoinTicker: ticker.Label.GetAfter(tradingPairSeparator),
+          quoteCoinTicker: ticker.Label.GetBefore(tradingPairSeparator),
+          askPrice: ticker.AskPrice,
+          bidPrice: ticker.BidPrice);
+      }
     }
   }
 }

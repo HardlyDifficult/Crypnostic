@@ -56,9 +56,9 @@
     <Compile Include="Exchanges\Cryptopia\CryptopiaExchange.cs" />
     <Compile Include="Exchange.cs" />
     <Compile Include="ExchangeName.cs" />
-    <Compile Include="Exchanges\Kucoin\KucoinMarketJson.cs" />
-    <Compile Include="Exchanges\Kucoin\KucoinTickerNameListJson.cs" />
+    <Compile Include="Exchanges\Kucoin\KucoinJson.cs" />
     <Compile Include="ExchangeMonitor.cs" />
+    <Compile Include="Exchanges\RestExchange.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TradingPair.cs" />
   </ItemGroup>

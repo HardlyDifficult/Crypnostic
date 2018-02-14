@@ -45,14 +45,22 @@ namespace CryptoExchanges
     #region Public Data
     public readonly string fullName;
 
+    /// <summary>
+    /// Called when prices refresh on any TradingPair for this Coin.
+    /// </summary>
     public event Action<Coin> onPriceUpdate;
+
+    /// <summary>
+    /// Called when a TradingPair for this Coin has a status change.
+    /// </summary>
+    public event Action<Coin> onStatusUpdate;
     #endregion
 
     #region Private Data
     /// <summary>
     /// Cached in this form for performance.
     /// </summary>
-    readonly string fullNameLower;
+    internal readonly string fullNameLower;
 
     readonly Dictionary<(ExchangeName, Coin baseCoin), TradingPair> exchangeInfo
       = new Dictionary<(ExchangeName, Coin baseCoin), TradingPair>();
@@ -81,7 +89,7 @@ namespace CryptoExchanges
       this.fullName = fullName;
       this.fullNameLower = fullName.ToLowerInvariant();
 
-      ExchangeMonitor.instance.fullNameLowerToCoin.Add(fullName.ToLowerInvariant(), this);
+      ExchangeMonitor.instance.OnNewCoin(this);
     }
 
     public static Coin FromName(
@@ -184,7 +192,7 @@ namespace CryptoExchanges
       onPriceUpdate?.Invoke(this);
     }
 
-    internal void AddPair(
+    internal TradingPair AddPair(
       Exchange exchange,
       Coin baseCoin,
       decimal askPrice,
@@ -195,13 +203,16 @@ namespace CryptoExchanges
       {
         pair.Update(askPrice, bidPrice);
         onPriceUpdate?.Invoke(this);
+
+        return pair;
       }
       else
       {
-        new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
+        return new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
       }
     }
 
+    // TODO all exchanges (vs cryptopia)
     internal void UpdatePairStatus(
       Exchange exchange,
       Coin baseCoin,
@@ -213,7 +224,11 @@ namespace CryptoExchanges
         pair = new TradingPair(exchange, baseCoin, this, 0, 0);
       }
 
-      pair.isInactive = isInactive;
+      if (pair.isInactive != isInactive)
+      {
+        pair.isInactive = isInactive;
+        onStatusUpdate?.Invoke(this);
+      }
     }
     #endregion
 

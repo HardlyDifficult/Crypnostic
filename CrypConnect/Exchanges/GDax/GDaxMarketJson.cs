@@ -16,6 +16,7 @@ namespace CryptoExchanges.Exchanges.GDax
     public string base_min_size { get; set; }
     public string base_max_size { get; set; }
     public string quote_increment { get; set; }
+    public string status { get; set; }
   }
 
   public class GDaxProductTickerJson
