@@ -117,13 +117,13 @@ namespace CryptoExchanges
     {
       ticker = ticker.ToLowerInvariant();
 
-        Exchange exchange = ExchangeMonitor.instance.FindExchange(onExchange);
-        Debug.Assert(exchange != null);
+      Exchange exchange = ExchangeMonitor.instance.FindExchange(onExchange);
+      Debug.Assert(exchange != null);
 
-        if (exchange.tickerLowerToCoin.TryGetValue(ticker, out Coin coin))
-        {
-          return coin;
-        }
+      if (exchange.tickerLowerToCoin.TryGetValue(ticker, out Coin coin))
+      {
+        return coin;
+      }
 
       return null;
     }
@@ -178,8 +178,28 @@ namespace CryptoExchanges
     internal void AddPair(
       TradingPair pair)
     {
+      Debug.Assert(exchangeInfo.ContainsKey((pair.exchange.exchangeName, pair.baseCoin)) == false);
+
       exchangeInfo[(pair.exchange.exchangeName, pair.baseCoin)] = pair;
       onPriceUpdate?.Invoke(this);
+    }
+
+    internal void AddPair(
+      Exchange exchange,
+      Coin baseCoin,
+      decimal askPrice,
+      decimal bidPrice)
+    {
+      (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
+      if (exchangeInfo.TryGetValue(key, out TradingPair pair))
+      {
+        pair.Update(askPrice, bidPrice);
+        onPriceUpdate?.Invoke(this);
+      }
+      else
+      {
+        new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
+      }
     }
     #endregion
 

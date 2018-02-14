@@ -43,6 +43,7 @@ namespace CryptoExchanges
 
     readonly HashSet<Coin> inactiveCoinFullNames = new HashSet<Coin>();
 
+    // TODO remove, use a bit in the pair instead.
     protected readonly HashSet<(Coin quoteCoin, Coin baseCoin)> inactivePairs
       = new HashSet<(Coin quoteCoin, Coin baseCoin)>();
     #endregion
@@ -243,12 +244,11 @@ namespace CryptoExchanges
         return;
       }
 
-      new TradingPair(
-        this,
+      quoteCoin.AddPair(this,
         baseCoin,
-        quoteCoin,
         askPrice,
         bidPrice);
+
     }
     #endregion
   }
