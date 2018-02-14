@@ -8,8 +8,6 @@ namespace CryptoExchanges
   [Serializable]
   public class ExchangeMonitorConfig
   {
-    public  bool includeMaintainceStatus;
-
     internal readonly ExchangeName[] supportedExchangeList;
     
     internal readonly Dictionary<string, string> coinAliasToName 

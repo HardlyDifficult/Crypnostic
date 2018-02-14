@@ -42,26 +42,19 @@ namespace CryptoExchanges
     readonly Timer timerRefreshData;
 
     readonly HashSet<Coin> inactiveCoinFullNames = new HashSet<Coin>();
-
-    // TODO remove, use a bit in the pair instead.
-    protected readonly HashSet<(Coin quoteCoin, Coin baseCoin)> inactivePairs
-      = new HashSet<(Coin quoteCoin, Coin baseCoin)>();
     #endregion
 
     #region Init
     public static Exchange LoadExchange(
       ExchangeMonitor exchangeMonitor,
-      ExchangeName exchangeName,
-      bool includeMaintainceStatus)
+      ExchangeName exchangeName)
     {
       switch (exchangeName)
       {
         case ExchangeName.Binance:
           return new BinanceExchange(exchangeMonitor);
         case ExchangeName.Cryptopia:
-          return new CryptopiaExchange(
-            exchangeMonitor,
-            includeMaintainceStatus);
+          return new CryptopiaExchange(exchangeMonitor);
         case ExchangeName.EtherDelta:
           return new EtherDeltaExchange(exchangeMonitor);
         case ExchangeName.Kucoin:
@@ -234,21 +227,11 @@ namespace CryptoExchanges
       { // May be missing due to book's listing status
         return;
       }
-      if (inactiveCoinFullNames.Contains(baseCoin)
-        || inactiveCoinFullNames.Contains(quoteCoin))
-      {
-        return;
-      }
-      if (inactivePairs.Contains((quoteCoin, baseCoin)))
-      {
-        return;
-      }
 
       quoteCoin.AddPair(this,
         baseCoin,
         askPrice,
         bidPrice);
-
     }
     #endregion
   }

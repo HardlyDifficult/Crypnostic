@@ -28,12 +28,12 @@ namespace CryptoExchanges.Tests.Exchanges
       Coin monero = Coin.FromName("Monero");
       Assert.IsTrue(monero != null);
       TradingPair pair = monero.Best(doge, true);
-      Assert.IsTrue(pair == null);
+      Assert.IsTrue(pair == null || pair.isInactive);
 
       Coin omg = Coin.FromName("OmiseGo");
       Assert.IsTrue(omg != null);
       TradingPair omgPair = omg.Best(doge, true);
-      Assert.IsTrue(omgPair == null);
+      Assert.IsTrue(omgPair == null || omgPair.isInactive);
     }
   }
 }

@@ -6,12 +6,14 @@ namespace CryptoExchanges
   {
     #region Data
     public event Action onUpdate;
+    public event Action onStatusChange;
 
     public readonly Exchange exchange;
 
     public readonly Coin baseCoin;
 
     public readonly Coin quoteCoin;
+
 
     /// <summary>
     /// The cost to purchase.
@@ -34,6 +36,27 @@ namespace CryptoExchanges
       get; private set;
     }
     #endregion
+
+
+    bool _isInactive;
+
+    public bool isInactive
+    {
+      get
+      {
+        return _isInactive;
+      }
+      set
+      {
+        if(isInactive == value)
+        { // No change
+          return;
+        }
+
+        _isInactive = value;
+        onStatusChange?.Invoke();
+      }
+    }
 
     #region Init
     internal TradingPair(

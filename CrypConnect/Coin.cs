@@ -201,6 +201,20 @@ namespace CryptoExchanges
         new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
       }
     }
+
+    internal void UpdatePairStatus(
+      Exchange exchange,
+      Coin baseCoin,
+      bool isInactive)
+    {
+      (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
+      if (exchangeInfo.TryGetValue(key, out TradingPair pair) == false)
+      {
+        pair = new TradingPair(exchange, baseCoin, this, 0, 0);
+      }
+
+      pair.isInactive = isInactive;
+    }
     #endregion
 
     #region Operators

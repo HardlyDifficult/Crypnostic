@@ -18,21 +18,16 @@ namespace CryptoExchanges
   {
     readonly CryptopiaApiPublic publicApi;
 
-    readonly bool includeMaintainceStatus;
-
     /// <summary>
     /// 1,000 requests/minute
     /// 1,000,000 requests/day (smaller)
     /// (using half daily limit)
     /// </summary>
     /// <param name="exchangeMonitor"></param>
-    /// <param name="includeMaintainceStatus"></param>
     public CryptopiaExchange(
-      ExchangeMonitor exchangeMonitor,
-      bool includeMaintainceStatus)
+      ExchangeMonitor exchangeMonitor)
       : base(exchangeMonitor, ExchangeName.Cryptopia, 1_000_000 / 1_440)
     {
-      this.includeMaintainceStatus = includeMaintainceStatus;
       publicApi = new CryptopiaApiPublic();
     }
 
@@ -44,8 +39,7 @@ namespace CryptoExchanges
       {
         CurrencyResult product = currenciesResponse.Data[i];
         bool isCoinActive = true;
-        if (product.ListingStatus != "Active"
-          || includeMaintainceStatus == false && product.Status != "OK")
+        if (product.ListingStatus != "Active" || product.Status != "OK")
         {
           isCoinActive = false;
         }
@@ -59,14 +53,7 @@ namespace CryptoExchanges
         TradePairResult tradePair = tradePairsResponse.Data[i];
         (Coin, Coin) entry = (Coin.FromName(tradePair.Currency), 
           Coin.FromName(tradePair.BaseCurrency));
-        if (includeMaintainceStatus || tradePair.Status == "OK")
-        {
-          inactivePairs.Remove(entry);
-        }
-        else
-        {
-          inactivePairs.Add(entry);
-        }
+        entry.Item1.UpdatePairStatus(this, entry.Item2, tradePair.Status != "OK");
       }
     }
 

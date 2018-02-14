@@ -69,7 +69,7 @@ namespace CryptoExchanges
       for (int i = 0; i < config.supportedExchangeList.Length; i++)
       {
         ExchangeName name = config.supportedExchangeList[i];
-        Exchange exchange = Exchange.LoadExchange(this, name, config.includeMaintainceStatus);
+        Exchange exchange = Exchange.LoadExchange(this, name);
         exchangeList[i] = exchange;
       }
 
