@@ -6,34 +6,22 @@ using HD;
 
 namespace CryptoExchanges.Exchanges.GDax
 {
-  /// <summary>
-  /// 
-  /// </summary>
   /// <remarks>
   /// https://docs.gdax.com/#introduction
   /// </remarks>
-  internal class GDaxExchange : Exchange
+  internal class GDaxExchange : RestExchange
   {
-    readonly IRestClient restClient;
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="exchangeMonitor"></param>
     public GDaxExchange(
       ExchangeMonitor exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.GDax, 3 * 60)
+      : base(exchangeMonitor, ExchangeName.GDax, 3 * 60, "https://api.gdax.com")
     {
-      restClient = new RestClient("https://api.gdax.com");
       exchangeMonitor.AddAlias("Ether", "Ethereum");
     }
 
     protected override async Task LoadTickerNames()
     {
-      await throttle.WaitTillReady();
-
       List<GDaxTickerNameJson> productList =
-        restClient.Get<List<GDaxTickerNameJson>>("currencies");
+        await Get<List<GDaxTickerNameJson>>("currencies");
 
       for (int i = 0; i < productList.Count; i++)
       {
@@ -48,8 +36,7 @@ namespace CryptoExchanges.Exchanges.GDax
     {
       await throttle.WaitTillReady();
 
-      List< GDaxProductJson> productList =
-            restClient.Get<List<GDaxProductJson>>("products");
+      List<GDaxProductJson> productList = await Get<List<GDaxProductJson>>("products");
 
       for (int i = 0; i < productList.Count; i++)
       {
@@ -57,9 +44,8 @@ namespace CryptoExchanges.Exchanges.GDax
         bool isInactive = product.status.Equals("online", 
           StringComparison.InvariantCultureIgnoreCase) == false;
 
-        await throttle.WaitTillReady();
         GDaxProductTickerJson productTicker
-          = restClient.Get<GDaxProductTickerJson>($"products/{product.id}/ticker");
+          = await Get<GDaxProductTickerJson>($"products/{product.id}/ticker");
 
         AddTradingPair(product.quote_currency, product.base_currency,
           decimal.Parse(productTicker.ask),

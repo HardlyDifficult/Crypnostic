@@ -3,6 +3,7 @@ using RestSharp;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
+using CryptoExchanges.Exchanges;
 
 namespace CryptoExchanges
 {
@@ -12,10 +13,8 @@ namespace CryptoExchanges
   /// <remarks>
   /// https://github.com/etherdelta/etherdelta.github.io/blob/master/docs/API_OLD.md
   /// </remarks>
-  internal class EtherDeltaExchange : Exchange
+  internal class EtherDeltaExchange : RestExchange
   {
-    protected readonly IRestClient restClient;
-
     public override bool supportsOverlappingBooks
     {
       get
@@ -30,9 +29,9 @@ namespace CryptoExchanges
     /// <param name="exchangeMonitor"></param>
     public EtherDeltaExchange(
       ExchangeMonitor exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.EtherDelta, 1_000_000 / 1_440)
+      : base(exchangeMonitor, ExchangeName.EtherDelta, 1_000_000 / 1_440,
+          "https://api.etherdelta.com")
     {
-      restClient = new RestClient("https://api.etherdelta.com");
     }
 
     protected override async Task LoadTickerNames()
@@ -48,10 +47,8 @@ namespace CryptoExchanges
       {
         try
         {
-          await throttle.WaitTillReady();
           tickerList =
-            restClient.Get<Dictionary<string, Dictionary<string, object>>>(
-              "returnTicker");
+            await Get<Dictionary<string, Dictionary<string, object>>>("returnTicker");
 
           if (tickerList != null)
           {
@@ -69,7 +66,7 @@ namespace CryptoExchanges
         AddTradingPair(baseCoinTicker: "ETH",
           quoteCoinTicker: ticker.Key.GetAfter("_"),
           askPrice: Convert.ToDecimal(ticker.Value["ask"]),
-          bidPrice: Convert.ToDecimal(ticker.Value["bid"]), // Can't be inactive
+          bidPrice: Convert.ToDecimal(ticker.Value["bid"]), 
           isInactive: false);
       }
     }

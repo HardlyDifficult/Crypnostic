@@ -13,6 +13,7 @@ namespace CryptoExchanges
   /// </remarks>
   internal class CryptopiaExchange : Exchange
   {
+    // TODO remove and switch to 'RestExchange'
     readonly CryptopiaApiPublic publicApi;
 
     /// <summary>

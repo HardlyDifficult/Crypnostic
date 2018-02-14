@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
 using System.Diagnostics;
+using CryptoExchanges.Exchanges;
 
 namespace CryptoExchanges
 {
@@ -16,10 +17,9 @@ namespace CryptoExchanges
   /// https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
   /// HTTP 429 return code is used when breaking a request rate limit.
   /// </remarks>
-  internal class BinanceExchange : Exchange
+  internal class BinanceExchange : RestExchange
   {
-    readonly IRestClient restClient;
-
+    // TODO remove this dependancy
     readonly BinanceClient client;
 
     /// <summary>
@@ -31,20 +31,17 @@ namespace CryptoExchanges
       ExchangeMonitor exchangeMonitor)
       : base(exchangeMonitor,
           ExchangeName.Binance,
-          1200)
+          1200,
+          "https://www.binance.com")
     {
-      restClient = new RestClient("https://www.binance.com");
-
       ApiClient api = new ApiClient(null, null);
       client = new BinanceClient(api);
     }
 
     protected override async Task LoadTickerNames()
     {
-      await throttle.WaitTillReady();
-
-      BinanceProductListJson productList =
-        restClient.Get<BinanceProductListJson>("exchange/public/product");
+      BinanceProductListJson productList = 
+        await Get<BinanceProductListJson>("exchange/public/product");
 
       for (int i = 0; i < productList.data.Length; i++)
       {
@@ -63,7 +60,6 @@ namespace CryptoExchanges
     protected override async Task GetAllTradingPairs()
     {
       await throttle.WaitTillReady();
-
       IEnumerable<OrderBookTicker> tickerList = await client.GetOrderBookTicker();
 
       foreach (OrderBookTicker ticker in tickerList)
