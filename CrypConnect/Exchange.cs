@@ -43,6 +43,10 @@ namespace CryptoExchanges
     readonly Timer timerRefreshData;
 
     readonly HashSet<Coin> inactiveCoins = new HashSet<Coin>();
+
+    readonly TimeSpan timeBetweenGetAllPairs = TimeSpan.FromMinutes(5); // TODO config
+
+    DateTime lastLoadTickerNames;
     #endregion
 
     #region Init
@@ -87,16 +91,16 @@ namespace CryptoExchanges
     #endregion
 
     #region Public API
-    /// TODO Periodic refresh (plus timestamp and event?)
     public async Task GetAllPairs()
     {
-      if (tickerLowerToCoin.Count == 0)
+      if (tickerLowerToCoin.Count == 0 || DateTime.Now - lastLoadTickerNames > timeBetweenGetAllPairs)
       {
         while (true)
         {
           try
           {
             await LoadTickerNames();
+            lastLoadTickerNames = DateTime.Now;
           }
           catch
           { // Auto retry on fail
