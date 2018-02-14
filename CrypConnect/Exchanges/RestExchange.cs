@@ -21,15 +21,12 @@ namespace CryptoExchanges.Exchanges
       restClient = new RestClient(baseUrl);
     }
 
-
     protected async Task<T> Get<T>(
       string resource)
       where T : new()
     {
       await throttle.WaitTillReady();
-
-      // TODO should be an async call
-      return restClient.Get<T>(resource);
+      return await restClient.GetAsync<T>(resource);
     }
   }
 }
