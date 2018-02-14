@@ -38,7 +38,7 @@ namespace CryptoExchanges
       client = new BinanceClient(api);
     }
 
-    protected override async Task LoadTickerNames()
+    public override async Task LoadTickerNames()
     {
       BinanceProductListJson productList = 
         await Get<BinanceProductListJson>("exchange/public/product");

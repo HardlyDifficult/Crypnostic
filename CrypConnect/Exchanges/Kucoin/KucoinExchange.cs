@@ -17,7 +17,7 @@ namespace CryptoExchanges.Exchanges
       : base(exchangeMonitor, ExchangeName.Kucoin, 1_000_000 / 1_440, "https://api.kucoin.com")
     { }
 
-    protected override async Task LoadTickerNames()
+    public override async Task LoadTickerNames()
     {
       KucoinProductListJson productList = await Get<KucoinProductListJson>(
         "v1/market/open/coins");

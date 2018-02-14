@@ -42,7 +42,7 @@ namespace CryptoExchanges
 
     readonly Timer timerRefreshData;
 
-    readonly HashSet<Coin> inactiveCoinFullNames = new HashSet<Coin>();
+    readonly HashSet<Coin> inactiveCoins = new HashSet<Coin>();
     #endregion
 
     #region Init
@@ -142,15 +142,27 @@ namespace CryptoExchanges
     {
       await GetAllTradingPairsWrapper();
     }
+
+    public bool IsCoinActive(
+      Coin coin)
+    {
+      if(inactiveCoins.Contains(coin))
+      {
+        return false;
+      }
+
+      return tickerLowerToCoin.ContainsValue(coin);
+    }
     #endregion
 
     #region Helpers
     /// <summary>
     /// This is called during init and then refreshed periodically.
+    /// You can also call this anytime for a manual refresh (subject to throttling).
     /// It should call AddTicker for each coin.
     /// This may call UpdateTradingPair with status (unless that is done during GetAllTradingPairs)
     /// </summary>
-    protected abstract Task LoadTickerNames();
+    public abstract Task LoadTickerNames();
 
     /// <summary>
     /// This is called during init, after LoadTickerNames and then refreshed periodically.
@@ -174,11 +186,11 @@ namespace CryptoExchanges
 
       if (isCoinActive)
       {
-        inactiveCoinFullNames.Remove(coin);
+        inactiveCoins.Remove(coin);
       }
       else
       {
-        inactiveCoinFullNames.Add(coin);
+        inactiveCoins.Add(coin);
       }
 
       ticker = ticker.ToLowerInvariant();

@@ -18,7 +18,7 @@ namespace CryptoExchanges.Exchanges.GDax
       exchangeMonitor.AddAlias("Ether", "Ethereum");
     }
 
-    protected override async Task LoadTickerNames()
+    public override async Task LoadTickerNames()
     {
       List<GDaxTickerNameJson> productList =
         await Get<List<GDaxTickerNameJson>>("currencies");

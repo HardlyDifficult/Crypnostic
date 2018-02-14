@@ -29,7 +29,7 @@ namespace CryptoExchanges
       publicApi = new CryptopiaApiPublic();
     }
 
-    protected override async Task LoadTickerNames()
+    public override async Task LoadTickerNames()
     {
       await throttle.WaitTillReady();
       CurrenciesResponse currenciesResponse = await publicApi.GetCurrencies();

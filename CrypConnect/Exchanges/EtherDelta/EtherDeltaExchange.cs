@@ -34,7 +34,7 @@ namespace CryptoExchanges
     {
     }
 
-    protected override async Task LoadTickerNames()
+    public override async Task LoadTickerNames()
     {
       // how to LoadTickerNames from EtherDelta?
       await Task.Delay(0);

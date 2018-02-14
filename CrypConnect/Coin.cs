@@ -180,6 +180,12 @@ namespace CryptoExchanges
 
       return bestPair;
     }
+
+    public bool IsActiveOn(
+      ExchangeName exchangeName)
+    {
+      return ExchangeMonitor.instance.FindExchange(exchangeName).IsCoinActive(this);
+    }
     #endregion
 
     #region Internal Write
