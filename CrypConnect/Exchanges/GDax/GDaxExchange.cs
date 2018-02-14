@@ -25,6 +25,7 @@ namespace CryptoExchanges.Exchanges.GDax
       : base(exchangeMonitor, ExchangeName.GDax, 3 * 60)
     {
       restClient = new RestClient("https://api.gdax.com");
+      ExchangeMonitor.AddAlias("Ether", "Ethereum");
     }
 
     protected override async Task LoadTickerNames()

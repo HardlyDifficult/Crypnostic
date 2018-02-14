@@ -31,7 +31,6 @@ namespace CrypConnectExamples.PriceTarget
         ExchangeName.GDax);
 
       config.AddCoinMap(
-        new[] { "Ethereum", "Ether" },
         new[] { "TetherUS", "USDT", "Tether" },
         new[] { "TenX", "TenXPay" });
 

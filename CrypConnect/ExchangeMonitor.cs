@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CryptoExchanges.CoinMarketCap;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -30,19 +31,18 @@ namespace CryptoExchanges
       Debug.Assert(instance == null);
       instance = this;
 
+      Debug.Assert(Coin.aliasLowerToCoin != null);
+      foreach (KeyValuePair<string, string> aliasToName in config.coinAliasToName)
+      {
+        AddAlias(aliasToName.Key, aliasToName.Value);
+      }
+
       exchangeList = new Exchange[config.supportedExchangeList.Length];
       for (int i = 0; i < config.supportedExchangeList.Length; i++)
       {
         ExchangeName name = config.supportedExchangeList[i];
         Exchange exchange = Exchange.LoadExchange(this, name, config.includeMaintainceStatus);
         exchangeList[i] = exchange;
-      }
-
-      foreach (KeyValuePair<string, string> aliasToName in config.coinAliasToName)
-      {
-        Debug.Assert(Coin.aliasLowerToFullNameLower != null);
-        Coin.aliasLowerToFullNameLower.Add(aliasToName.Key.ToLowerInvariant(),
-          aliasToName.Value.ToLowerInvariant());
       }
 
       foreach (string blacklistedCoin in config.blacklistedCoins)
@@ -53,15 +53,18 @@ namespace CryptoExchanges
       CompleteFirstLoad().Wait();
     }
 
+   
+
     async Task CompleteFirstLoad()
     {
-      Task[] exchangeTaskList = new Task[exchangeList.Length];
+      List<Task> taskList = new List<Task>();
+
       for (int i = 0; i < exchangeList.Length; i++)
       {
-        exchangeTaskList[i] = exchangeList[i].GetAllPairs();
+        taskList.Add(exchangeList[i].GetAllPairs());
       }
 
-      await Task.WhenAll(exchangeTaskList);
+      await Task.WhenAll(taskList);
     }
 
     public void Stop()
@@ -72,6 +75,24 @@ namespace CryptoExchanges
       instance = null;
     }
     #endregion
+
+    public static void AddAlias(
+     string alias,
+     string name)
+    {
+      alias = alias.ToLowerInvariant();
+      Debug.Assert(Coin.fullNameLowerToCoin.ContainsKey(alias) == false);
+
+      if(Coin.aliasLowerToCoin.ContainsKey(alias))
+      { // De-dupe
+        return;
+      }
+
+      name = name.ToLowerInvariant();
+      Coin coin = Coin.FromName(name);
+
+      Coin.aliasLowerToCoin.Add(alias, coin);
+    }
 
     #region Public Read API
     public Exchange FindExchange(

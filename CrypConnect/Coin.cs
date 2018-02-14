@@ -39,8 +39,8 @@ namespace CryptoExchanges
     /// <summary>
     /// Populated by the ExchangeMonitor on construction.
     /// </summary>
-    internal static readonly Dictionary<string, string> aliasLowerToFullNameLower
-      = new Dictionary<string, string>();
+    internal static readonly Dictionary<string, Coin> aliasLowerToCoin
+      = new Dictionary<string, Coin>();
 
     /// <summary>
     /// Populated by the ExchangeMonitor on construction.
@@ -52,7 +52,7 @@ namespace CryptoExchanges
     /// <summary>
     /// After considering aliases and blacklist.
     /// </summary>
-    static readonly Dictionary<string, Coin> fullNameLowerToCoin
+    internal static readonly Dictionary<string, Coin> fullNameLowerToCoin
       = new Dictionary<string, Coin>();
     #endregion
 
@@ -90,26 +90,29 @@ namespace CryptoExchanges
       ethereum = Coin.FromName("Ethereum");
       usd = Coin.FromName("United States Dollar");
     }
-    
+
     Coin(
       string fullName)
     {
       Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
-      Debug.Assert(aliasLowerToFullNameLower.ContainsKey(fullName.ToLowerInvariant()) == false);
+      Debug.Assert(aliasLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
       Debug.Assert(blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()) == false);
+      Debug.Assert(fullName.Equals("Ether", StringComparison.InvariantCultureIgnoreCase) == false);
+      Debug.Assert(fullName.Equals("BTC", StringComparison.InvariantCultureIgnoreCase) == false);
 
       this.fullName = fullName;
       this.fullNameLower = fullName.ToLowerInvariant();
+
+      fullNameLowerToCoin.Add(fullName.ToLowerInvariant(), this);
     }
 
     public static Coin FromName(
       string fullName)
     {
       // Alias
-      if (aliasLowerToFullNameLower.TryGetValue(fullName.ToLowerInvariant(),
-        out string coinName))
+      if (aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
       {
-        fullName = coinName;
+        return coin;
       }
 
       // Blacklist
@@ -119,29 +122,30 @@ namespace CryptoExchanges
       }
 
       // Existing Coin
-      if (fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
+      if (fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out coin))
       {
         return coin;
       }
 
       // New Coin
       coin = new Coin(fullName);
-      fullNameLowerToCoin.Add(fullName.ToLowerInvariant(), coin);
       return coin;
     }
+
 
     public static Coin FromTicker(
       string ticker,
       ExchangeName onExchange)
     {
-      Exchange exchange = ExchangeMonitor.instance.FindExchange(onExchange);
-      Debug.Assert(exchange != null);
+      ticker = ticker.ToLowerInvariant();
 
-      if (exchange.tickerLowerToCoin.TryGetValue(ticker.ToLowerInvariant(),
-        out Coin coin))
-      {
-        return coin;
-      }
+        Exchange exchange = ExchangeMonitor.instance.FindExchange(onExchange);
+        Debug.Assert(exchange != null);
+
+        if (exchange.tickerLowerToCoin.TryGetValue(ticker, out Coin coin))
+        {
+          return coin;
+        }
 
       return null;
     }

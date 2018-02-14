@@ -18,6 +18,17 @@ namespace CryptoExchanges
     /// This is an alternative to each Coin's onPriceUpdate event.
     /// </summary>
     public event Action<Exchange> onPriceUpdate;
+
+    /// <summary>
+    /// True if the exchange allows a negative spread.
+    /// </summary>
+    public virtual bool supportsOverlappingBooks
+    {
+      get
+      {
+        return false;
+      }
+    }
     #endregion
 
     #region Data
@@ -207,7 +218,10 @@ namespace CryptoExchanges
         return;
       }
 
-      Debug.Assert(askPrice == 0 || bidPrice == 0 || askPrice >= bidPrice);
+      Debug.Assert(askPrice == 0 
+        || bidPrice == 0 
+        || askPrice >= bidPrice 
+        || supportsOverlappingBooks);
 
       if (tickerLowerToCoin.TryGetValue(baseCoinTicker.ToLowerInvariant(),
         out Coin baseCoin) == false)

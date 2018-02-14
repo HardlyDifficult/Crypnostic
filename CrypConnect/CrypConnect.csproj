@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Coin.cs" />
+    <Compile Include="CoinMarketCap\CoinMarketCap.cs" />
+    <Compile Include="CoinMarketCap\CoinMarketCapTickerJson.cs" />
     <Compile Include="ExchangeMonitorConfig.cs" />
     <Compile Include="Exchanges\Binance\BinanceProductJson.cs" />
     <Compile Include="Exchanges\GDax\GDaxExchange.cs" />

@@ -16,6 +16,14 @@ namespace CryptoExchanges
   {
     protected readonly IRestClient restClient;
 
+    public override bool supportsOverlappingBooks
+    {
+      get
+      {
+        return true;
+      }
+    }
+
     /// <summary>
     /// No stated throttle limit, going with the same as Crytpopia
     /// </summary>
