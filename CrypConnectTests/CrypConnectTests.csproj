@@ -7,7 +7,7 @@
     <ProjectGuid>{1828B97B-4983-4763-B012-DA004EC10975}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CrypConnectTests</RootNamespace>
+    <RootNamespace>CryptoExchanges.Tests</RootNamespace>
     <AssemblyName>CrypConnectTests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -60,6 +60,12 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Exchanges\CryptopiaTests.cs" />
+    <Compile Include="Exchanges\EtherDeltaTests.cs" />
+    <Compile Include="Exchanges\GDaxTests.cs" />
+    <Compile Include="Exchanges\KucoinTests.cs" />
+    <Compile Include="Exchanges\BinanceTests.cs" />
+    <Compile Include="ExchangeMonitorTests.cs" />
     <Compile Include="ExchangeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
