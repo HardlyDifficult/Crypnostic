@@ -84,18 +84,19 @@ namespace CrypConnect
       throttle = new Throttle(TimeSpan.FromMilliseconds(
         2 * TimeSpan.FromMinutes(1).TotalMilliseconds / maxRequestsPerMinute));
 
-      timerRefreshData = new Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
+      timerRefreshData = new Timer(TimeSpan.FromSeconds(10).TotalMilliseconds);
       timerRefreshData.AutoReset = false;
       timerRefreshData.Elapsed += Timer_Elapsed;
     }
     #endregion
 
     #region Public API
-    public async Task GetAllPairs()
+    public async Task GetAllPairs(
+      bool preventRetryOnFail = false)
     {
       if (tickerLowerToCoin.Count == 0 || DateTime.Now - lastLoadTickerNames > timeBetweenGetAllPairs)
       {
-        while (true)
+        do
         {
           try
           {
@@ -111,15 +112,16 @@ namespace CrypConnect
             }
           }
           break;
-        }
+        } while (preventRetryOnFail == false);
       }
 
       await GetAllTradingPairsWrapper();
     }
 
-    async Task GetAllTradingPairsWrapper()
+    async Task GetAllTradingPairsWrapper(
+      bool preventRetryOnFail = false)
     {
-      while (true)
+      do
       {
         try
         {
@@ -133,10 +135,10 @@ namespace CrypConnect
             continue;
           }
         }
+        onPriceUpdate?.Invoke(this);
         break;
-      }
+      } while (preventRetryOnFail == false);
 
-      onPriceUpdate?.Invoke(this);
       timerRefreshData.Start();
     }
 
@@ -150,7 +152,7 @@ namespace CrypConnect
     public bool IsCoinActive(
       Coin coin)
     {
-      if(inactiveCoins.Contains(coin))
+      if (inactiveCoins.Contains(coin))
       {
         return false;
       }
@@ -212,7 +214,7 @@ namespace CrypConnect
       string baseCoinTicker,
       string quoteCoinTicker,
       decimal askPrice,
-      decimal bidPrice, 
+      decimal bidPrice,
       bool? isInactive = null)
     {
       if (string.IsNullOrWhiteSpace(baseCoinTicker)
@@ -221,9 +223,9 @@ namespace CrypConnect
         return;
       }
 
-      Debug.Assert(askPrice == 0 
-        || bidPrice == 0 
-        || askPrice >= bidPrice 
+      Debug.Assert(askPrice == 0
+        || bidPrice == 0
+        || askPrice >= bidPrice
         || supportsOverlappingBooks);
 
       if (tickerLowerToCoin.TryGetValue(baseCoinTicker.ToLowerInvariant(),
@@ -242,7 +244,7 @@ namespace CrypConnect
         askPrice,
         bidPrice);
 
-      if(isInactive != null)
+      if (isInactive != null)
       {
         pair.isInactive = isInactive.Value;
       }

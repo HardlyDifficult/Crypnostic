@@ -95,6 +95,13 @@ namespace CrypConnect
     public static Coin FromName(
       string fullName)
     {
+      return CreateFromName(fullName, false);
+    }
+
+    internal static Coin CreateFromName(
+      string fullName,
+      bool createIfDoesNotExist)
+    {
       // Alias
       if (ExchangeMonitor.instance.aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
       {
@@ -111,6 +118,11 @@ namespace CrypConnect
       if (ExchangeMonitor.instance.fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out coin))
       {
         return coin;
+      }
+
+      if(createIfDoesNotExist == false)
+      {
+        return null;
       }
 
       // New Coin

@@ -41,7 +41,7 @@ namespace CrypConnect
         {
           isCoinActive = false;
         }
-        AddTicker(product.Symbol, Coin.FromName(product.Name), isCoinActive);
+        AddTicker(product.Symbol, Coin.CreateFromName(product.Name, true), isCoinActive);
       }
 
       await throttle.WaitTillReady();
@@ -49,8 +49,8 @@ namespace CrypConnect
       for (int i = 0; i < tradePairsResponse.Data.Count; i++)
       {
         TradePairResult tradePair = tradePairsResponse.Data[i];
-        (Coin, Coin) entry = (Coin.FromName(tradePair.Currency),
-          Coin.FromName(tradePair.BaseCurrency));
+        (Coin, Coin) entry = (Coin.CreateFromName(tradePair.Currency, true),
+          Coin.CreateFromName(tradePair.BaseCurrency, true));
         entry.Item1.UpdatePairStatus(this, entry.Item2, tradePair.Status != "OK");
       }
     }

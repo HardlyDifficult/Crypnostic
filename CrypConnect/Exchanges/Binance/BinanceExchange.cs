@@ -48,10 +48,10 @@ namespace CrypConnect
         BinanceProductJson product = productList.data[i];
         bool isInactive = product.status.Equals("TRADING",
           StringComparison.InvariantCultureIgnoreCase) == false;
-        Coin baseCoin = Coin.FromName(product.baseAssetName);
+        Coin baseCoin = Coin.CreateFromName(product.baseAssetName, true);
         // TODO Binance: how-to determine the coin's status (e.g. deposit paused)
         AddTicker(product.baseAsset, baseCoin, false);
-        Coin quoteCoin = Coin.FromName(product.quoteAssetName);
+        Coin quoteCoin = Coin.CreateFromName(product.quoteAssetName, true);
         AddTicker(product.quoteAsset, quoteCoin, false);
         quoteCoin.UpdatePairStatus(this, baseCoin, isInactive);
       }

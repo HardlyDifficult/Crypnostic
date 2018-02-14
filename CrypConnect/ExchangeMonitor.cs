@@ -89,7 +89,7 @@ namespace CrypConnect
 
       for (int i = 0; i < exchangeList.Length; i++)
       {
-        taskList.Add(exchangeList[i].GetAllPairs());
+        taskList.Add(exchangeList[i].GetAllPairs(true));
       }
 
       await Task.WhenAll(taskList);
@@ -127,7 +127,7 @@ namespace CrypConnect
       }
 
       name = name.ToLowerInvariant();
-      Coin coin = Coin.FromName(name);
+      Coin coin = Coin.CreateFromName(name, true);
 
       aliasLowerToCoin.Add(alias, coin);
     }
