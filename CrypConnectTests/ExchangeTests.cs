@@ -15,7 +15,7 @@ namespace CryptoExchanges.Tests
       monitor = new ExchangeMonitor(
         new ExchangeMonitorConfig());
 
-      int count = Coin.allCoins.Count();
+      int count = monitor.allCoins.Count();
       Assert.IsTrue(count > 600); // Cryptopia is the largest with about 500
     }
 

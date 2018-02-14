@@ -8,6 +8,16 @@ namespace CryptoExchanges
 {
   public class ExchangeMonitor
   {
+    #region Public Data
+    public IEnumerable<Coin> allCoins
+    {
+      get
+      {
+        return fullNameLowerToCoin.Values;
+      }
+    }
+    #endregion
+
     #region Internal/Private Data
     internal static ExchangeMonitor instance;
 
@@ -22,6 +32,25 @@ namespace CryptoExchanges
     {
       get; private set;
     }
+
+    /// <summary>
+    /// Populated from config on construction.
+    /// </summary>
+    internal readonly Dictionary<string, Coin> aliasLowerToCoin
+      = new Dictionary<string, Coin>();
+
+    /// <summary>
+    /// Populated from config on construction.
+    /// After consider aliases.
+    /// </summary>
+    internal readonly HashSet<string> blacklistedFullNameLowerList
+      = new HashSet<string>();
+
+    /// <summary>
+    /// After considering aliases and blacklist.
+    /// </summary>
+    internal readonly Dictionary<string, Coin> fullNameLowerToCoin
+      = new Dictionary<string, Coin>();
     #endregion
 
     #region Init
@@ -31,7 +60,6 @@ namespace CryptoExchanges
       Debug.Assert(instance == null);
       instance = this;
 
-      Debug.Assert(Coin.aliasLowerToCoin != null);
       foreach (KeyValuePair<string, string> aliasToName in config.coinAliasToName)
       {
         AddAlias(aliasToName.Key, aliasToName.Value);
@@ -47,13 +75,11 @@ namespace CryptoExchanges
 
       foreach (string blacklistedCoin in config.blacklistedCoins)
       {
-        Coin.blacklistedFullNameLowerList.Add(blacklistedCoin.ToLowerInvariant());
+        blacklistedFullNameLowerList.Add(blacklistedCoin.ToLowerInvariant());
       }
 
       CompleteFirstLoad().Wait();
     }
-
-   
 
     async Task CompleteFirstLoad()
     {
@@ -76,14 +102,15 @@ namespace CryptoExchanges
     }
     #endregion
 
-    public static void AddAlias(
+    #region Public Write API
+    public void AddAlias(
      string alias,
      string name)
     {
       alias = alias.ToLowerInvariant();
-      Debug.Assert(Coin.fullNameLowerToCoin.ContainsKey(alias) == false);
+      Debug.Assert(fullNameLowerToCoin.ContainsKey(alias) == false);
 
-      if(Coin.aliasLowerToCoin.ContainsKey(alias))
+      if(aliasLowerToCoin.ContainsKey(alias))
       { // De-dupe
         return;
       }
@@ -91,8 +118,9 @@ namespace CryptoExchanges
       name = name.ToLowerInvariant();
       Coin coin = Coin.FromName(name);
 
-      Coin.aliasLowerToCoin.Add(alias, coin);
+      aliasLowerToCoin.Add(alias, coin);
     }
+    #endregion
 
     #region Public Read API
     public Exchange FindExchange(

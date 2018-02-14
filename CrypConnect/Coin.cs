@@ -10,50 +10,36 @@ namespace CryptoExchanges
     #region Public Static 
     /// <summary>
     /// Reference to Bitcoin, for convenience.
-    /// Same as new Coin("Bitcoin")
     /// </summary>
-    public static readonly Coin bitcoin;
-
-    /// <summary>
-    /// Reference to Ethereum, for convenience.
-    /// Same as new Coin("Ethereum")
-    /// </summary>
-    public static readonly Coin ethereum;
-
-    /// <summary>
-    /// Reference to United States Dollar, for convenience.
-    /// Same as new Coin("United States Dollar")
-    /// </summary>
-    public static readonly Coin usd;
-
-    public static IEnumerable<Coin> allCoins
+    public static Coin bitcoin
     {
       get
       {
-        return fullNameLowerToCoin.Values;
+        return Coin.FromName("Bitcoin");
       }
     }
-    #endregion
-
-    #region Static Data
-    /// <summary>
-    /// Populated by the ExchangeMonitor on construction.
-    /// </summary>
-    internal static readonly Dictionary<string, Coin> aliasLowerToCoin
-      = new Dictionary<string, Coin>();
 
     /// <summary>
-    /// Populated by the ExchangeMonitor on construction.
-    /// After consider aliases.
+    /// Reference to Ethereum, for convenience.
     /// </summary>
-    internal static readonly HashSet<string> blacklistedFullNameLowerList
-      = new HashSet<string>();
+    public static Coin ethereum
+    {
+      get
+      {
+        return Coin.FromName("Ethereum");
+      }
+    }
 
     /// <summary>
-    /// After considering aliases and blacklist.
+    /// Reference to United States Dollar, for convenience.
     /// </summary>
-    internal static readonly Dictionary<string, Coin> fullNameLowerToCoin
-      = new Dictionary<string, Coin>();
+    public static Coin usd
+    {
+      get
+      {
+        return Coin.FromName("United States Dollar");
+      }
+    }
     #endregion
 
     #region Public Data
@@ -83,46 +69,38 @@ namespace CryptoExchanges
     #endregion
 
     #region Init
-    static Coin()
-    {
-      // Must be done in the constructor to allow the other data types to init
-      bitcoin = Coin.FromName("Bitcoin");
-      ethereum = Coin.FromName("Ethereum");
-      usd = Coin.FromName("United States Dollar");
-    }
-
     Coin(
       string fullName)
     {
       Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
-      Debug.Assert(aliasLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
-      Debug.Assert(blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()) == false);
+      Debug.Assert(ExchangeMonitor.instance.aliasLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
+      Debug.Assert(ExchangeMonitor.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()) == false);
       Debug.Assert(fullName.Equals("Ether", StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullName.Equals("BTC", StringComparison.InvariantCultureIgnoreCase) == false);
 
       this.fullName = fullName;
       this.fullNameLower = fullName.ToLowerInvariant();
 
-      fullNameLowerToCoin.Add(fullName.ToLowerInvariant(), this);
+      ExchangeMonitor.instance.fullNameLowerToCoin.Add(fullName.ToLowerInvariant(), this);
     }
 
     public static Coin FromName(
       string fullName)
     {
       // Alias
-      if (aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
+      if (ExchangeMonitor.instance.aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
       {
         return coin;
       }
 
       // Blacklist
-      if (blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()))
+      if (ExchangeMonitor.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()))
       {
         return null;
       }
 
       // Existing Coin
-      if (fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out coin))
+      if (ExchangeMonitor.instance.fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out coin))
       {
         return coin;
       }
