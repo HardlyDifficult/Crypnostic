@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CryptoExchanges
+namespace CrypConnect
 {
   public class TradingPair
   {

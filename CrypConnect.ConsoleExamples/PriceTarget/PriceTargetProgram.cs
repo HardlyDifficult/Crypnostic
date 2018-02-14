@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CryptoExchanges;
+using CrypConnect;
 
-namespace CrypConnectExamples.PriceTarget
+namespace CrypConnect.ConsoleExamples.PriceTarget
 {
   class PriceTargetProgram
   {

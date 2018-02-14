@@ -1,17 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CryptoExchanges;
+using CrypConnect;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace CryptoExchanges.Tests.Exchanges
+namespace CrypConnect.Tests.Exchanges
 {
   [TestClass()]
-  public class BinanceTests : ExchangeMonitorTests
+  public class KucoinTests : ExchangeMonitorTests
   {
     [TestMethod()]
-    public void Binance()
+    public void Kucoin()
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.Binance);
+      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.Kucoin);
       monitor = new ExchangeMonitor(config);
       Assert.IsTrue(Coin.ethereum.Best(Coin.bitcoin, true).askPrice > 0);
     }

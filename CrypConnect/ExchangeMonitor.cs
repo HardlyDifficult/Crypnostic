@@ -1,10 +1,10 @@
-﻿using CryptoExchanges.CoinMarketCap;
+﻿using CrypConnect.CoinMarketCap;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace CryptoExchanges
+namespace CrypConnect
 {
   public class ExchangeMonitor
   {

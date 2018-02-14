@@ -1,10 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CryptoExchanges;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CryptoExchanges.Tests
+namespace CrypConnect.Tests
 {
   [TestClass()]
   public class ExchangeTests : ExchangeMonitorTests

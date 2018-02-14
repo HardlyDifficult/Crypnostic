@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using HD;
 
-namespace CryptoExchanges
+namespace CrypConnect
 {
   public class Coin
   {

@@ -1,18 +1,17 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CryptoExchanges;
+using CrypConnect;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace CryptoExchanges.Tests.Exchanges
+namespace CrypConnect.Tests.Exchanges
 {
   [TestClass()]
-  public class GDaxTests : ExchangeMonitorTests
+  public class BinanceTests : ExchangeMonitorTests
   {
     [TestMethod()]
-    public void GDax()
+    public void Binance()
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.GDax);
+      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.Binance);
       monitor = new ExchangeMonitor(config);
       Assert.IsTrue(Coin.ethereum.Best(Coin.bitcoin, true).askPrice > 0);
     }

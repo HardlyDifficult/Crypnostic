@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
 
-namespace CryptoExchanges
+namespace CrypConnect
 {
   /// <remarks>
   /// https://www.cryptopia.co.nz/Forum/Thread/255

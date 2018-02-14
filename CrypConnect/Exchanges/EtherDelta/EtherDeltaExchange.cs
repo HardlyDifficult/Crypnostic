@@ -3,9 +3,9 @@ using RestSharp;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
-using CryptoExchanges.Exchanges;
+using CrypConnect.Exchanges;
 
-namespace CryptoExchanges
+namespace CrypConnect
 {
   /// <summary>
   /// 

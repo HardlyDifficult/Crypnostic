@@ -7,8 +7,8 @@
     <ProjectGuid>{F11BDE06-24BA-4898-AF21-5187754B9A27}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CrypConnectExamples</RootNamespace>
-    <AssemblyName>CrypConnectExamples</AssemblyName>
+    <RootNamespace>CrypConnect.ConsoleExamples</RootNamespace>
+    <AssemblyName>CrypConnect.Examples.Console</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>CrypConnectExamples.PriceTarget.PriceTargetProgram</StartupObject>
+    <StartupObject>CrypConnect.ConsoleExamples.PriceTarget.PriceTargetProgram</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

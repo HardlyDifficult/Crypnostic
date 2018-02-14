@@ -1,15 +1,15 @@
 ﻿using System;
 using Binance.API.Csharp.Client;
 using Binance.API.Csharp.Client.Models.Market;
-using CryptoExchanges.Exchanges.Binance;
+using CrypConnect.Exchanges.Binance;
 using RestSharp;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
 using System.Diagnostics;
-using CryptoExchanges.Exchanges;
+using CrypConnect.Exchanges;
 
-namespace CryptoExchanges
+namespace CrypConnect
 {
   /// <summary>
   /// </summary>

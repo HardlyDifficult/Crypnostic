@@ -1,10 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CryptoExchanges;
+using CrypConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CryptoExchanges.Tests.Exchanges
+namespace CrypConnect.Tests.Exchanges
 {
   [TestClass()]
   public class EtherDeltaTests : ExchangeMonitorTests

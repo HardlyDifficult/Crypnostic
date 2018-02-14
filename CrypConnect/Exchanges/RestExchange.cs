@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HD;
 
-namespace CryptoExchanges.Exchanges
+namespace CrypConnect.Exchanges
 {
   public abstract class RestExchange : Exchange
   {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
 
-namespace CryptoExchanges.Exchanges.GDax
+namespace CrypConnect.Exchanges.GDax
 {
   /// <remarks>
   /// https://docs.gdax.com/#introduction

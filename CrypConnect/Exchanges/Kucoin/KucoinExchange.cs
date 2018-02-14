@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CryptoExchanges.Exchanges.Kucoin;
+using CrypConnect.Exchanges.Kucoin;
 
-namespace CryptoExchanges.Exchanges
+namespace CrypConnect.Exchanges
 {
   /// <remarks>
   /// https://kucoinapidocs.docs.apiary.io/#

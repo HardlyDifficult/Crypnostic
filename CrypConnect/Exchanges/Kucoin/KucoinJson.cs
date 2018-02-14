@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CryptoExchanges.Exchanges.Kucoin
+namespace CrypConnect.Exchanges.Kucoin
 {
   public class KucoinTickerListJson
   {
