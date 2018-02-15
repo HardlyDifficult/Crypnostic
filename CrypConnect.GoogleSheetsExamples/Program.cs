@@ -9,6 +9,8 @@ namespace CrypConnect.GoogleSheetsExamples
   ///  in the CrypConnect.GoogleSheetsExamples\bin directory 
   ///  https://developers.google.com/sheets/api/quickstart/dotnet
   ///  - Follow Steps 2 from the same guide to install the nuget package
+  ///  - In GoogleSheetPriceMonitor change the sheet Id to one that you own
+  ///  - Make changes to GoogleSheetPriceMonitor's read and write logic for your use case
   /// </summary>
   class Program
   {
