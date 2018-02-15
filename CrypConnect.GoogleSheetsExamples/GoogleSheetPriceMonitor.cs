@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Media;
 using System.Timers;
 
@@ -42,21 +41,14 @@ namespace CrypConnect.GoogleSheetsExamples
       object sender,
       ElapsedEventArgs e)
     {
-      try
-      {
-        IList<IList<object>> data = sheet.Read(tab, "A2:A");
+      IList<IList<object>> data = sheet.Read(tab, "A2:A");
 
-        string[][] results = new string[data.Count][];
-        for (int i = 0; i < results.Length; i++)
-        {
-          results[i] = DescribeCoin(data[i][0]);
-        }
-        sheet.Write(tab, "B2", results);
+      string[][] results = new string[data.Count][];
+      for (int i = 0; i < results.Length; i++)
+      {
+        results[i] = DescribeCoin(data[i][0]);
       }
-      catch (Exception ex)
-      { // TODO remove
-        Console.WriteLine(ex);
-      }
+      sheet.Write(tab, "B2", results);
 
       IList<IList<object>> alarmData = sheet.Read(tab, "G2:G");
       for (int i = 0; i < alarmData.Count; i++)
@@ -73,7 +65,7 @@ namespace CrypConnect.GoogleSheetsExamples
       refreshTimer.Start();
     }
 
-    private string[] DescribeCoin(
+    string[] DescribeCoin(
       object coinName)
     {
       Coin coin = Coin.FromName((string)coinName);
@@ -83,7 +75,7 @@ namespace CrypConnect.GoogleSheetsExamples
       }
 
       TradingPair bestSell = coin.Best(Coin.bitcoin, true);
-      TradingPair bestBuy = coin.Best(Coin.bitcoin, true);
+      TradingPair bestBuy = coin.Best(Coin.bitcoin, false);
 
       return new string[]
       {
