@@ -126,7 +126,6 @@ namespace CrypConnect
         return;
       }
 
-      name = name.ToLowerInvariant();
       Coin coin = Coin.CreateFromName(name);
 
       aliasLowerToCoin.Add(alias, coin);

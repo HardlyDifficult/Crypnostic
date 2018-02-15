@@ -51,6 +51,8 @@ namespace CrypConnect
 
     readonly Timer timerRefreshData;
 
+    readonly HashSet<string> blacklistedTickerLower = new HashSet<string>();
+
     readonly HashSet<Coin> inactiveCoins = new HashSet<Coin>();
 
     readonly TimeSpan timeBetweenGetAllPairs = TimeSpan.FromMinutes(5); // TODO config
@@ -75,6 +77,8 @@ namespace CrypConnect
           return new KucoinExchange(exchangeMonitor);
         case ExchangeName.GDax:
           return new GDaxExchange(exchangeMonitor);
+        case ExchangeName.Idex:
+          return new IdexExchange(exchangeMonitor);
         default:
           Debug.Fail("Missing Exchange");
           return null;
@@ -100,6 +104,17 @@ namespace CrypConnect
     #endregion
 
     #region Public API
+    public void AddBlacklistedTicker(
+      params string[] tickerList)
+    {
+      for (int i = 0; i < tickerList.Length; i++)
+      {
+        string ticker = tickerList[i];
+        ticker = ticker.ToLowerInvariant();
+        blacklistedTickerLower.Add(ticker);
+      }
+    }
+
     public async Task GetAllPairs(
       bool preventRetryOnFail = false)
     {
@@ -137,7 +152,7 @@ namespace CrypConnect
         {
           await GetAllTradingPairs();
         }
-        catch(Exception e)
+        catch (Exception e)
         { // Auto retry on fail
           // TODO log
           Console.WriteLine(e);
@@ -176,6 +191,7 @@ namespace CrypConnect
     #endregion
 
     #region Helpers
+
     /// <summary>
     /// This is called during init and then refreshed periodically.
     /// You can also call this anytime for a manual refresh (subject to throttling).
@@ -204,6 +220,13 @@ namespace CrypConnect
         return;
       }
 
+      ticker = ticker.ToLowerInvariant();
+
+      if (blacklistedTickerLower.Contains(ticker))
+      { // Ticker blacklisted on this exchange
+        return;
+      }
+
       if (isCoinActive)
       {
         inactiveCoins.Remove(coin);
@@ -213,7 +236,6 @@ namespace CrypConnect
         inactiveCoins.Add(coin);
       }
 
-      ticker = ticker.ToLowerInvariant();
 
       if (tickerLowerToCoin.ContainsKey(ticker))
       { // Ignore dupes
@@ -224,9 +246,10 @@ namespace CrypConnect
       try
       {
 
-      tickerLowerToCoin.Add(ticker, coin);
-      coinToTickerLower.Add(coin, ticker);
-      } catch
+        tickerLowerToCoin.Add(ticker, coin);
+        coinToTickerLower.Add(coin, ticker);
+      }
+      catch
       { // TODO remove
         Console.WriteLine();
       }
@@ -284,7 +307,7 @@ namespace CrypConnect
     }
 
     protected abstract string GetPairId(
-      string quoteSymbol, 
+      string quoteSymbol,
       string baseSymbol);
     #endregion
   }

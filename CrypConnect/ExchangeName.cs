@@ -10,6 +10,7 @@ namespace CrypConnect
   {
     Binance, Cryptopia, EtherDelta,
     Kucoin,
-    GDax
+    GDax,
+    Idex
   }
 }

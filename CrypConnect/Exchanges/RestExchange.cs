@@ -1,7 +1,5 @@
 ﻿using RestSharp;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using HD;
 
@@ -10,15 +8,18 @@ namespace CrypConnect.Exchanges
   public abstract class RestExchange : Exchange
   {
     readonly IRestClient restClient;
+    readonly Method method;
 
     public RestExchange(
       ExchangeMonitor exchangeMonitor,
       ExchangeName exchangeName,
       int maxRequestsPerMinute,
-      string baseUrl)
+      string baseUrl,
+      Method method = Method.GET)
       : base(exchangeMonitor, exchangeName, maxRequestsPerMinute)
     {
       restClient = new RestClient(baseUrl);
+      this.method = method;
     }
 
     protected async Task<T> Get<T>(
@@ -26,7 +27,7 @@ namespace CrypConnect.Exchanges
       where T : new()
     {
       await throttle.WaitTillReady();
-      T result = await restClient.GetAsync<T>(resource);
+      T result = await restClient.AsyncDownload<T>(resource, method: method);
       throttle.SetLastUpdateTime();
       return result;
     }
