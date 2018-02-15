@@ -25,12 +25,12 @@ namespace CrypConnect.Exchanges
       {
         string ticker = product.coin;
         string fullName = product.name;
-        Coin coin = Coin.FromName(fullName);
+        Coin coin = Coin.CreateFromName(fullName);
         bool isInactive = product.enableDeposit == false || product.enableWithdraw == false;
         AddTicker(ticker, coin, isInactive);
       }
     }
-    
+
     protected override async Task GetAllTradingPairs()
     {
       KucoinTickerListJson tickerList = await Get<KucoinTickerListJson>("v1/open/tick");
@@ -43,8 +43,21 @@ namespace CrypConnect.Exchanges
         decimal bidPrice = new decimal(ticker.buy);
         bool isInactive = ticker.trading == false;
 
-        AddTradingPair(baseCoinTicker, quoteCoinTicker, askPrice, bidPrice, isInactive);
+        TradingPair pair = AddTradingPair(baseCoinTicker, quoteCoinTicker, askPrice, bidPrice, isInactive);
+
+        if (pair != null)
+        {
+          pair.lastTrade = new LastTrade(
+            new decimal(ticker.lastDealPrice), new decimal(ticker.vol));
+        }
       }
+    }
+
+    protected override string GetPairId(
+      string quoteSymbol,
+      string baseSymbol)
+    {
+      return $"{quoteSymbol.ToUpperInvariant()}-{baseSymbol.ToUpperInvariant()}";
     }
   }
 }

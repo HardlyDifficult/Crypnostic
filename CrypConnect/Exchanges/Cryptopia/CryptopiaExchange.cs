@@ -41,7 +41,7 @@ namespace CrypConnect
         {
           isCoinActive = false;
         }
-        AddTicker(product.Symbol, Coin.CreateFromName(product.Name, true), isCoinActive);
+        AddTicker(product.Symbol, Coin.CreateFromName(product.Name), isCoinActive);
       }
 
       await throttle.WaitTillReady();
@@ -49,8 +49,8 @@ namespace CrypConnect
       for (int i = 0; i < tradePairsResponse.Data.Count; i++)
       {
         TradePairResult tradePair = tradePairsResponse.Data[i];
-        (Coin, Coin) entry = (Coin.CreateFromName(tradePair.Currency, true),
-          Coin.CreateFromName(tradePair.BaseCurrency, true));
+        (Coin, Coin) entry = (Coin.CreateFromName(tradePair.Currency),
+          Coin.CreateFromName(tradePair.BaseCurrency));
         entry.Item1.UpdatePairStatus(this, entry.Item2, tradePair.Status != "OK");
       }
     }
@@ -63,11 +63,22 @@ namespace CrypConnect
       MarketsResponse tickerList = await publicApi.GetMarkets(new MarketsRequest());
       foreach (MarketResult ticker in tickerList.Data)
       {
-        AddTradingPair(baseCoinTicker: ticker.Label.GetAfter(tradingPairSeparator),
+        TradingPair pair = AddTradingPair(baseCoinTicker: ticker.Label.GetAfter(tradingPairSeparator),
           quoteCoinTicker: ticker.Label.GetBefore(tradingPairSeparator),
           askPrice: ticker.AskPrice,
           bidPrice: ticker.BidPrice);
+        if (pair != null)
+        {
+          pair.lastTrade = new LastTrade(ticker.LastPrice, ticker.LastVolume);
+        }
       }
+    }
+
+    protected override string GetPairId(
+      string quoteSymbol,
+      string baseSymbol)
+    {
+      return $"{quoteSymbol.ToUpperInvariant()}/{baseSymbol.ToUpperInvariant()}";
     }
   }
 }

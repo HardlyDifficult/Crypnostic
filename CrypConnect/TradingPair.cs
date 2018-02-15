@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace CrypConnect
 {
   public class TradingPair
   {
     #region Data
+    // TODO config?  Should this match the price refresh time?
+    TimeSpan timeBetweenLastTradeUpdates = TimeSpan.FromSeconds(15);
+
     public event Action onPriceUpdate;
 
     public event Action onStatusChange;
@@ -15,6 +19,20 @@ namespace CrypConnect
 
     public readonly Coin quoteCoin;
 
+    internal LastTrade lastTrade
+    {
+      private get; set;
+    }
+
+    public async Task<LastTrade> GetLastTrade()
+    {
+      if (DateTime.Now - lastTrade.dateCreated > timeBetweenLastTradeUpdates)
+      {
+        await exchange.RefreshLastTrade(this);
+      }
+
+      return lastTrade;
+    }
 
     /// <summary>
     /// The cost to purchase.
@@ -49,7 +67,7 @@ namespace CrypConnect
       }
       set
       {
-        if(isInactive == value)
+        if (isInactive == value)
         { // No change
           return;
         }

@@ -8,7 +8,7 @@ using CrypConnect.Exchanges;
 namespace CrypConnect
 {
   /// <summary>
-  /// 
+  /// TODO EtherDelta lastTrade
   /// </summary>
   /// <remarks>
   /// https://github.com/etherdelta/etherdelta.github.io/blob/master/docs/API_OLD.md
@@ -69,6 +69,13 @@ namespace CrypConnect
           bidPrice: Convert.ToDecimal(ticker.Value["bid"]), 
           isInactive: false);
       }
+    }
+
+    protected override string GetPairId(
+      string quoteSymbol, 
+      string baseSymbol)
+    {
+      return $"{quoteSymbol.ToUpperInvariant()}-{baseSymbol.ToUpperInvariant()}";
     }
   }
 }

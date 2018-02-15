@@ -28,7 +28,7 @@ namespace CrypConnect.Exchanges.GDax
         GDaxTickerNameJson product = productList[i];
         bool isInactive = product.status.Equals("online",
           StringComparison.InvariantCultureIgnoreCase) == false;
-        AddTicker(product.id, Coin.FromName(product.name), isInactive);
+        AddTicker(product.id, Coin.CreateFromName(product.name), isInactive);
       }
     }
 
@@ -41,17 +41,31 @@ namespace CrypConnect.Exchanges.GDax
       for (int i = 0; i < productList.Count; i++)
       {
         GDaxProductJson product = productList[i];
-        bool isInactive = product.status.Equals("online", 
+        bool isInactive = product.status.Equals("online",
           StringComparison.InvariantCultureIgnoreCase) == false;
 
         GDaxProductTickerJson productTicker
           = await Get<GDaxProductTickerJson>($"products/{product.id}/ticker");
 
-        AddTradingPair(product.quote_currency, product.base_currency,
+        TradingPair pair = AddTradingPair(product.quote_currency, product.base_currency,
           decimal.Parse(productTicker.ask),
           decimal.Parse(productTicker.bid),
           isInactive);
+
+        if (pair != null)
+        {
+          pair.lastTrade = new LastTrade(
+            decimal.Parse(productTicker.price),
+            decimal.Parse(productTicker.size));
+        }
       }
+    }
+
+    protected override string GetPairId(
+      string quoteSymbol,
+      string baseSymbol)
+    {
+      return $"{quoteSymbol}-{baseSymbol}";
     }
   }
 }

@@ -30,6 +30,12 @@ namespace CrypConnect
         return false;
       }
     }
+
+    internal virtual Task RefreshLastTrade(
+      TradingPair tradingPair)
+    {
+      return null;
+    }
     #endregion
 
     #region Data
@@ -37,6 +43,9 @@ namespace CrypConnect
 
     internal protected readonly Dictionary<string, Coin>
       tickerLowerToCoin = new Dictionary<string, Coin>();
+
+    internal protected readonly Dictionary<Coin, string>
+      coinToTickerLower = new Dictionary<Coin, string>();
 
     protected readonly Throttle throttle;
 
@@ -103,8 +112,9 @@ namespace CrypConnect
             await LoadTickerNames();
             lastLoadTickerNames = DateTime.Now;
           }
-          catch
+          catch (Exception e)
           { // Auto retry on fail
+            Console.WriteLine(e); // TODO log
             if (exchangeMonitor.shouldStop == false)
             {
               await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.instance.random.Next(30)));
@@ -127,9 +137,13 @@ namespace CrypConnect
         {
           await GetAllTradingPairs();
         }
-        catch
+        catch(Exception e)
         { // Auto retry on fail
+          // TODO log
+          Console.WriteLine(e);
+
           if (exchangeMonitor.shouldStop == false)
+
           {
             await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.instance.random.Next(30)));
             continue;
@@ -208,9 +222,10 @@ namespace CrypConnect
       }
 
       tickerLowerToCoin.Add(ticker, coin);
+      coinToTickerLower.Add(coin, ticker);
     }
 
-    public void AddTradingPair(
+    public TradingPair AddTradingPair(
       string baseCoinTicker,
       string quoteCoinTicker,
       decimal askPrice,
@@ -220,7 +235,7 @@ namespace CrypConnect
       if (string.IsNullOrWhiteSpace(baseCoinTicker)
         || string.IsNullOrWhiteSpace(quoteCoinTicker))
       {
-        return;
+        return null;
       }
 
       Debug.Assert(askPrice == 0
@@ -231,12 +246,12 @@ namespace CrypConnect
       if (tickerLowerToCoin.TryGetValue(baseCoinTicker.ToLowerInvariant(),
         out Coin baseCoin) == false)
       { // May be missing due to coin filtering (e.g. no Tether)
-        return;
+        return null;
       }
       if (tickerLowerToCoin.TryGetValue(quoteCoinTicker.ToLowerInvariant(),
         out Coin quoteCoin) == false)
       { // May be missing due to book's listing status
-        return;
+        return null;
       }
 
       TradingPair pair = quoteCoin.AddPair(this,
@@ -248,7 +263,22 @@ namespace CrypConnect
       {
         pair.isInactive = isInactive.Value;
       }
+
+      return pair;
     }
+
+    protected string GetPairId(
+      TradingPair pair)
+    {
+      string quoteSymbol = coinToTickerLower[pair.quoteCoin];
+      string baseSymbol = coinToTickerLower[pair.baseCoin];
+
+      return GetPairId(quoteSymbol, baseSymbol);
+    }
+
+    protected abstract string GetPairId(
+      string quoteSymbol, 
+      string baseSymbol);
     #endregion
   }
 }

@@ -40,7 +40,7 @@ namespace CrypConnect
 
     public override async Task LoadTickerNames()
     {
-      BinanceProductListJson productList = 
+      BinanceProductListJson productList =
         await Get<BinanceProductListJson>("exchange/public/product");
 
       for (int i = 0; i < productList.data.Length; i++)
@@ -48,10 +48,10 @@ namespace CrypConnect
         BinanceProductJson product = productList.data[i];
         bool isInactive = product.status.Equals("TRADING",
           StringComparison.InvariantCultureIgnoreCase) == false;
-        Coin baseCoin = Coin.CreateFromName(product.baseAssetName, true);
+        Coin baseCoin = Coin.CreateFromName(product.baseAssetName);
         // TODO Binance: how-to determine the coin's status (e.g. deposit paused)
         AddTicker(product.baseAsset, baseCoin, false);
-        Coin quoteCoin = Coin.CreateFromName(product.quoteAssetName, true);
+        Coin quoteCoin = Coin.CreateFromName(product.quoteAssetName);
         AddTicker(product.quoteAsset, quoteCoin, false);
         quoteCoin.UpdatePairStatus(this, baseCoin, isInactive);
       }
@@ -81,6 +81,28 @@ namespace CrypConnect
           askPrice: ticker.AskPrice,
           bidPrice: ticker.BidPrice);
       }
+    }
+
+    internal override async Task RefreshLastTrade(
+      TradingPair tradingPair)
+    {
+      // https://www.binance.com/api/v1/trades?symbol=ETHBTC&limit=1
+      List<BinanceTradeJson> tradeHistory = await Get<List<BinanceTradeJson>>(
+        $"api/v1/trades?symbol={GetPairId(tradingPair)}&limit=1");
+      if (tradeHistory.Count > 0)
+      {
+        BinanceTradeJson history = tradeHistory[0];
+        decimal price = decimal.Parse(history.price);
+        decimal volume = decimal.Parse(history.qty);
+        tradingPair.lastTrade = new LastTrade(price, volume);
+      }
+    }
+
+    protected override string GetPairId(
+      string quoteSymbol, 
+      string baseSymbol)
+    {
+      return $"{quoteSymbol.ToUpperInvariant()}{baseSymbol.ToUpperInvariant()}";
     }
   }
 }

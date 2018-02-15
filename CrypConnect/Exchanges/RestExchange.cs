@@ -26,7 +26,9 @@ namespace CrypConnect.Exchanges
       where T : new()
     {
       await throttle.WaitTillReady();
-      return await restClient.GetAsync<T>(resource);
+      T result = await restClient.GetAsync<T>(resource);
+      throttle.SetLastUpdateTime();
+      return result;
     }
   }
 }
