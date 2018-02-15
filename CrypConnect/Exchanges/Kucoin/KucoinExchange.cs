@@ -39,8 +39,8 @@ namespace CrypConnect.Exchanges
       {
         string baseCoinTicker = ticker.coinTypePair;
         string quoteCoinTicker = ticker.coinType;
-        decimal askPrice = new decimal(ticker.sell);
-        decimal bidPrice = new decimal(ticker.buy);
+        decimal askPrice = new decimal(ticker.sell ?? 0);
+        decimal bidPrice = new decimal(ticker.buy ?? 0);
         bool isInactive = ticker.trading == false;
 
         TradingPair pair = AddTradingPair(baseCoinTicker, quoteCoinTicker, askPrice, bidPrice, isInactive);

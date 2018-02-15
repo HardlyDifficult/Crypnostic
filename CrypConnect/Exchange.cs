@@ -221,8 +221,15 @@ namespace CrypConnect
         return;
       }
 
+      try
+      {
+
       tickerLowerToCoin.Add(ticker, coin);
       coinToTickerLower.Add(coin, ticker);
+      } catch
+      { // TODO remove
+        Console.WriteLine();
+      }
     }
 
     public TradingPair AddTradingPair(

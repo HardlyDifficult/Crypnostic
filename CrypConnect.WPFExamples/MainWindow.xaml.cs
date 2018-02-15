@@ -1,40 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace ExampleWPF
+namespace CrypConnect.WPFExamples
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+  public partial class MainWindow : Window
+  {
+    ExchangeMonitor exchangeMonitor;
+
+    readonly CrypDataContext dataContext = new CrypDataContext();
+
+    public MainWindow()
     {
-        private WatchedCoin wc = new WatchedCoin();
-        public MainWindow()
-        {
-            InitializeComponent();
-            DataContext = wc; // Setting datacontext to the watchcoin thing, cant remember what class u wanted it as.
-        }
+      BackgroundWorker worker = new BackgroundWorker();
+      worker.DoWork += Worker_DoWork;
+      worker.RunWorkerAsync();
 
-        private void AddButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            wc.Add(CoinName.Text,CoinFullName.Text);
-        }
-
-        private void SwapNameToFullName_OnClick(object sender, RoutedEventArgs e)
-        {
-            wc.SwapNameToFullNameOnFirstItem();
-        }
+      InitializeComponent();
+      DataContext = dataContext; 
     }
+
+    void Worker_DoWork(
+      object sender, 
+      DoWorkEventArgs e)
+    {
+      ExchangeMonitorConfig config = new ExchangeMonitorConfig(
+        ExchangeName.Binance,
+        ExchangeName.Cryptopia,
+        ExchangeName.Kucoin);
+      exchangeMonitor = new ExchangeMonitor(config);
+    }
+
+    void AddButton_OnClick(
+      object sender, 
+      RoutedEventArgs e)
+    {
+      dataContext.Add(CoinName.Text);
+    }
+  }
 }

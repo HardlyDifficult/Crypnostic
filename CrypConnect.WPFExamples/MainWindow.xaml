@@ -1,11 +1,11 @@
-﻿<Window x:Class="ExampleWPF.MainWindow"
+﻿<Window x:Class="CrypConnect.WPFExamples.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ExampleWPF"
+        xmlns:local="clr-namespace:CrypConnect.WPFExamples"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="357.704" Width="315.88">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
@@ -14,28 +14,23 @@
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
         <TextBox Name="CoinName"></TextBox>
-        <TextBox Name="CoinFullName" Grid.Column="1"></TextBox>
-        <Button Name="AddButton"  Click="AddButton_OnClick" Grid.Column="2">Add</Button>
-        <ListView ItemsSource="{Binding Coins}" Grid.Row="2" Grid.ColumnSpan="3">
+        <Button Name="AddButton"  Click="AddButton_OnClick" Grid.Column="1">Add</Button>
+        <ListView ItemsSource="{Binding coinList}" Grid.Row="2" Grid.ColumnSpan="2">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid x:Name="ticker" >
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="200"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Name}"/>
-                        <TextBlock Grid.Column="1" Text="{Binding FullName}"/>
-                        <TextBlock Grid.Column="2" Text="{Binding price}"/>
+                        <TextBlock Text="{Binding shortText}"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button Grid.Row="4" Name="SwapNameToFullName" Click="SwapNameToFullName_OnClick">Swap name</Button>
     </Grid>
 </Window>

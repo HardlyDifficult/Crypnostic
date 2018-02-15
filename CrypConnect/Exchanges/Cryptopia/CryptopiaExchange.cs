@@ -36,8 +36,13 @@ namespace CrypConnect
       for (int i = 0; i < currenciesResponse.Data.Count; i++)
       {
         CurrencyResult product = currenciesResponse.Data[i];
+        if (product.ListingStatus.Equals("Active", 
+          StringComparison.InvariantCultureIgnoreCase) == false)
+        { // De-listed coins should not be considered at all..
+          continue;
+        }
         bool isCoinActive = true;
-        if (product.ListingStatus != "Active" || product.Status != "OK")
+        if (product.Status != "OK")
         {
           isCoinActive = false;
         }

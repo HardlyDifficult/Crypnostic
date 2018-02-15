@@ -45,22 +45,24 @@ namespace CrypConnect
     #region Public Data
     public readonly string fullName;
 
+    public delegate void OnUpdate(Coin coin, TradingPair tradingPair);
+
     /// <summary>
     /// Called when prices refresh on any TradingPair for this Coin.
     /// </summary>
-    public event Action<Coin, TradingPair> onPriceUpdate;
+    public event OnUpdate onPriceUpdate;
 
     /// <summary>
     /// Called when a TradingPair for this Coin has a status change.
     /// </summary>
-    public event Action<Coin, TradingPair> onStatusUpdate;
+    public event OnUpdate onStatusUpdate;
 
     /// <summary>
     /// Called anytime a new exchange pairing is listed.
     /// 
     /// onPriceUpdated is also called anytime this event occurs.
     /// </summary>
-    public event Action<Coin, TradingPair> onNewTradingPairListed;
+    public event OnUpdate onNewTradingPairListed;
     #endregion
 
     #region Private Data
