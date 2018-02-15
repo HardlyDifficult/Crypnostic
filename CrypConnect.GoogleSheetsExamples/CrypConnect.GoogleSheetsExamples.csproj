@@ -79,12 +79,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GoogleSheet.cs" />
+    <Compile Include="GoogleSheetPriceMonitor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CrypConnect\CrypConnect.csproj">
+      <Project>{c4ea014d-bd4d-4a1a-b517-3656eba47723}</Project>
+      <Name>CrypConnect</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HardlyCommon\Hardly.Common.csproj">
+      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
+      <Name>Hardly.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
