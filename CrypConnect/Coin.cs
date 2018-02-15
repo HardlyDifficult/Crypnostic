@@ -48,12 +48,19 @@ namespace CrypConnect
     /// <summary>
     /// Called when prices refresh on any TradingPair for this Coin.
     /// </summary>
-    public event Action<Coin> onPriceUpdate;
+    public event Action<Coin, TradingPair> onPriceUpdate;
 
     /// <summary>
     /// Called when a TradingPair for this Coin has a status change.
     /// </summary>
-    public event Action<Coin> onStatusUpdate;
+    public event Action<Coin, TradingPair> onStatusUpdate;
+
+    /// <summary>
+    /// Called anytime a new exchange pairing is listed.
+    /// 
+    /// onPriceUpdated is also called anytime this event occurs.
+    /// </summary>
+    public event Action<Coin, TradingPair> onNewTradingPairListed;
     #endregion
 
     #region Private Data
@@ -120,7 +127,7 @@ namespace CrypConnect
         return coin;
       }
 
-      if(createIfDoesNotExist == false)
+      if (createIfDoesNotExist == false)
       {
         return null;
       }
@@ -207,7 +214,7 @@ namespace CrypConnect
       Debug.Assert(exchangeInfo.ContainsKey((pair.exchange.exchangeName, pair.baseCoin)) == false);
 
       exchangeInfo[(pair.exchange.exchangeName, pair.baseCoin)] = pair;
-      onPriceUpdate?.Invoke(this);
+      onPriceUpdate?.Invoke(this, pair);
     }
 
     internal TradingPair AddPair(
@@ -220,14 +227,15 @@ namespace CrypConnect
       if (exchangeInfo.TryGetValue(key, out TradingPair pair))
       {
         pair.Update(askPrice, bidPrice);
-        onPriceUpdate?.Invoke(this);
-
-        return pair;
       }
       else
       {
-        return new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
+        pair = new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
+        onNewTradingPairListed?.Invoke(this, pair);
       }
+
+      onPriceUpdate?.Invoke(this, pair);
+      return pair;
     }
 
     // TODO all exchanges (vs cryptopia)
@@ -245,7 +253,7 @@ namespace CrypConnect
       if (pair.isInactive != isInactive)
       {
         pair.isInactive = isInactive;
-        onStatusUpdate?.Invoke(this);
+        onStatusUpdate?.Invoke(this, pair);
       }
     }
     #endregion

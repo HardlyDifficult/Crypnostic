@@ -50,7 +50,8 @@ namespace CrypConnect.ConsoleExamples.PriceTarget
 
     #region Events
     void CoinToMonitor_onPriceUpdate(
-      Coin coin)
+      Coin coin,
+      TradingPair pair)
     {
       TradingPair bestEthPair = coin.Best(Coin.ethereum, sellVsBuy: true);
       decimal currentValue = bestEthPair.bidPrice;
