@@ -64,6 +64,36 @@ namespace CrypConnect.Exchanges
       exchangeMonitor.AddAlias("Trade.io", "Trade Token");
       exchangeMonitor.AddAlias("WePower Token", "WePower");
       exchangeMonitor.AddAlias("WILD", "Wild Crypto");
+      exchangeMonitor.AddAlias("Accelerator", "Accelerator Network");
+      exchangeMonitor.AddAlias("AstroTokens", "Astro");
+      exchangeMonitor.AddAlias("Cloudwith.me", "Cloud");
+      exchangeMonitor.AddAlias("Cofoundit", "Cofound.it");
+      exchangeMonitor.AddAlias("Crystal", "Crystal Clear");
+      exchangeMonitor.AddAlias("DaoCasino", "DAO.Casino");
+      exchangeMonitor.AddAlias("DataWallet Token", "Datawallet");
+      exchangeMonitor.AddAlias("EthereumMovieVenture", "Ethereum Movie Venture");
+      exchangeMonitor.AddAlias("Fusion Token", "Fusion");
+      exchangeMonitor.AddAlias("Hubiits", "Hubii Network");
+      exchangeMonitor.AddAlias("HYPERTV", "Hyper TV");
+      exchangeMonitor.AddAlias("ICOS - ICOBox", "ICOS");
+      exchangeMonitor.AddAlias("INDAHASH COIN", "indaHash");
+      exchangeMonitor.AddAlias("Indorse", "Indorse Token");
+      exchangeMonitor.AddAlias("Jibrel Network Token", "Jibrel Network");
+      exchangeMonitor.AddAlias("LIFE Token", "LIFE");
+      exchangeMonitor.AddAlias("Link", "Link Platform");
+      exchangeMonitor.AddAlias("MedToken", "Medicalchain");
+      exchangeMonitor.AddAlias("Melonport", "Melon");
+      exchangeMonitor.AddAlias("NeuroToken", "Neuro");
+      exchangeMonitor.AddAlias("Origin Trail", "OriginTrail");
+      exchangeMonitor.AddAlias("PlayKey Token", "Playkey");
+      exchangeMonitor.AddAlias("Real.Markets", "REAL");
+      exchangeMonitor.AddAlias("SANtiment", "Santiment Network Token");
+      exchangeMonitor.AddAlias("Storm Market", "Storm");
+      exchangeMonitor.AddAlias("Streamr", "Streamr DATAcoin");
+      exchangeMonitor.AddAlias("Target", "Target Coin");
+      exchangeMonitor.AddAlias("Theta", "Theta Token");
+      exchangeMonitor.AddAlias("Tie Token", "TIES Network");
+      exchangeMonitor.AddAlias("Wi", "Wi Coin");
     }
 
     public override async Task LoadTickerNames()

@@ -29,6 +29,8 @@ namespace CrypConnect.Exchanges
       exchangeMonitor.AddAlias("Tether USD", "Tether");
       exchangeMonitor.AddAlias("CanYa", "CanYaCoin");
       exchangeMonitor.AddAlias("New Economy Movement", "NEM");
+      exchangeMonitor.AddAlias("Lightning Bitcoin", "Lightning Bitcoin [Futures]");
+      exchangeMonitor.AddAlias("UnitedBitcoin", "United Bitcoin");
     }
 
     public override async Task LoadTickerNames()

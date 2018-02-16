@@ -129,7 +129,7 @@ namespace CrypConnect.GoogleSheetsExamples
         return about;
       }
 
-      if (coin.hasValidTradingPairs == false)
+      if (coin.hasValidTradingPairs == false && coin.coinMarketCapData == null)
       {
         return null;
       }

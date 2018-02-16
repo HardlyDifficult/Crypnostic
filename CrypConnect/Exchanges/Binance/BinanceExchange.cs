@@ -43,6 +43,8 @@ namespace CrypConnect
       exchangeMonitor.AddAlias("PowerLedger", "Power Ledger");
       exchangeMonitor.AddAlias("Stellar Lumens", "Stellar");
       exchangeMonitor.AddAlias("Walton", "Waltonchain");
+      exchangeMonitor.AddAlias("Amber", "AmberCoin");
+      exchangeMonitor.AddAlias("CHAT", "ChatCoin");
 
       ApiClient api = new ApiClient(null, null);
       client = new BinanceClient(api);
