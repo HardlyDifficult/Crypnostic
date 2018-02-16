@@ -28,6 +28,11 @@ namespace CrypConnect
     {
       publicApi = new CryptopiaApiPublic();
       exchangeMonitor.AddAlias("MyWishToken", "MyWish");
+      exchangeMonitor.AddAlias("BCash", "Bitcoin Cash");
+      exchangeMonitor.AddAlias("KyberNetworkCrystal", "Kyber Network");
+      exchangeMonitor.AddAlias("NewEconomyMovement", "New Economy Movement");
+      exchangeMonitor.AddAlias("OysterPearl", "Oyster Pearl");
+      exchangeMonitor.AddAlias("Tronix", "TRON");
     }
 
     public override async Task LoadTickerNames()
@@ -57,7 +62,7 @@ namespace CrypConnect
         TradePairResult tradePair = tradePairsResponse.Data[i];
         (Coin, Coin) entry = (Coin.CreateFromName(tradePair.Currency),
           Coin.CreateFromName(tradePair.BaseCurrency));
-        entry.Item1.UpdatePairStatus(this, entry.Item2, tradePair.Status != "OK");
+        entry.Item1?.UpdatePairStatus(this, entry.Item2, tradePair.Status != "OK");
       }
     }
 

@@ -34,6 +34,8 @@ namespace CrypConnect
           1200,
           "https://www.binance.com")
     {
+      exchangeMonitor.AddAlias("TetherUS", "Tether");
+
       ApiClient api = new ApiClient(null, null);
       client = new BinanceClient(api);
     }
@@ -53,7 +55,7 @@ namespace CrypConnect
         AddTicker(product.baseAsset, baseCoin, false);
         Coin quoteCoin = Coin.CreateFromName(product.quoteAssetName);
         AddTicker(product.quoteAsset, quoteCoin, false);
-        quoteCoin.UpdatePairStatus(this, baseCoin, isInactive);
+        baseCoin?.UpdatePairStatus(this, quoteCoin, isInactive);
       }
     }
 

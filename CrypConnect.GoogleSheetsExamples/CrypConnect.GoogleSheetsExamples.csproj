@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutCoin.cs" />
     <Compile Include="GoogleSheet.cs" />
     <Compile Include="GoogleSheetPriceMonitor.cs" />
     <Compile Include="Program.cs" />

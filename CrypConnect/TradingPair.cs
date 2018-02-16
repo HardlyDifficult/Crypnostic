@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace CrypConnect
@@ -63,7 +64,7 @@ namespace CrypConnect
     {
       get
       {
-        return _isInactive;
+        return _isInactive || askPrice == 0 && bidPrice == 0;
       }
       set
       {
@@ -82,15 +83,21 @@ namespace CrypConnect
       Exchange exchange,
       Coin baseCoin,
       Coin quoteCoin,
-      decimal AskPrice,
-      decimal BidPrice)
+      decimal askPrice,
+      decimal bidPrice,
+      bool isInactive = false)
     {
+      Debug.Assert(baseCoin != Coin.FromName("Ark"));
+      Debug.Assert(askPrice >= 0);
+      Debug.Assert(bidPrice >= 0);
+
       this.exchange = exchange;
       this.baseCoin = baseCoin;
       this.quoteCoin = quoteCoin;
-      this.askPrice = AskPrice;
-      this.bidPrice = BidPrice;
+      this.askPrice = askPrice;
+      this.bidPrice = bidPrice;
       this.lastUpdated = DateTime.Now;
+      this.isInactive = isInactive;
 
       quoteCoin.AddPair(this);
     }

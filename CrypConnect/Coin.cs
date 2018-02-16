@@ -63,6 +63,22 @@ namespace CrypConnect
     /// onPriceUpdated is also called anytime this event occurs.
     /// </summary>
     public event OnUpdate onNewTradingPairListed;
+
+    public bool hasValidTradingPairs
+    {
+      get
+      {
+        foreach (var pair in exchangeInfo)
+        {
+          if(pair.Value.isInactive == false)
+          {
+            return true;
+          }
+        }
+
+        return false;
+      }
+    }
     #endregion
 
     #region Private Data
@@ -73,6 +89,7 @@ namespace CrypConnect
 
     readonly Dictionary<(ExchangeName, Coin baseCoin), TradingPair> exchangeInfo
       = new Dictionary<(ExchangeName, Coin baseCoin), TradingPair>();
+
     #endregion
 
     #region Public Properties
@@ -95,6 +112,8 @@ namespace CrypConnect
       Debug.Assert(ExchangeMonitor.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()) == false);
       Debug.Assert(fullName.Equals("Ether", StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullName.Equals("BTC", StringComparison.InvariantCultureIgnoreCase) == false);
+      Debug.Assert(fullName.Equals("TetherUS", StringComparison.InvariantCultureIgnoreCase) == false);
+      Debug.Assert(fullName.Equals("USDT", StringComparison.InvariantCultureIgnoreCase) == false);
 
       this.fullName = fullName;
       this.fullNameLower = fullName.ToLowerInvariant();
@@ -189,7 +208,17 @@ namespace CrypConnect
           continue;
         }
 
+        if(pair.Value.isInactive)
+        { // Ignore inactive pairs
+          continue;
+        }
+
         decimal value = sellVsBuy ? pair.Value.bidPrice : pair.Value.askPrice;
+        if(value <= 0)
+        { // No bid/ask to consider here
+          continue;
+        }
+
         if (bestValue == null
           || sellVsBuy && value > bestValue.Value
           || sellVsBuy == false && value < bestValue.Value)
@@ -240,16 +269,20 @@ namespace CrypConnect
       return pair;
     }
 
-    // TODO all exchanges (vs cryptopia)
     internal void UpdatePairStatus(
       Exchange exchange,
       Coin baseCoin,
       bool isInactive)
     {
+      if(baseCoin == null)
+      { // May be a blacklisted coin
+        return;
+      }
+
       (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
       if (exchangeInfo.TryGetValue(key, out TradingPair pair) == false)
       {
-        pair = new TradingPair(exchange, baseCoin, this, 0, 0);
+        pair = new TradingPair(exchange, baseCoin, this, 0, 0, isInactive);
       }
 
       if (pair.isInactive != isInactive)

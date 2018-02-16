@@ -15,7 +15,12 @@ namespace CrypConnect.Exchanges
     public KucoinExchange(
       ExchangeMonitor exchangeMonitor)
       : base(exchangeMonitor, ExchangeName.Kucoin, 1_000_000 / 1_440, "https://api.kucoin.com")
-    { }
+    {
+      exchangeMonitor.AddAlias("USDT", "Tether");
+      exchangeMonitor.AddAlias("Raiden Network", "Raiden Network Token");
+      exchangeMonitor.AddAlias("Request", "Request Network");
+      exchangeMonitor.AddAlias("TenXPay", "TenX");
+    }
 
     public override async Task LoadTickerNames()
     {

@@ -31,5 +31,22 @@ namespace CrypConnect.Tests
       int count = omg.allTradingPairs.Count();
       Assert.IsTrue(count >= 5); // ~2 each (BTC and ETH)
     }
+
+    [TestMethod()]
+    public void BitcoinPairs()
+    {
+      monitor = new ExchangeMonitor(
+        new ExchangeMonitorConfig(
+          ExchangeName.Binance,
+          ExchangeName.Cryptopia,
+          ExchangeName.Kucoin));
+
+      Coin ark = Coin.FromName("Ark");
+      TradingPair pair = Coin.bitcoin.Best(ark, true);
+      Assert.IsTrue(pair == null);
+
+      TradingPair otherPair = ark.Best(Coin.bitcoin, true);
+      Assert.IsTrue(otherPair != null);
+    }
   }
 }

@@ -67,17 +67,17 @@ namespace CrypConnect
         AddAlias(aliasToName.Key, aliasToName.Value);
       }
 
+      foreach (string blacklistedCoin in config.blacklistedCoins)
+      {
+        blacklistedFullNameLowerList.Add(blacklistedCoin.ToLowerInvariant());
+      }
+
       exchangeList = new Exchange[config.supportedExchangeList.Length];
       for (int i = 0; i < config.supportedExchangeList.Length; i++)
       {
         ExchangeName name = config.supportedExchangeList[i];
         Exchange exchange = Exchange.LoadExchange(this, name);
         exchangeList[i] = exchange;
-      }
-
-      foreach (string blacklistedCoin in config.blacklistedCoins)
-      {
-        blacklistedFullNameLowerList.Add(blacklistedCoin.ToLowerInvariant());
       }
 
       CompleteFirstLoad().Wait();

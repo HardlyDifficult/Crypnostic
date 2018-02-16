@@ -13,6 +13,14 @@ namespace CrypConnect.Exchanges
   /// </remarks>
   internal class IdexExchange : RestExchange
   {
+    public override bool supportsOverlappingBooks
+    {
+      get
+      { // Not common, but does happen
+        return true;
+      }
+    }
+
     /// <summary>
     /// No stated throttle limit, going with the same as Crytpopia
     /// </summary>
@@ -29,6 +37,14 @@ namespace CrypConnect.Exchanges
         );
       exchangeMonitor.AddAlias("Ether", "Ethereum");
       exchangeMonitor.AddAlias("OMGToken", "OmiseGO");
+      exchangeMonitor.AddAlias("Digix DAO", "DigixDAO");
+      exchangeMonitor.AddAlias("Kyber", "Kyber Network");
+      exchangeMonitor.AddAlias("Poet", "Po.et");
+      exchangeMonitor.AddAlias("Raiden", "Raiden Network Token");
+      exchangeMonitor.AddAlias("Ripio", "Ripio Credit Network");
+      exchangeMonitor.AddAlias("Singularity.net", "SingularityNET");
+      exchangeMonitor.AddAlias("SALT Lending", "SALT");
+      exchangeMonitor.AddAlias("StorjToken", "Storj");
     }
 
     public override async Task LoadTickerNames()
