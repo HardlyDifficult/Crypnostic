@@ -6,6 +6,7 @@ namespace CrypConnect
   {
     public readonly decimal price;
 
+    // TODO what do we do about the fact not all exchanges get this at the same time? e.g. idex
     public readonly decimal volume;
 
     public readonly DateTime dateCreated;

@@ -58,6 +58,8 @@
     <Compile Include="Exchanges\GDax\GDaxTickerNameListJson.cs" />
     <Compile Include="Exchanges\Idex\IdexExchange.cs" />
     <Compile Include="Exchanges\Idex\IdexJson.cs" />
+    <Compile Include="Exchanges\AEX\AEXExchange.cs" />
+    <Compile Include="Exchanges\AEX\AEXJson.cs" />
     <Compile Include="Exchanges\Kucoin\KucoinExchange.cs" />
     <Compile Include="Exchanges\EtherDelta\EtherDeltaExchange.cs" />
     <Compile Include="Exchanges\Binance\BinanceExchange.cs" />

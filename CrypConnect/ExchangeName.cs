@@ -11,6 +11,7 @@ namespace CrypConnect
     Binance, Cryptopia, EtherDelta,
     Kucoin,
     GDax,
-    Idex
+    Idex,
+    AEX
   }
 }

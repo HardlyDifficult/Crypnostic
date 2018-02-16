@@ -79,6 +79,8 @@ namespace CrypConnect
           return new GDaxExchange(exchangeMonitor);
         case ExchangeName.Idex:
           return new IdexExchange(exchangeMonitor);
+        case ExchangeName.AEX:
+          return new AEXExchange(exchangeMonitor);
         default:
           Debug.Fail("Missing Exchange");
           return null;

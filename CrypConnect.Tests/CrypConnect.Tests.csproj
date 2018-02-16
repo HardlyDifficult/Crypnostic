@@ -63,6 +63,7 @@
     <Compile Include="Exchanges\CryptopiaTests.cs" />
     <Compile Include="Exchanges\EtherDeltaTests.cs" />
     <Compile Include="Exchanges\GDaxTests.cs" />
+    <Compile Include="Exchanges\AEXTests.cs" />
     <Compile Include="Exchanges\IdexTests.cs" />
     <Compile Include="Exchanges\KucoinTests.cs" />
     <Compile Include="Exchanges\BinanceTests.cs" />
