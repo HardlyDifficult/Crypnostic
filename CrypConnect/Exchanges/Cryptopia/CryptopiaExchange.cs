@@ -27,12 +27,21 @@ namespace CrypConnect
       : base(exchangeMonitor, ExchangeName.Cryptopia, 1_000_000 / 1_440)
     {
       publicApi = new CryptopiaApiPublic();
+      AddBlacklistedTicker(
+        "Trinity" // This is not TNC
+        );
+
       exchangeMonitor.AddAlias("MyWishToken", "MyWish");
       exchangeMonitor.AddAlias("BCash", "Bitcoin Cash");
       exchangeMonitor.AddAlias("KyberNetworkCrystal", "Kyber Network");
-      exchangeMonitor.AddAlias("NewEconomyMovement", "New Economy Movement");
-      exchangeMonitor.AddAlias("OysterPearl", "Oyster Pearl");
+      exchangeMonitor.AddAlias("NewEconomyMovement", "NEM");
+      exchangeMonitor.AddAlias("OysterPearl", "Oyster");
       exchangeMonitor.AddAlias("Tronix", "TRON");
+      exchangeMonitor.AddAlias("BlockMason", "BlockMason Credit Protocol");
+      exchangeMonitor.AddAlias("GeneChain", "EncrypGen");
+      exchangeMonitor.AddAlias("Iquant Chain", "iQuant");
+      exchangeMonitor.AddAlias("NavCoin", "NAV Coin");
+      exchangeMonitor.AddAlias("WildCrypto", "Wild Crypto");
     }
 
     public override async Task LoadTickerNames()

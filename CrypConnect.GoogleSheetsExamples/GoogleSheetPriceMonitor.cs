@@ -9,14 +9,13 @@ namespace CrypConnect.GoogleSheetsExamples
 {
   /// <summary>
   /// TODO
-  ///  - Don't show coins with no pairs
-  ///  - What's up with the nzdollar and other markets i don't care for?
-  ///  - Ingest blacklist from sheets
-  ///  - Confirm Bitcoin and Ether
+  ///  - Add total 24-volume seen (and total from coinmarketcap)
+  ///     - or maybe the max of the two?
   /// </summary>
   public class GoogleSheetPriceMonitor
   {
-    const string tab = "CrypConnect";
+    const string dataDumpTab = "CrypConnect";
+    const string settingsTab = "CrypConnectSettings";
 
     readonly GoogleSheet sheet;
 
@@ -36,13 +35,19 @@ namespace CrypConnect.GoogleSheetsExamples
         ExchangeName.GDax,
         ExchangeName.Idex);
 
-      config.BlacklistCoins(
-        "Bitcoin Cash",
-        "Bitcoin God", 
-        "NZed",
-        "British Pound",
-        "Tether",
-        "Euro");
+      IList<IList<object>> settings = sheet.Read(settingsTab, "A:A");
+      List<string> blacklist = new List<string>();
+      foreach (var row in settings)
+      {
+        object blacklistData = row.FirstOrDefault();
+        if(blacklistData == null)
+        {
+          continue;
+        }
+        blacklist.Add((string)blacklistData);
+      }
+
+      config.BlacklistCoins(blacklist.ToArray());
 
       exchangeMonitor = new ExchangeMonitor(config);
 
@@ -110,7 +115,7 @@ namespace CrypConnect.GoogleSheetsExamples
         results.Add(new AboutCoin().ToArray());
       }
 
-      sheet.Write(tab, "A1", results);
+      sheet.Write(dataDumpTab, "A1", results);
     }
 
     AboutCoin DescribeCoin(
@@ -124,7 +129,7 @@ namespace CrypConnect.GoogleSheetsExamples
         return about;
       }
 
-      if(coin.hasValidTradingPairs == false)
+      if (coin.hasValidTradingPairs == false)
       {
         return null;
       }
@@ -191,6 +196,11 @@ namespace CrypConnect.GoogleSheetsExamples
       {
         about.columns[(int)Column.BestAskUSD] = bestUsdAsk.askPrice.ToString();
         about.columns[(int)Column.BestAskUSDExchange] = bestUsdAsk.exchange.exchangeName.ToString();
+      }
+
+      if (coin.coinMarketCapData != null)
+      {
+        about.columns[(int)Column.MarketCapUSD] = coin.coinMarketCapData.market_cap_usd ?? "?";
       }
 
       return about;

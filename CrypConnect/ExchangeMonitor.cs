@@ -53,6 +53,8 @@ namespace CrypConnect
     /// </summary>
     internal readonly Dictionary<string, Coin> fullNameLowerToCoin
       = new Dictionary<string, Coin>();
+
+    readonly CoinMarketCapAPI coinMarketCap = new CoinMarketCapAPI();
     #endregion
 
     #region Init
@@ -87,6 +89,7 @@ namespace CrypConnect
     {
       List<Task> taskList = new List<Task>();
 
+      taskList.Add(coinMarketCap.Refresh());
       for (int i = 0; i < exchangeList.Length; i++)
       {
         taskList.Add(exchangeList[i].GetAllPairs(true));

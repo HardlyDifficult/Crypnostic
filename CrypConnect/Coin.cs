@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using CrypConnect.CoinMarketCap;
 using HD;
 
 namespace CrypConnect
@@ -38,6 +39,17 @@ namespace CrypConnect
       get
       {
         return Coin.FromName("United States Dollar");
+      }
+    }
+
+    /// <summary>
+    /// Reference to Litecoin, for convenience.
+    /// </summary>
+    public static Coin litecoin
+    {
+      get
+      {
+        return Coin.FromName("Litecoin");
       }
     }
     #endregion
@@ -79,6 +91,8 @@ namespace CrypConnect
         return false;
       }
     }
+
+    public CoinMarketCapTickerJson coinMarketCapData;
     #endregion
 
     #region Private Data

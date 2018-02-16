@@ -35,6 +35,14 @@ namespace CrypConnect
           "https://www.binance.com")
     {
       exchangeMonitor.AddAlias("TetherUS", "Tether");
+      exchangeMonitor.AddAlias("KyberNetwork", "Kyber Network");
+      exchangeMonitor.AddAlias("EnjinCoin", "Enjin Coin");
+      exchangeMonitor.AddAlias("iExecRLC", "iExec RLC");
+      exchangeMonitor.AddAlias("MIOTA", "IOTA");
+      exchangeMonitor.AddAlias("NeoGas", "Gas");
+      exchangeMonitor.AddAlias("PowerLedger", "Power Ledger");
+      exchangeMonitor.AddAlias("Stellar Lumens", "Stellar");
+      exchangeMonitor.AddAlias("Walton", "Waltonchain");
 
       ApiClient api = new ApiClient(null, null);
       client = new BinanceClient(api);

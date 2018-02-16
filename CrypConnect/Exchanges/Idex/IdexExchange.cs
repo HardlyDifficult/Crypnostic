@@ -45,6 +45,25 @@ namespace CrypConnect.Exchanges
       exchangeMonitor.AddAlias("Singularity.net", "SingularityNET");
       exchangeMonitor.AddAlias("SALT Lending", "SALT");
       exchangeMonitor.AddAlias("StorjToken", "Storj");
+      exchangeMonitor.AddAlias("BNB", "Binance Coin");
+      exchangeMonitor.AddAlias("Blockarray", "Block Array");
+      exchangeMonitor.AddAlias("Decent.Bet", "DecentBet");
+      exchangeMonitor.AddAlias("Flixx", "Flixxo");
+      exchangeMonitor.AddAlias("Gene-Chain Coin", "EncrypGen");
+      exchangeMonitor.AddAlias("Hawala Today", "Hawala.Today");
+      exchangeMonitor.AddAlias("iExec", "iExec RLC");
+      exchangeMonitor.AddAlias("IOS", "IOStoken");
+      exchangeMonitor.AddAlias("IQT", "iQuant");
+      exchangeMonitor.AddAlias("ITT", "Intelligent Trading Tech");
+      exchangeMonitor.AddAlias("Moeda", "Moeda Loyalty Points");
+      exchangeMonitor.AddAlias("Ormeus", "OrmeusCoin");
+      exchangeMonitor.AddAlias("QRL", "Quantum Resistant Ledger");
+      exchangeMonitor.AddAlias("RHOC", "RChain");
+      exchangeMonitor.AddAlias("RvT", "Rivetz");
+      exchangeMonitor.AddAlias("SIRIN LABS", "SIRIN LABS Token");
+      exchangeMonitor.AddAlias("Trade.io", "Trade Token");
+      exchangeMonitor.AddAlias("WePower Token", "WePower");
+      exchangeMonitor.AddAlias("WILD", "Wild Crypto");
     }
 
     public override async Task LoadTickerNames()

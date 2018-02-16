@@ -68,7 +68,9 @@ namespace CrypConnect
       }
       set
       {
-        if (isInactive == value)
+        Debug.Assert(baseCoin != Coin.litecoin || value); // This may not hold 
+
+        if (_isInactive == value)
         { // No change
           return;
         }
@@ -90,6 +92,7 @@ namespace CrypConnect
       Debug.Assert(baseCoin != Coin.FromName("Ark"));
       Debug.Assert(askPrice >= 0);
       Debug.Assert(bidPrice >= 0);
+      Debug.Assert(baseCoin != Coin.litecoin || isInactive); // This may not hold 
 
       this.exchange = exchange;
       this.baseCoin = baseCoin;

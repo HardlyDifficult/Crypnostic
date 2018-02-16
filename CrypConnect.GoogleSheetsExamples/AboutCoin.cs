@@ -23,6 +23,8 @@ namespace CrypConnect.GoogleSheetsExamples
       BestBidUSDExchange,
       BestAskUSD,
       BestAskUSDExchange,
+      MarketCapUSD,
+      TotalVolumeSeen
     }
 
     public readonly string[] columns;

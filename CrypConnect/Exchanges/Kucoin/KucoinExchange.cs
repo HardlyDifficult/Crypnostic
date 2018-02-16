@@ -20,6 +20,12 @@ namespace CrypConnect.Exchanges
       exchangeMonitor.AddAlias("Raiden Network", "Raiden Network Token");
       exchangeMonitor.AddAlias("Request", "Request Network");
       exchangeMonitor.AddAlias("TenXPay", "TenX");
+      exchangeMonitor.AddAlias("CanYa", "CanYaCoin");
+      exchangeMonitor.AddAlias("BlockMason", "BlockMason Credit Protocol");
+      exchangeMonitor.AddAlias("High Performance Blockch", "High Performance Blockchain");
+      exchangeMonitor.AddAlias("NeoGas", "Gas");
+      exchangeMonitor.AddAlias("Oyster Pearl", "Oyster");
+      exchangeMonitor.AddAlias("Trinity", "Trinity Network Credit");
     }
 
     public override async Task LoadTickerNames()

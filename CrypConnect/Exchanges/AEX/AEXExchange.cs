@@ -27,6 +27,8 @@ namespace CrypConnect.Exchanges
       client = new RestClient("https://www.aex.com");
       exchangeMonitor.AddAlias("BitcoinGod", "Bitcoin God");
       exchangeMonitor.AddAlias("Tether USD", "Tether");
+      exchangeMonitor.AddAlias("CanYa", "CanYaCoin");
+      exchangeMonitor.AddAlias("New Economy Movement", "NEM");
     }
 
     public override async Task LoadTickerNames()
