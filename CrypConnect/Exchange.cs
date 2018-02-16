@@ -280,8 +280,19 @@ namespace CrypConnect
       { // May be missing due to coin filtering (e.g. no Tether)
         return null;
       }
+
+      return AddTradingPair(baseCoin, quoteCoinTicker, askPrice, bidPrice, isInactive);
+    }
+
+    public TradingPair AddTradingPair(
+      Coin baseCoin,
+      string quoteCoinTicker,
+      decimal askPrice,
+      decimal bidPrice,
+      bool? isInactive)
+    {
       if (tickerLowerToCoin.TryGetValue(quoteCoinTicker.ToLowerInvariant(),
-        out Coin quoteCoin) == false)
+              out Coin quoteCoin) == false)
       { // May be missing due to book's listing status
         return null;
       }
