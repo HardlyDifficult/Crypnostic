@@ -63,12 +63,12 @@ namespace CrypConnect.GoogleSheetsExamples
     public void Write(
       string tab,
       string range, 
-      params string[][] valueList)
+      List<string[]> valueList)
     {
       string writeRange = $"{tab}!{range}";
 
       ValueRange valueRange = new ValueRange();
-      valueRange.Values = valueList;
+      valueRange.Values = valueList.ToArray();
       SpreadsheetsResource.ValuesResource.UpdateRequest updateRequest =
         new SpreadsheetsResource.ValuesResource.UpdateRequest(service,
         valueRange,

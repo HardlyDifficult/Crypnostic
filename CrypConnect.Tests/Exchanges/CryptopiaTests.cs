@@ -18,6 +18,16 @@ namespace CrypConnect.Tests.Exchanges
     }
 
     [TestMethod()]
+    public void CryptopiaMyWish()
+    {
+      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.Cryptopia);
+      monitor = new ExchangeMonitor(config);
+      Coin wish = Coin.FromName("MyWish");
+      TradingPair pair = wish.Best(Coin.bitcoin, true);
+      Assert.IsTrue(pair.askPrice > 0);
+    }
+
+    [TestMethod()]
     public void CryptopiaClosedBooks()
     {
       monitor = new ExchangeMonitor(

@@ -27,6 +27,7 @@ namespace CrypConnect
       : base(exchangeMonitor, ExchangeName.Cryptopia, 1_000_000 / 1_440)
     {
       publicApi = new CryptopiaApiPublic();
+      exchangeMonitor.AddAlias("MyWishToken", "MyWish");
     }
 
     public override async Task LoadTickerNames()

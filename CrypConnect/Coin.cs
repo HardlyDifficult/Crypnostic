@@ -89,6 +89,7 @@ namespace CrypConnect
     Coin(
       string fullName)
     {
+      Debug.Assert(ExchangeMonitor.instance.fullNameLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
       Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
       Debug.Assert(ExchangeMonitor.instance.aliasLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
       Debug.Assert(ExchangeMonitor.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()) == false);
