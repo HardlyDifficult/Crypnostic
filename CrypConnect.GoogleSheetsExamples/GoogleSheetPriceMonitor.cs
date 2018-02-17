@@ -18,6 +18,10 @@ namespace CrypConnect.GoogleSheetsExamples
   {
     const string dataDumpTab = "CrypConnect";
     const string settingsTab = "CrypConnectSettings";
+    const string arbAlarmTab = "ArbAlarm";
+
+    const decimal arbPurchasePriceETH = .5m;
+    const decimal arbPurchasePriceBTC = .05m;
 
     readonly GoogleSheet sheet;
 
@@ -45,7 +49,8 @@ namespace CrypConnect.GoogleSheetsExamples
         ExchangeName.Kucoin,
         ExchangeName.AEX,
         ExchangeName.GDax,
-        ExchangeName.Idex);
+        ExchangeName.Idex
+        );
       IList<IList<object>> settings = await sheet.Read(settingsTab, "A:A");
       List<string> blacklist = new List<string>();
       foreach (var row in settings)
@@ -70,30 +75,12 @@ namespace CrypConnect.GoogleSheetsExamples
       ElapsedEventArgs e)
     {
       await DumpAllCoinsAndStats();
+      await RefreshArb();
       await ConsiderAlarming();
 
       Console.Write(".");
 
       refreshTimer.Start();
-    }
-
-    async Task ConsiderAlarming()
-    {
-      IList<IList<object>> alarmData = await sheet.Read(settingsTab, "B2");
-      if (alarmData.Count > 0
-        && alarmData[0].Count > 0
-        && alarmData[0][0] != null)
-      {
-        if (int.TryParse(alarmData[0][0].ToString(), out int alarmCount))
-        {
-          if (alarmCount > 0)
-          {
-            SoundPlayer player = new SoundPlayer(
-            @"d:\\StreamAssets\\HeyLISTEN.wav");
-            player.Play();
-          }
-        }
-      }
     }
 
     async Task DumpAllCoinsAndStats()
@@ -120,6 +107,103 @@ namespace CrypConnect.GoogleSheetsExamples
       }
 
       await sheet.Write(dataDumpTab, "A1", results);
+    }
+
+    async Task RefreshArb()
+    {
+      IList<IList<object>> results = await sheet.Read(arbAlarmTab, "B:K");
+
+      List<string[]> dataToWrite = new List<string[]>(results.Count);
+
+      TradingPair bestBtcUsdAsk = Coin.bitcoin.Best(Coin.usd, false);
+      TradingPair bestBtcUsdBid = Coin.bitcoin.Best(Coin.usd, true);
+      TradingPair bestEthUsdAsk = Coin.ethereum.Best(Coin.usd, false);
+      TradingPair bestEthUsdBid = Coin.ethereum.Best(Coin.usd, true);
+
+      for (int iRow = 0; iRow < results.Count; iRow++)
+      {
+        dataToWrite.Add(new string[2]
+        {
+          "",""
+        });
+
+        IList<object> row = results[iRow];
+        if (row[9]?.ToString() == "TRUE")
+        {
+          string coinName = row[0].ToString();
+          Coin quoteCoin = Coin.FromName(coinName);
+          string bidExchangeName = row[2].ToString();
+          ExchangeName bidExchange = (ExchangeName)Enum.Parse(typeof(ExchangeName),
+            bidExchangeName);
+          string bidCurrencyName = row[3].ToString();
+          Coin bidBaseCoin = Coin.FromName(bidCurrencyName);
+
+          string askExchangeName = row[5].ToString();
+          ExchangeName askExchange = (ExchangeName)Enum.Parse(typeof(ExchangeName),
+            askExchangeName);
+          string askCurrencyName = row[6].ToString();
+          Coin askBaseCoin = Coin.FromName(askCurrencyName);
+
+          decimal purchasePriceInBase;
+          if (askBaseCoin == Coin.ethereum)
+          {
+            purchasePriceInBase = arbPurchasePriceETH;
+          }
+          else
+          {
+            purchasePriceInBase = arbPurchasePriceBTC;
+          }
+
+          (decimal purchaseAmount, decimal quantity) = await quoteCoin.CalcPurchasePrice(
+            askExchange, askBaseCoin,
+            purchasePriceInBase: purchasePriceInBase);
+          if (askBaseCoin == Coin.bitcoin)
+          {
+            purchaseAmount *= bestBtcUsdAsk.askPrice;
+          }
+          else
+          {
+            purchaseAmount *= bestEthUsdAsk.askPrice;
+          }
+
+          decimal sellAmount = await quoteCoin.CalcSellPrice(
+            bidExchange, bidBaseCoin,
+            quantityOfCoin: quantity);
+          if (bidBaseCoin == Coin.bitcoin)
+          {
+            sellAmount *= bestBtcUsdBid.bidPrice;
+          }
+          else
+          {
+            purchaseAmount *= bestEthUsdBid.bidPrice;
+          }
+
+          dataToWrite[iRow][0] = purchaseAmount.ToString();
+          dataToWrite[iRow][1] = sellAmount.ToString();
+        }
+      }
+
+
+      await sheet.Write(arbAlarmTab, "L:M", dataToWrite);
+    }
+
+    async Task ConsiderAlarming()
+    {
+      IList<IList<object>> alarmData = await sheet.Read(settingsTab, "B2");
+      if (alarmData.Count > 0
+        && alarmData[0].Count > 0
+        && alarmData[0][0] != null)
+      {
+        if (int.TryParse(alarmData[0][0].ToString(), out int alarmCount))
+        {
+          if (alarmCount > 0)
+          {
+            SoundPlayer player = new SoundPlayer(
+            @"d:\\StreamAssets\\HeyLISTEN.wav");
+            player.Play();
+          }
+        }
+      }
     }
 
     AboutCoin DescribeCoin(

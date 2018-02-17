@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using CrypConnect.CoinMarketCap;
 using HD;
 
@@ -256,6 +257,64 @@ namespace CrypConnect
       }
 
       return bestPair;
+    }
+
+    // TODO no tuple?
+    public async Task<(decimal purchaseAmount, decimal quantity)> CalcPurchasePrice(
+      ExchangeName askExchange,
+      Coin askBaseCoin,
+      decimal purchasePriceInBase)
+    {
+      decimal purchaseAmount = 0;
+      decimal quantity = 0;
+
+      Exchange exchange = ExchangeMonitor.instance.FindExchange(askExchange);
+      OrderBook orderBook = await exchange.GetOrderBook(this, askBaseCoin);
+
+      for (int i = 0; i < orderBook.asks.Length; i++)
+      {
+        Order order = orderBook.asks[i];
+        decimal purchaseAmountFromOrder = Math.Min(purchasePriceInBase, 
+          order.price * order.volume);
+
+        purchaseAmount += purchaseAmountFromOrder;
+        quantity += purchaseAmountFromOrder / order.price;
+        purchasePriceInBase -= purchaseAmountFromOrder;
+
+        if(purchasePriceInBase <= 0)
+        {
+          break;
+        }
+      }
+
+      return (purchaseAmount, quantity);
+    }
+
+    public async Task<decimal> CalcSellPrice(
+      ExchangeName bidExchange, 
+      Coin bidBaseCoin, 
+      decimal quantityOfCoin)
+    {
+      decimal sellAmount = 0;
+
+      Exchange exchange = ExchangeMonitor.instance.FindExchange(bidExchange);
+      OrderBook orderBook = await exchange.GetOrderBook(this, bidBaseCoin);
+
+      for (int i = 0; i < orderBook.bids.Length; i++)
+      {
+        Order order = orderBook.bids[i];
+        decimal sellAmountFromOrder = Math.Min(quantityOfCoin, order.volume);
+
+        sellAmount += sellAmountFromOrder * order.price;
+        quantityOfCoin -= sellAmountFromOrder;
+
+        if (quantityOfCoin <= 0)
+        {
+          break;
+        }
+      }
+
+      return sellAmount;
     }
 
     public bool IsActiveOn(
