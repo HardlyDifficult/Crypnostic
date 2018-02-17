@@ -175,7 +175,7 @@ namespace CrypConnect.GoogleSheetsExamples
           }
           else
           {
-            purchaseAmount *= bestEthUsdBid.bidPrice;
+            sellAmount *= bestEthUsdBid.bidPrice;
           }
 
           dataToWrite[iRow][0] = purchaseAmount.ToString();

@@ -203,7 +203,7 @@ namespace CrypConnect
       Coin quoteCoin,
       Coin baseCoin)
     {
-      if(coinToTickerLower.TryGetValue(quoteCoin, out string quoteCoinTicker) == false
+      if (coinToTickerLower.TryGetValue(quoteCoin, out string quoteCoinTicker) == false
         || coinToTickerLower.TryGetValue(baseCoin, out string baseCoinTicker) == false)
       {
         return null;
@@ -228,7 +228,7 @@ namespace CrypConnect
 
       string pairId = GetPairId(quoteCoin, baseCoin);
       orderBook = await GetOrderBookInternal(pairId);
-      orderBookList.Add(key, orderBook);
+      orderBookList[key] = orderBook;
 
       return orderBook;
     }
@@ -370,7 +370,7 @@ namespace CrypConnect
     protected Coin CreateFromName(
       string name)
     {
-      if(blacklistedTickerLower.Contains(name.ToLowerInvariant()))
+      if (blacklistedTickerLower.Contains(name.ToLowerInvariant()))
       {
         return null;
       }

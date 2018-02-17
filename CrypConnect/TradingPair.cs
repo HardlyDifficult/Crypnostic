@@ -68,7 +68,7 @@ namespace CrypConnect
       }
       set
       {
-        Debug.Assert(baseCoin != Coin.litecoin || value); // This may not hold 
+        //Debug.Assert(baseCoin != Coin.litecoin || value); // This may not hold 
 
         if (_isInactive == value)
         { // No change
