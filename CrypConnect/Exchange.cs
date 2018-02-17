@@ -38,6 +38,14 @@ namespace CrypConnect
     }
     #endregion
 
+
+
+    readonly Dictionary<(Coin quoteCoin, Coin baseCoin), OrderBook> orderBookList
+      = new Dictionary<(Coin quoteCoin, Coin baseCoin), OrderBook>();
+
+    static readonly TimeSpan timeBetweenOrderBookUpdates
+      = TimeSpan.FromSeconds(30); // TODO config
+
     #region Data
     protected readonly ExchangeMonitor exchangeMonitor;
 
@@ -71,8 +79,8 @@ namespace CrypConnect
           return new BinanceExchange(exchangeMonitor);
         case ExchangeName.Cryptopia:
           return new CryptopiaExchange(exchangeMonitor);
-        case ExchangeName.EtherDelta:
-          return new EtherDeltaExchange(exchangeMonitor);
+        //case ExchangeName.EtherDelta:
+        //  return new EtherDeltaExchange(exchangeMonitor);
         case ExchangeName.Kucoin:
           return new KucoinExchange(exchangeMonitor);
         case ExchangeName.GDax:
@@ -190,10 +198,46 @@ namespace CrypConnect
 
       return tickerLowerToCoin.ContainsValue(coin);
     }
+
+    public string GetPairId(
+      Coin quoteCoin,
+      Coin baseCoin)
+    {
+      if(coinToTickerLower.TryGetValue(quoteCoin, out string quoteCoinTicker) == false
+        || coinToTickerLower.TryGetValue(baseCoin, out string baseCoinTicker) == false)
+      {
+        return null;
+      }
+
+      return GetPairId(quoteCoinTicker, baseCoinTicker);
+    }
+
+    public async Task<OrderBook> GetOrderBook(
+      Coin quoteCoin,
+      Coin baseCoin)
+    {
+      Debug.Assert(coinToTickerLower.ContainsKey(quoteCoin));
+      Debug.Assert(coinToTickerLower.ContainsKey(baseCoin));
+
+      (Coin, Coin) key = (quoteCoin, baseCoin);
+      orderBookList.TryGetValue(key, out OrderBook orderBook);
+      if ((DateTime.Now - orderBook.dateCreated) < timeBetweenOrderBookUpdates)
+      {
+        return orderBook;
+      }
+
+      string pairId = GetPairId(quoteCoin, baseCoin);
+      orderBook = await GetOrderBookInternal(pairId);
+      orderBookList.Add(key, orderBook);
+
+      return orderBook;
+    }
+
+    protected abstract Task<OrderBook> GetOrderBookInternal(
+      string pairId);
     #endregion
 
     #region Helpers
-
     /// <summary>
     /// This is called during init and then refreshed periodically.
     /// You can also call this anytime for a manual refresh (subject to throttling).
@@ -322,6 +366,17 @@ namespace CrypConnect
     protected abstract string GetPairId(
       string quoteSymbol,
       string baseSymbol);
+
+    protected Coin CreateFromName(
+      string name)
+    {
+      if(blacklistedTickerLower.Contains(name.ToLowerInvariant()))
+      {
+        return null;
+      }
+
+      return Coin.CreateFromName2(name);
+    }
     #endregion
   }
 }

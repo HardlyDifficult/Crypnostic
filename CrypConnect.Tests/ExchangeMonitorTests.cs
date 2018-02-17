@@ -7,15 +7,51 @@ using System.Threading.Tasks;
 
 namespace CrypConnect.Tests
 {
-  public abstract class ExchangeMonitorTests
+  public abstract class ExchangeMonitorTests : MonitorTests
   {
-    protected ExchangeMonitor monitor;
-
-    [TestCleanup]
-    public void Cleanup()
+    protected abstract ExchangeName exchangeName
     {
-      monitor.Stop();
-      monitor = null;
+      get;
     }
+    
+    protected abstract Coin popularQuoteCoin
+    {
+      get;
+    }
+
+    protected abstract Coin popularBaseCoin
+    {
+      get;
+    }
+
+    [TestMethod()]
+    public void BasicExchange()
+    {
+      ExchangeMonitorConfig config = new ExchangeMonitorConfig(exchangeName);
+      monitor = new ExchangeMonitor(config);
+      TradingPair pair = popularQuoteCoin.Best(popularBaseCoin, true);
+      Assert.IsTrue(pair.askPrice > 0);
+    }
+
+    [TestMethod()]
+    public async Task OrderBook()
+    {
+      ExchangeMonitorConfig config = new ExchangeMonitorConfig(exchangeName);
+      monitor = new ExchangeMonitor(config);
+      Exchange exchange = monitor.FindExchange(exchangeName);
+
+      OrderBook orderBook = await exchange.GetOrderBook(popularQuoteCoin, popularBaseCoin);
+      Assert.IsTrue(orderBook.asks.Length > 0);
+      Assert.IsTrue(orderBook.asks[0].price > 0);
+      Assert.IsTrue(orderBook.asks[0].volume > 0);
+      Assert.IsTrue(orderBook.bids.Length > 0);
+      Assert.IsTrue(orderBook.bids[0].price > 0);
+      Assert.IsTrue(orderBook.bids[0].volume > 0);
+
+      Assert.IsTrue(orderBook.asks[0].price >= orderBook.bids[0].price);
+      Assert.IsTrue(orderBook.asks[1].price >= orderBook.asks[0].price);
+      Assert.IsTrue(orderBook.bids[0].price >= orderBook.bids[1].price);
+    }
+
   }
 }

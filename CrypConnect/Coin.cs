@@ -80,11 +80,24 @@ namespace CrypConnect
     {
       get
       {
+        bool hasBid = false;
+        bool hasAsk = false;
         foreach (var pair in exchangeInfo)
         {
-          if(pair.Value.isInactive == false)
+          if (pair.Value.isInactive == false)
           {
-            return true;
+            if (pair.Value.bidPrice > 0)
+            {
+              hasBid = true;
+            }
+            if (pair.Value.askPrice > 0)
+            {
+              hasAsk = true;
+            }
+            if (hasBid && hasAsk)
+            {
+              return true;
+            }
           }
         }
 
@@ -138,23 +151,23 @@ namespace CrypConnect
     public static Coin FromName(
       string fullName)
     {
-      return CreateFromName(fullName, true);
+      return CreateFromName2(fullName, true);
     }
 
-    internal static Coin CreateFromName(
+    internal static Coin CreateFromName2(
       string fullName,
       bool skipCreationIfDoesNotExist = false)
     {
-      // Alias
-      if (ExchangeMonitor.instance.aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
-      {
-        return coin;
-      }
-
       // Blacklist
       if (ExchangeMonitor.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()))
       {
         return null;
+      }
+
+      // Alias
+      if (ExchangeMonitor.instance.aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
+      {
+        return coin;
       }
 
       // Existing Coin
@@ -163,7 +176,7 @@ namespace CrypConnect
         return coin;
       }
 
-      if(skipCreationIfDoesNotExist)
+      if (skipCreationIfDoesNotExist)
       {
         return null;
       }
@@ -222,13 +235,13 @@ namespace CrypConnect
           continue;
         }
 
-        if(pair.Value.isInactive)
+        if (pair.Value.isInactive)
         { // Ignore inactive pairs
           continue;
         }
 
         decimal value = sellVsBuy ? pair.Value.bidPrice : pair.Value.askPrice;
-        if(value <= 0)
+        if (value <= 0)
         { // No bid/ask to consider here
           continue;
         }
@@ -288,7 +301,7 @@ namespace CrypConnect
       Coin baseCoin,
       bool isInactive)
     {
-      if(baseCoin == null)
+      if (baseCoin == null)
       { // May be a blacklisted coin
         return;
       }

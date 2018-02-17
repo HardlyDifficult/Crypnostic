@@ -8,12 +8,28 @@ namespace CrypConnect.Tests.Exchanges
   [TestClass()]
   public class BinanceTests : ExchangeMonitorTests
   {
-    [TestMethod()]
-    public void Binance()
+    protected override ExchangeName exchangeName
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.Binance);
-      monitor = new ExchangeMonitor(config);
-      Assert.IsTrue(Coin.ethereum.Best(Coin.bitcoin, true).askPrice > 0);
+      get
+      {
+        return ExchangeName.Binance;
+      }
     }
+
+    protected override Coin popularBaseCoin
+    {
+      get
+      {
+        return Coin.bitcoin;
+      }
+    } 
+
+    protected override Coin popularQuoteCoin
+    {
+      get
+      {
+        return Coin.ethereum;
+      }
+    } 
   }
 }

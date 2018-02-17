@@ -33,7 +33,7 @@ namespace CrypConnect.CoinMarketCap
       for (int i = 0; i < resultList.Count; i++)
       {
         CoinMarketCapTickerJson ticker = resultList[i];
-        Coin coin = Coin.CreateFromName(ticker.name);
+        Coin coin = Coin.CreateFromName2(ticker.name);
         if(coin == null)
         { // Blacklisted
           continue;

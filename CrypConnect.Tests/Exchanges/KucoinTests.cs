@@ -9,12 +9,28 @@ namespace CrypConnect.Tests.Exchanges
   [TestClass()]
   public class KucoinTests : ExchangeMonitorTests
   {
-    [TestMethod()]
-    public void Kucoin()
+    protected override ExchangeName exchangeName
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.Kucoin);
-      monitor = new ExchangeMonitor(config);
-      Assert.IsTrue(Coin.ethereum.Best(Coin.bitcoin, true).askPrice > 0);
+      get
+      {
+        return ExchangeName.Kucoin;
+      }
     }
+
+    protected override Coin popularBaseCoin
+    {
+      get
+      {
+        return Coin.bitcoin; 
+      }
+    } 
+
+    protected override Coin popularQuoteCoin
+    {
+      get
+      {
+        return Coin.ethereum; 
+      }
+    } 
   }
 }

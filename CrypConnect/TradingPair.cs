@@ -92,7 +92,6 @@ namespace CrypConnect
       Debug.Assert(baseCoin != Coin.FromName("Ark"));
       Debug.Assert(askPrice >= 0);
       Debug.Assert(bidPrice >= 0);
-      Debug.Assert(baseCoin != Coin.litecoin || isInactive); // This may not hold 
 
       this.exchange = exchange;
       this.baseCoin = baseCoin;

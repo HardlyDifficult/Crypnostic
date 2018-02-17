@@ -3,35 +3,42 @@ using CrypConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CrypConnect.Tests.Exchanges
 {
   [TestClass()]
   public class CryptopiaTests : ExchangeMonitorTests
   {
-    [TestMethod()]
-    public void Cryptopia()
+    protected override ExchangeName exchangeName
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.Cryptopia);
-      monitor = new ExchangeMonitor(config);
-      Assert.IsTrue(Coin.ethereum.Best(Coin.bitcoin, true).askPrice > 0);
+      get
+      {
+        return ExchangeName.Cryptopia;
+      }
     }
 
-    [TestMethod()]
-    public void CryptopiaMyWish()
+    protected override Coin popularBaseCoin
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.Cryptopia);
-      monitor = new ExchangeMonitor(config);
-      Coin wish = Coin.FromName("MyWish");
-      TradingPair pair = wish.Best(Coin.bitcoin, true);
-      Assert.IsTrue(pair.askPrice > 0);
-    }
+      get
+      {
+        return Coin.bitcoin;
+      }
+    } 
+
+    protected override Coin popularQuoteCoin
+    {
+      get
+      {
+        return Coin.FromName("OmiseGO");
+      }
+    } 
 
     [TestMethod()]
     public void CryptopiaClosedBooks()
     {
       monitor = new ExchangeMonitor(
-        new ExchangeMonitorConfig(ExchangeName.Cryptopia));
+        new ExchangeMonitorConfig(exchangeName));
       Coin doge = Coin.FromName("Dogecoin");
       Assert.IsTrue(doge != null);
 

@@ -129,7 +129,7 @@ namespace CrypConnect
         return;
       }
 
-      Coin coin = Coin.CreateFromName(name);
+      Coin coin = Coin.CreateFromName2(name);
 
       aliasLowerToCoin.Add(alias, coin);
     }

@@ -6,7 +6,7 @@ using System.Linq;
 namespace CrypConnect.Tests
 {
   [TestClass()]
-  public class ExchangeTests : ExchangeMonitorTests
+  public class ExchangeTests : MonitorTests
   {
     [TestMethod()]
     public void AllExchanges()

@@ -69,6 +69,8 @@
     <Compile Include="Exchanges\Kucoin\KucoinJson.cs" />
     <Compile Include="ExchangeMonitor.cs" />
     <Compile Include="Exchanges\RestExchange.cs" />
+    <Compile Include="Order.cs" />
+    <Compile Include="OrderBook.cs" />
     <Compile Include="LastTrade.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TradingPair.cs" />

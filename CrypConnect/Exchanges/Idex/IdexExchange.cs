@@ -106,7 +106,7 @@ namespace CrypConnect.Exchanges
       {
         string ticker = product.Key;
         string fullName = product.Value.name;
-        Coin coin = Coin.CreateFromName(fullName);
+        Coin coin = CreateFromName(fullName);
         bool isInactive = false;
         AddTicker(ticker, coin, isInactive);
       }
@@ -152,7 +152,34 @@ namespace CrypConnect.Exchanges
       string quoteSymbol,
       string baseSymbol)
     {
-      return $"{quoteSymbol.ToUpperInvariant()}_{baseSymbol.ToUpperInvariant()}";
+      return $"{baseSymbol.ToUpperInvariant()}_{quoteSymbol.ToUpperInvariant()}";
+    }
+
+    protected override async Task<OrderBook> GetOrderBookInternal(
+     string pairId)
+    {
+      IdexRequestForMarket request = new IdexRequestForMarket();
+      request.market = pairId;
+      IdexDepthListJson depthJson = await Get<IdexDepthListJson>(
+        $"returnOrderBook", request);
+
+      Order[] bids = ExtractOrders(depthJson.Bids);
+      Order[] asks = ExtractOrders(depthJson.Asks);
+
+      return new OrderBook(asks, bids);
+    }
+
+    static Order[] ExtractOrders(
+      IdexDepthJson[] resultList)
+    {
+      Order[] orderList = new Order[resultList?.Length ?? 0];
+      for (int i = 0; i < orderList.Length; i++)
+      {
+        orderList[i] = new Order(decimal.Parse(resultList[i].Price), 
+          decimal.Parse(resultList[i].Amount));
+      }
+
+      return orderList;
     }
   }
 }

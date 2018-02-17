@@ -7,14 +7,28 @@ namespace CrypConnect.Tests.Exchanges
   [TestClass()]
   public class IdexTests : ExchangeMonitorTests
   {
-    [TestMethod()]
-    public void Idex()
+    protected override ExchangeName exchangeName
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(ExchangeName.Idex);
-      monitor = new ExchangeMonitor(config);
-      Coin omg = Coin.FromName("OmiseGO");
-      TradingPair pair = omg.Best(Coin.ethereum, true);
-      Assert.IsTrue(pair.askPrice > 0);
+      get
+      {
+        return ExchangeName.Idex;
+      }
     }
+
+    protected override Coin popularBaseCoin
+    {
+      get
+      {
+        return Coin.ethereum;
+      }
+    } 
+
+    protected override Coin popularQuoteCoin
+    {
+      get
+      {
+        return Coin.FromName("Polymath"); 
+      }
+    } 
   }
 }

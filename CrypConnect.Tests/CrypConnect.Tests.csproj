@@ -69,6 +69,7 @@
     <Compile Include="Exchanges\BinanceTests.cs" />
     <Compile Include="ExchangeMonitorTests.cs" />
     <Compile Include="ExchangeTests.cs" />
+    <Compile Include="MonitorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

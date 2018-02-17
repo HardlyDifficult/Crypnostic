@@ -8,7 +8,9 @@ namespace CrypConnect
 {
   public enum ExchangeName
   {
-    Binance, Cryptopia, EtherDelta,
+    Binance,
+    Cryptopia,
+    //EtherDelta,
     Kucoin,
     GDax,
     Idex,

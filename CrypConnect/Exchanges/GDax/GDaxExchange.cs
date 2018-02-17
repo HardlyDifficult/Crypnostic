@@ -28,7 +28,7 @@ namespace CrypConnect.Exchanges.GDax
         GDaxTickerNameJson product = productList[i];
         bool isInactive = product.status.Equals("online",
           StringComparison.InvariantCultureIgnoreCase) == false;
-        AddTicker(product.id, Coin.CreateFromName(product.name), isInactive);
+        AddTicker(product.id, CreateFromName(product.name), isInactive);
       }
     }
 
@@ -66,6 +66,30 @@ namespace CrypConnect.Exchanges.GDax
       string baseSymbol)
     {
       return $"{quoteSymbol}-{baseSymbol}";
+    }
+
+    protected override async Task<OrderBook> GetOrderBookInternal(
+     string pairId)
+    {
+      GDaxDepthListJson depthJson = await Get<GDaxDepthListJson>($"products/{pairId}/book?level=2");
+
+      Order[] bids = ExtractOrders(depthJson.bids);
+      Order[] asks = ExtractOrders(depthJson.asks);
+
+      return new OrderBook(asks, bids);
+    }
+
+    static Order[] ExtractOrders(
+      string[][] resultList)
+    {
+      Order[] orderList = new Order[resultList.Length];
+      for (int i = 0; i < orderList.Length; i++)
+      {
+        orderList[i] = new Order(decimal.Parse(resultList[i][0]),
+          decimal.Parse(resultList[i][1]));
+      }
+
+      return orderList;
     }
   }
 }

@@ -23,11 +23,12 @@ namespace CrypConnect.Exchanges
     }
 
     protected async Task<T> Get<T>(
-      string resource)
+      string resource,
+      object jsonObject = null)
       where T : new()
     {
       await throttle.WaitTillReady();
-      T result = await restClient.AsyncDownload<T>(resource, method: method);
+      T result = await restClient.AsyncDownload<T>(resource, method: method, jsonObject: jsonObject);
       throttle.SetLastUpdateTime();
       return result;
     }

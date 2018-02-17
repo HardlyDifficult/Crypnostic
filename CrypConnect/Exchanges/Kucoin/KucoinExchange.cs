@@ -36,7 +36,7 @@ namespace CrypConnect.Exchanges
       {
         string ticker = product.coin;
         string fullName = product.name;
-        Coin coin = Coin.CreateFromName(fullName);
+        Coin coin = CreateFromName(fullName);
         bool isInactive = product.enableDeposit == false || product.enableWithdraw == false;
         AddTicker(ticker, coin, isInactive);
       }
@@ -69,6 +69,30 @@ namespace CrypConnect.Exchanges
       string baseSymbol)
     {
       return $"{quoteSymbol.ToUpperInvariant()}-{baseSymbol.ToUpperInvariant()}";
+    }
+
+    protected override async Task<OrderBook> GetOrderBookInternal(
+     string pairId)
+    {
+      KucoinDepthListJson depthJson = await Get<KucoinDepthListJson>(
+        $"v1/open/orders?symbol={pairId}&limit=100");
+
+      Order[] bids = ExtractOrders(depthJson.data.BUY);
+      Order[] asks = ExtractOrders(depthJson.data.SELL);
+
+      return new OrderBook(asks, bids);
+    }
+
+    static Order[] ExtractOrders(
+      decimal[][] resultList)
+    {
+      Order[] orderList = new Order[resultList.Length];
+      for (int i = 0; i < orderList.Length; i++)
+      {
+        orderList[i] = new Order(resultList[i][0], resultList[i][1]);
+      }
+
+      return orderList;
     }
   }
 }

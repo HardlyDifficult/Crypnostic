@@ -38,7 +38,7 @@ namespace CrypConnect.Exchanges.Binance
     //public float minQty { get; set; }
   }
 
-  
+
 
   public class BinanceTradeJson
   {
@@ -51,4 +51,10 @@ namespace CrypConnect.Exchanges.Binance
   }
 
 
+  public class BinanceDepthJson
+  {
+    //public int lastUpdateId { get; set; }
+    public object[][] bids { get; set; }
+    public object[][] asks { get; set; }
+  }
 }

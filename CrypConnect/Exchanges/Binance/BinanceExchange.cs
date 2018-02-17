@@ -60,10 +60,10 @@ namespace CrypConnect
         BinanceProductJson product = productList.data[i];
         bool isInactive = product.status.Equals("TRADING",
           StringComparison.InvariantCultureIgnoreCase) == false;
-        Coin baseCoin = Coin.CreateFromName(product.baseAssetName);
+        Coin baseCoin = CreateFromName(product.baseAssetName);
         // TODO Binance: how-to determine the coin's status (e.g. deposit paused)
         AddTicker(product.baseAsset, baseCoin, false);
-        Coin quoteCoin = Coin.CreateFromName(product.quoteAssetName);
+        Coin quoteCoin = CreateFromName(product.quoteAssetName);
         AddTicker(product.quoteAsset, quoteCoin, false);
         baseCoin?.UpdatePairStatus(this, quoteCoin, isInactive);
       }
@@ -115,6 +115,30 @@ namespace CrypConnect
       string baseSymbol)
     {
       return $"{quoteSymbol.ToUpperInvariant()}{baseSymbol.ToUpperInvariant()}";
+    }
+
+    protected override async Task<OrderBook> GetOrderBookInternal(
+     string pairId)
+    {
+      BinanceDepthJson depthJson = await Get<BinanceDepthJson>($"api/v1/depth?symbol={pairId}");
+
+      Order[] bids = ExtractOrders(depthJson.bids);
+      Order[] asks = ExtractOrders(depthJson.asks);
+
+      return new OrderBook(asks, bids);
+    }
+
+    static Order[] ExtractOrders(
+      object[][] resultList)
+    {
+      Order[] orderList = new Order[resultList.Length];
+      for (int i = 0; i < orderList.Length; i++)
+      {
+        orderList[i] = new Order(decimal.Parse((string)resultList[i][0]), 
+          decimal.Parse((string)resultList[i][1]));
+      }
+
+      return orderList;
     }
   }
 }

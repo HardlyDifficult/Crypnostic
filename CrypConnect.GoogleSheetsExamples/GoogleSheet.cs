@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using HD;
+using System.Threading.Tasks;
 
 namespace CrypConnect.GoogleSheetsExamples
 {
@@ -25,11 +26,10 @@ namespace CrypConnect.GoogleSheetsExamples
 
 
     /// <summary>
-    /// TODO
     /// From https://developers.google.com/sheets/api/limits
     /// </summary>
-    readonly Throttle readThrottle = new Throttle(TimeSpan.FromSeconds(1));
-    readonly Throttle writeThrottle = new Throttle(TimeSpan.FromSeconds(1));
+    readonly Throttle readThrottle = new Throttle(TimeSpan.FromSeconds(2*1));
+    readonly Throttle writeThrottle = new Throttle(TimeSpan.FromSeconds(2*1));
 
     public GoogleSheet(
       string spreadsheetId)
@@ -60,9 +60,9 @@ namespace CrypConnect.GoogleSheetsExamples
       });
     }
 
-    public void Write(
+    public async Task Write(
       string tab,
-      string range, 
+      string range,
       List<string[]> valueList)
     {
       string writeRange = $"{tab}!{range}";
@@ -74,21 +74,44 @@ namespace CrypConnect.GoogleSheetsExamples
         valueRange,
         spreadsheetId,
         writeRange);
-      updateRequest.ValueInputOption 
+      updateRequest.ValueInputOption
         = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
-      updateRequest.Execute();
+      while (true)
+      {
+        try
+        {
+          await writeThrottle.WaitTillReady();
+          updateRequest.Execute();
+          break;
+        }
+        catch
+        {
+          await Task.Delay(TimeSpan.FromSeconds(10));
+        }
+      }
     }
 
-    internal IList<IList<object>> Read(
-      string tab, 
+    internal async Task<IList<IList<object>>> Read(
+      string tab,
       string range)
     {
       string readRange = $"{tab}!{range}";
       SpreadsheetsResource.ValuesResource.GetRequest request =
         service.Spreadsheets.Values.Get(spreadsheetId, readRange);
 
-      ValueRange response = request.Execute();
-      return response.Values;
+      while (true)
+      {
+        try
+        {
+          await readThrottle.WaitTillReady();
+          ValueRange response = request.Execute();
+          return response.Values;
+        }
+        catch
+        {
+          await Task.Delay(TimeSpan.FromSeconds(10));
+        }
+      }
     }
   }
 }

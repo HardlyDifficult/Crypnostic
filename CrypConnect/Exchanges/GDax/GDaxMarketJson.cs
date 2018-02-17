@@ -30,4 +30,11 @@ namespace CrypConnect.Exchanges.GDax
     public DateTime time { get; set; }
   }
 
+
+  public class GDaxDepthListJson
+  {
+    //public long sequence { get; set; }
+    public string[][] bids { get; set; }
+    public string[][] asks { get; set; }
+  }
 }

@@ -4,11 +4,13 @@ using System.Media;
 using System.Timers;
 using System.Linq;
 using static CrypConnect.GoogleSheetsExamples.AboutCoin;
+using System.Threading.Tasks;
 
 namespace CrypConnect.GoogleSheetsExamples
 {
   /// <summary>
   /// TODO
+  ///  - Add buy targets
   ///  - Add total 24-volume seen (and total from coinmarketcap)
   ///     - or maybe the max of the two?
   /// </summary>
@@ -21,12 +23,22 @@ namespace CrypConnect.GoogleSheetsExamples
 
     readonly Timer refreshTimer;
 
-    readonly ExchangeMonitor exchangeMonitor;
+    ExchangeMonitor exchangeMonitor;
 
     public GoogleSheetPriceMonitor()
     {
-      sheet = new GoogleSheet("1RoFMncCxV4ExqFQCRKSOmo-7WBSGc7F-9HjLc-5OT2c");
+      sheet = new GoogleSheet("1e6jCpqkQEGwICemF0iVzRDBQwmNUskpZoT5nY3SRd24");
 
+      refreshTimer = new Timer()
+      {
+        AutoReset = false,
+        Interval = TimeSpan.FromSeconds(10).TotalMilliseconds
+      };
+      refreshTimer.Elapsed += RefreshTimer_Elapsed;
+    }
+
+    public async Task Start()
+    {
       ExchangeMonitorConfig config = new ExchangeMonitorConfig(
         ExchangeName.Binance,
         ExchangeName.Cryptopia,
@@ -34,13 +46,12 @@ namespace CrypConnect.GoogleSheetsExamples
         ExchangeName.AEX,
         ExchangeName.GDax,
         ExchangeName.Idex);
-
-      IList<IList<object>> settings = sheet.Read(settingsTab, "A:A");
+      IList<IList<object>> settings = await sheet.Read(settingsTab, "A:A");
       List<string> blacklist = new List<string>();
       foreach (var row in settings)
       {
         object blacklistData = row.FirstOrDefault();
-        if(blacklistData == null)
+        if (blacklistData == null)
         {
           continue;
         }
@@ -51,48 +62,41 @@ namespace CrypConnect.GoogleSheetsExamples
 
       exchangeMonitor = new ExchangeMonitor(config);
 
-      refreshTimer = new Timer()
-      {
-        AutoReset = false,
-        Interval = TimeSpan.FromSeconds(10).TotalMilliseconds
-      };
-      refreshTimer.Elapsed += RefreshTimer_Elapsed;
-    }
-
-    public void Start()
-    {
       RefreshTimer_Elapsed(null, null);
     }
 
-    void RefreshTimer_Elapsed(
+    async void RefreshTimer_Elapsed(
       object sender,
       ElapsedEventArgs e)
     {
-      DumpAllCoinsAndStats();
-
-      // TODO Alarms
-      //IList<IList<object>> alarmData = sheet.Read(tab, "E2:E");
-      //for (int i = 0; i < alarmData.Count; i++)
-      //{
-      //  if(alarmData[i].Count <= 0)
-      //  {
-      //    continue;
-      //  }
-      //  if (alarmData[i][0].ToString().Equals("TRUE",
-      //    StringComparison.InvariantCultureIgnoreCase))
-      //  {
-      //    SoundPlayer player = new SoundPlayer(
-      //      @"d:\\StreamAssets\\HeyLISTEN.wav");
-      //    player.Play();
-      //  }
-      //}
+      await DumpAllCoinsAndStats();
+      await ConsiderAlarming();
 
       Console.Write(".");
 
       refreshTimer.Start();
     }
 
-    void DumpAllCoinsAndStats()
+    async Task ConsiderAlarming()
+    {
+      IList<IList<object>> alarmData = await sheet.Read(settingsTab, "B2");
+      if (alarmData.Count > 0
+        && alarmData[0].Count > 0
+        && alarmData[0][0] != null)
+      {
+        if (int.TryParse(alarmData[0][0].ToString(), out int alarmCount))
+        {
+          if (alarmCount > 0)
+          {
+            SoundPlayer player = new SoundPlayer(
+            @"d:\\StreamAssets\\HeyLISTEN.wav");
+            player.Play();
+          }
+        }
+      }
+    }
+
+    async Task DumpAllCoinsAndStats()
     {
       List<Coin> allCoinList = exchangeMonitor.allCoins.ToList();
 
@@ -115,7 +119,7 @@ namespace CrypConnect.GoogleSheetsExamples
         results.Add(new AboutCoin().ToArray());
       }
 
-      sheet.Write(dataDumpTab, "A1", results);
+      await sheet.Write(dataDumpTab, "A1", results);
     }
 
     AboutCoin DescribeCoin(
@@ -129,7 +133,7 @@ namespace CrypConnect.GoogleSheetsExamples
         return about;
       }
 
-      if (coin.hasValidTradingPairs == false && coin.coinMarketCapData == null)
+      if (coin.hasValidTradingPairs == false) //&& coin.coinMarketCapData == null)
       {
         return null;
       }

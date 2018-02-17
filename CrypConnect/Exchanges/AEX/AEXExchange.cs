@@ -5,6 +5,7 @@ using RestSharp;
 using HD;
 using System.Collections.Generic;
 using CrypConnect.Exchanges.AEX;
+using System.Diagnostics;
 
 namespace CrypConnect.Exchanges
 {
@@ -44,7 +45,7 @@ namespace CrypConnect.Exchanges
         string tickerToName = nameList[i];
         string ticker = tickerToName.GetBefore(":");
         string name = tickerToName.GetBetween("\"", "\"");
-        Coin coin = Coin.CreateFromName(name);
+        Coin coin = CreateFromName(name);
 
         // Is this possible to determine?
         bool isInactive = false;
@@ -109,8 +110,32 @@ namespace CrypConnect.Exchanges
     protected override string GetPairId(
       string quoteSymbol,
       string baseSymbol)
-    {// TODO remove
-      return $"{quoteSymbol.ToUpperInvariant()}-{baseSymbol.ToUpperInvariant()}";
+    {
+      //c=btc&mk_type=btc
+      return $"c={quoteSymbol.ToLowerInvariant()}&mk_type={baseSymbol.ToLowerInvariant()}";
+    }
+
+    protected override async Task<OrderBook> GetOrderBookInternal(
+     string pairId)
+    {
+      AexDepthJson depthJson = await Get<AexDepthJson>($"depth.php?{pairId}");
+
+      Order[] bids = ExtractOrders(depthJson.bids);
+      Order[] asks = ExtractOrders(depthJson.asks);
+
+      return new OrderBook(asks, bids);
+    }
+
+    static Order[] ExtractOrders(
+      decimal[][] resultList)
+    {
+      Order[] orderList = new Order[resultList.Length];
+      for (int i = 0; i < orderList.Length; i++)
+      {
+        orderList[i] = new Order(resultList[i][0], resultList[i][1]);
+      }
+
+      return orderList;
     }
   }
 }

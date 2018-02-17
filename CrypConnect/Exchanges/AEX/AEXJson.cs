@@ -16,4 +16,12 @@ namespace CrypConnect.Exchanges.AEX
     public decimal buy { get; set; }
     public decimal sell { get; set; }
   }
+
+
+  public class AexDepthJson
+  {
+    public decimal[][] bids { get; set; }
+    public decimal[][] asks { get; set; }
+  }
+
 }

@@ -56,4 +56,20 @@ namespace CrypConnect.Exchanges.Kucoin
     public ProductJson[] data { get; set; }
   }
 
+
+  public class KucoinDepthListJson
+  {
+    public bool success { get; set; }
+    public string code { get; set; }
+    public string msg { get; set; }
+    public long timestamp { get; set; }
+    public KuCoinDepthJson data { get; set; }
+  }
+
+  public class KuCoinDepthJson
+  {
+    public decimal[][] SELL { get; set; }
+    public decimal[][] BUY { get; set; }
+  }
+
 }

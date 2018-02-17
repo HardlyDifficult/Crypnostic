@@ -5,6 +5,7 @@ using Cryptopia.API.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
+using System.Diagnostics;
 
 namespace CrypConnect
 {
@@ -28,7 +29,8 @@ namespace CrypConnect
     {
       publicApi = new CryptopiaApiPublic();
       AddBlacklistedTicker(
-        "Trinity" // This is not TNC
+        "Trinity" // This is not TNC,
+        , "Trinity Network Credit" // TODO this is here since another exchange may have aliased Trinity
         );
 
       exchangeMonitor.AddAlias("MyWishToken", "MyWish");
@@ -116,7 +118,7 @@ namespace CrypConnect
         {
           isCoinActive = false;
         }
-        AddTicker(product.Symbol, Coin.CreateFromName(product.Name), isCoinActive);
+        AddTicker(product.Symbol, CreateFromName(product.Name), isCoinActive);
       }
 
       await throttle.WaitTillReady();
@@ -124,8 +126,8 @@ namespace CrypConnect
       for (int i = 0; i < tradePairsResponse.Data.Count; i++)
       {
         TradePairResult tradePair = tradePairsResponse.Data[i];
-        (Coin, Coin) entry = (Coin.CreateFromName(tradePair.Currency),
-          Coin.CreateFromName(tradePair.BaseCurrency));
+        (Coin, Coin) entry = (CreateFromName(tradePair.Currency),
+          CreateFromName(tradePair.BaseCurrency));
         entry.Item1?.UpdatePairStatus(this, entry.Item2, tradePair.Status != "OK");
       }
     }
@@ -153,7 +155,32 @@ namespace CrypConnect
       string quoteSymbol,
       string baseSymbol)
     {
-      return $"{quoteSymbol.ToUpperInvariant()}/{baseSymbol.ToUpperInvariant()}";
+      return $"{quoteSymbol.ToUpperInvariant()}_{baseSymbol.ToUpperInvariant()}";
+    }
+    
+    protected override async Task<OrderBook> GetOrderBookInternal(
+      string pairId)
+    {
+      MarketOrdersRequest ordersRequest = new MarketOrdersRequest(pairId);
+      MarketOrdersResponse ordersResponse = await publicApi.GetMarketOrders(ordersRequest);
+
+      Order[] bids = ExtractOrders(ordersResponse.Data.Buy);
+      Order[] asks = ExtractOrders(ordersResponse.Data.Sell);
+
+      return new OrderBook(asks, bids);
+    }
+
+    static Order[] ExtractOrders(
+      List<MarketOrderResult> resultList)
+    {
+      Order[] orderList = new Order[resultList.Count];
+      for (int i = 0; i < orderList.Length; i++)
+      {
+        MarketOrderResult orderResult = resultList[i];
+        orderList[i] = new Order(orderResult.Price, orderResult.Volume);
+      }
+
+      return orderList;
     }
   }
 }
