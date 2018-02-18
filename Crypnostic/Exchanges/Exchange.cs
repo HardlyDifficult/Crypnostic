@@ -37,6 +37,7 @@ namespace Crypnostic
       return null;
     }
     #endregion
+    readonly Random random = new Random();
 
 
 
@@ -140,9 +141,9 @@ namespace Crypnostic
           catch (Exception e)
           { // Auto retry on fail
             Console.WriteLine(e); // TODO log
-            if (exchangeMonitor.shouldStop == false)
+            if (exchangeMonitor.cancellationTokenSource.IsCancellationRequested == false)
             {
-              await Task.Delay(TimeSpan.FromSeconds(20 + CrypnosticController.instance.random.Next(30)));
+              await Task.Delay(TimeSpan.FromSeconds(20 + random.Next(30)));
               continue;
             }
           }
@@ -167,10 +168,10 @@ namespace Crypnostic
           // TODO log
           Console.WriteLine(e);
 
-          if (exchangeMonitor.shouldStop == false)
+          if (exchangeMonitor.cancellationTokenSource.IsCancellationRequested == false)
 
           {
-            await Task.Delay(TimeSpan.FromSeconds(20 + CrypnosticController.instance.random.Next(30)));
+            await Task.Delay(TimeSpan.FromSeconds(20 + random.Next(30)));
             continue;
           }
         }

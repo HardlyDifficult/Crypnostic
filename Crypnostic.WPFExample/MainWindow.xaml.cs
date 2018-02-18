@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Crypnostic.WPFExamples
@@ -20,7 +21,7 @@ namespace Crypnostic.WPFExamples
       DataContext = dataContext; 
     }
 
-    void Worker_DoWork(
+    async void Worker_DoWork(
       object sender, 
       DoWorkEventArgs e)
     {
@@ -29,6 +30,7 @@ namespace Crypnostic.WPFExamples
         ExchangeName.Cryptopia,
         ExchangeName.Kucoin);
       exchangeMonitor = new CrypnosticController(config);
+      await exchangeMonitor.Start();
     }
 
     void AddButton_OnClick(

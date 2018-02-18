@@ -28,6 +28,7 @@ namespace Crypnostic.Exchanges
       where T : new()
     {
       await throttle.WaitTillReady();
+
       T result = await restClient.AsyncDownload<T>(resource, method: method, jsonObject: jsonObject);
       throttle.SetLastUpdateTime();
       return result;

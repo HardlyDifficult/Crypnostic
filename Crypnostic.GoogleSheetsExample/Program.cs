@@ -38,7 +38,7 @@ namespace Crypnostic.GoogleSheetsExamples
 
 
       GoogleSheetPriceMonitor priceMonitor = new GoogleSheetPriceMonitor();
-      priceMonitor.Start();
+      priceMonitor.Start().Wait();
 
       while(true)
       {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Crypnostic.Tests
 {
@@ -9,23 +10,25 @@ namespace Crypnostic.Tests
   public class ExchangeTests : MonitorTests
   {
     [TestMethod()]
-    public void AllExchanges()
+    public async Task AllExchanges()
     {
       monitor = new CrypnosticController(
         new ExchangeMonitorConfig());
+      await monitor.Start();
 
       int count = monitor.allCoins.Count();
       Assert.IsTrue(count > 600); // Cryptopia is the largest with about 500
     }
 
     [TestMethod()]
-    public void AllTradingPairs()
+    public async Task AllTradingPairs()
     {
       monitor = new CrypnosticController(
         new ExchangeMonitorConfig(
           ExchangeName.Binance,
           ExchangeName.Cryptopia,
           ExchangeName.Kucoin));
+      await monitor.Start();
 
       Coin omg = Coin.FromName("OmiseGO");
       int count = omg.allTradingPairs.Count();
@@ -33,13 +36,14 @@ namespace Crypnostic.Tests
     }
 
     [TestMethod()]
-    public void BitcoinPairs()
+    public async Task BitcoinPairs()
     {
       monitor = new CrypnosticController(
         new ExchangeMonitorConfig(
           ExchangeName.Binance,
           ExchangeName.Cryptopia,
           ExchangeName.Kucoin));
+      await monitor.Start();
 
       Coin ark = Coin.FromName("Ark");
       TradingPair pair = Coin.bitcoin.Best(ark, true);

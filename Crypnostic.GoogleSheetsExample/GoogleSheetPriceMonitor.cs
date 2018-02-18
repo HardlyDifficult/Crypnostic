@@ -69,6 +69,7 @@ namespace Crypnostic.GoogleSheetsExamples
       config.BlacklistCoins(blacklist.ToArray());
 
       exchangeMonitor = new CrypnosticController(config);
+      await exchangeMonitor.Start();
 
       RefreshTimer_Elapsed(null, null);
     }

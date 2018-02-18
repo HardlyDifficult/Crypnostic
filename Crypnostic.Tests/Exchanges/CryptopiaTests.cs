@@ -35,10 +35,11 @@ namespace Crypnostic.Tests.Exchanges
     } 
 
     [TestMethod()]
-    public void CryptopiaClosedBooks()
+    public async Task CryptopiaClosedBooks()
     {
       monitor = new CrypnosticController(
         new ExchangeMonitorConfig(exchangeName));
+      await monitor.Start();
       Coin doge = Coin.FromName("Dogecoin");
       Assert.IsTrue(doge != null);
 

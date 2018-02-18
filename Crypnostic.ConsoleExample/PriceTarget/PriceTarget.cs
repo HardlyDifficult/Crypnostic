@@ -1,6 +1,7 @@
 ﻿using System;
 using Crypnostic;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Crypnostic.ConsoleExamples.PriceTarget
 {
@@ -37,6 +38,11 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
       config.BlacklistCoins("TetherUS", "Bitcoin Cash");
 
       monitor = new CrypnosticController(config);
+    }
+
+    public async Task Start()
+    {
+      await monitor.Start();
 
       AddMonitor("Monero");
       AddMonitor("OmiseGO");
