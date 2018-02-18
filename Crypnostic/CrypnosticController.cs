@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Crypnostic
 {
-  public class ExchangeMonitor
+  public class CrypnosticController
   {
     #region Public Data
     public event Action<Coin> onNewCoin;
@@ -22,9 +22,9 @@ namespace Crypnostic
     #endregion
 
     #region Internal/Private Data
-    readonly ILog log = LogManager.GetLogger<ExchangeMonitor>();
+    readonly ILog log = LogManager.GetLogger<CrypnosticController>();
 
-    internal static ExchangeMonitor instance;
+    internal static CrypnosticController instance;
 
     internal readonly Random random = new Random();
 
@@ -61,7 +61,7 @@ namespace Crypnostic
     #endregion
 
     #region Init
-    public ExchangeMonitor(
+    public CrypnosticController(
       ExchangeMonitorConfig config)
     {
       Debug.Assert(instance == null);

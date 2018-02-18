@@ -134,10 +134,10 @@ namespace Crypnostic
     Coin(
       string fullName)
     {
-      Debug.Assert(ExchangeMonitor.instance.fullNameLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
+      Debug.Assert(CrypnosticController.instance.fullNameLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
       Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
-      Debug.Assert(ExchangeMonitor.instance.aliasLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
-      Debug.Assert(ExchangeMonitor.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()) == false);
+      Debug.Assert(CrypnosticController.instance.aliasLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
+      Debug.Assert(CrypnosticController.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()) == false);
       Debug.Assert(fullName.Equals("Ether", StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullName.Equals("BTC", StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullName.Equals("TetherUS", StringComparison.InvariantCultureIgnoreCase) == false);
@@ -146,7 +146,7 @@ namespace Crypnostic
       this.fullName = fullName;
       this.fullNameLower = fullName.ToLowerInvariant();
 
-      ExchangeMonitor.instance.OnNewCoin(this);
+      CrypnosticController.instance.OnNewCoin(this);
     }
 
     public static Coin FromName(
@@ -160,19 +160,19 @@ namespace Crypnostic
       bool skipCreationIfDoesNotExist = false)
     {
       // Blacklist
-      if (ExchangeMonitor.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()))
+      if (CrypnosticController.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()))
       {
         return null;
       }
 
       // Alias
-      if (ExchangeMonitor.instance.aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
+      if (CrypnosticController.instance.aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
       {
         return coin;
       }
 
       // Existing Coin
-      if (ExchangeMonitor.instance.fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out coin))
+      if (CrypnosticController.instance.fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out coin))
       {
         return coin;
       }
@@ -193,7 +193,7 @@ namespace Crypnostic
     {
       ticker = ticker.ToLowerInvariant();
 
-      Exchange exchange = ExchangeMonitor.instance.FindExchange(onExchange);
+      Exchange exchange = CrypnosticController.instance.FindExchange(onExchange);
       Debug.Assert(exchange != null);
 
       if (exchange.tickerLowerToCoin.TryGetValue(ticker, out Coin coin))
@@ -268,7 +268,7 @@ namespace Crypnostic
       decimal purchaseAmount = 0;
       decimal quantity = 0;
 
-      Exchange exchange = ExchangeMonitor.instance.FindExchange(askExchange);
+      Exchange exchange = CrypnosticController.instance.FindExchange(askExchange);
       OrderBook orderBook = await exchange.GetOrderBook(this, askBaseCoin);
 
       for (int i = 0; i < orderBook.asks.Length; i++)
@@ -297,7 +297,7 @@ namespace Crypnostic
     {
       decimal sellAmount = 0;
 
-      Exchange exchange = ExchangeMonitor.instance.FindExchange(bidExchange);
+      Exchange exchange = CrypnosticController.instance.FindExchange(bidExchange);
       OrderBook orderBook = await exchange.GetOrderBook(this, bidBaseCoin);
 
       for (int i = 0; i < orderBook.bids.Length; i++)
@@ -320,7 +320,7 @@ namespace Crypnostic
     public bool IsActiveOn(
       ExchangeName exchangeName)
     {
-      return ExchangeMonitor.instance.FindExchange(exchangeName).IsCoinActive(this);
+      return CrypnosticController.instance.FindExchange(exchangeName).IsCoinActive(this);
     }
     #endregion
 

@@ -28,7 +28,7 @@ namespace Crypnostic.GoogleSheetsExamples
 
     readonly Timer refreshTimer;
 
-    ExchangeMonitor exchangeMonitor;
+    CrypnosticController exchangeMonitor;
 
     public GoogleSheetPriceMonitor()
     {
@@ -68,7 +68,7 @@ namespace Crypnostic.GoogleSheetsExamples
 
       config.BlacklistCoins(blacklist.ToArray());
 
-      exchangeMonitor = new ExchangeMonitor(config);
+      exchangeMonitor = new CrypnosticController(config);
 
       RefreshTimer_Elapsed(null, null);
     }

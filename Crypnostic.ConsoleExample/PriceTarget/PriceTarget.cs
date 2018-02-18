@@ -7,7 +7,7 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
   public class PriceTarget : IDisposable
   {
     #region Data
-    ExchangeMonitor monitor;
+    CrypnosticController monitor;
 
     readonly Dictionary<Coin, decimal> coinToTargetEthPrice
       = new Dictionary<Coin, decimal>();
@@ -36,7 +36,7 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
 
       config.BlacklistCoins("TetherUS", "Bitcoin Cash");
 
-      monitor = new ExchangeMonitor(config);
+      monitor = new CrypnosticController(config);
 
       AddMonitor("Monero");
       AddMonitor("OmiseGO");

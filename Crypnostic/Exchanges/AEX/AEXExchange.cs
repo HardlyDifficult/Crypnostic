@@ -22,7 +22,7 @@ namespace Crypnostic.Exchanges
     /// Every 60 seconds the number of calls can not be more than 120 times.
     /// </summary>
     public AEXExchange(
-      ExchangeMonitor exchangeMonitor)
+      CrypnosticController exchangeMonitor)
       : base(exchangeMonitor, ExchangeName.AEX, 120, "https://api.aex.com")
     {
       client = new RestClient("https://www.aex.com");

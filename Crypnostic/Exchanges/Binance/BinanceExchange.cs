@@ -28,7 +28,7 @@ namespace Crypnostic
     ///   Targeting half that to avoid issues.
     /// </summary>
     public BinanceExchange(
-      ExchangeMonitor exchangeMonitor)
+      CrypnosticController exchangeMonitor)
       : base(exchangeMonitor,
           ExchangeName.Binance,
           1200,

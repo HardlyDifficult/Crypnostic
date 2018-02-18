@@ -28,7 +28,7 @@ namespace Crypnostic.Tests
     public void BasicExchange()
     {
       ExchangeMonitorConfig config = new ExchangeMonitorConfig(exchangeName);
-      monitor = new ExchangeMonitor(config);
+      monitor = new CrypnosticController(config);
       TradingPair pair = popularQuoteCoin.Best(popularBaseCoin, true);
       Assert.IsTrue(pair.askPrice > 0);
     }
@@ -37,7 +37,7 @@ namespace Crypnostic.Tests
     public async Task OrderBook()
     {
       ExchangeMonitorConfig config = new ExchangeMonitorConfig(exchangeName);
-      monitor = new ExchangeMonitor(config);
+      monitor = new CrypnosticController(config);
       Exchange exchange = monitor.FindExchange(exchangeName);
 
       OrderBook orderBook = await exchange.GetOrderBook(popularQuoteCoin, popularBaseCoin);

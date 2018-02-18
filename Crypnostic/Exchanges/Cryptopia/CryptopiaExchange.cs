@@ -24,7 +24,7 @@ namespace Crypnostic
     /// </summary>
     /// <param name="exchangeMonitor"></param>
     public CryptopiaExchange(
-      ExchangeMonitor exchangeMonitor)
+      CrypnosticController exchangeMonitor)
       : base(exchangeMonitor, ExchangeName.Cryptopia, 1_000_000 / 1_440)
     {
       publicApi = new CryptopiaApiPublic();

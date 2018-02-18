@@ -11,7 +11,7 @@ namespace Crypnostic.Exchanges
     readonly Method method;
 
     public RestExchange(
-      ExchangeMonitor exchangeMonitor,
+      CrypnosticController exchangeMonitor,
       ExchangeName exchangeName,
       int maxRequestsPerMinute,
       string baseUrl,

@@ -6,7 +6,7 @@ namespace Crypnostic.WPFExamples
 {
   public partial class MainWindow : Window
   {
-    ExchangeMonitor exchangeMonitor;
+    CrypnosticController exchangeMonitor;
 
     readonly CrypDataContext dataContext = new CrypDataContext();
 
@@ -28,7 +28,7 @@ namespace Crypnostic.WPFExamples
         ExchangeName.Binance,
         ExchangeName.Cryptopia,
         ExchangeName.Kucoin);
-      exchangeMonitor = new ExchangeMonitor(config);
+      exchangeMonitor = new CrypnosticController(config);
     }
 
     void AddButton_OnClick(

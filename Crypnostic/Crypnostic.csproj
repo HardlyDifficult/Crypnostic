@@ -74,7 +74,7 @@
     <Compile Include="Exchanges\Exchange.cs" />
     <Compile Include="Data\ExchangeName.cs" />
     <Compile Include="Exchanges\Kucoin\KucoinJson.cs" />
-    <Compile Include="ExchangeMonitor.cs" />
+    <Compile Include="CrypnosticController.cs" />
     <Compile Include="Exchanges\RestExchange.cs" />
     <Compile Include="Data\Order.cs" />
     <Compile Include="Data\OrderBook.cs" />

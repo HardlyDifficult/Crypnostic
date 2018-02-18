@@ -37,7 +37,7 @@ namespace Crypnostic.Tests.Exchanges
     [TestMethod()]
     public void CryptopiaClosedBooks()
     {
-      monitor = new ExchangeMonitor(
+      monitor = new CrypnosticController(
         new ExchangeMonitorConfig(exchangeName));
       Coin doge = Coin.FromName("Dogecoin");
       Assert.IsTrue(doge != null);

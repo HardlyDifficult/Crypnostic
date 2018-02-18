@@ -11,7 +11,7 @@ namespace Crypnostic.Tests
     [TestMethod()]
     public void AllExchanges()
     {
-      monitor = new ExchangeMonitor(
+      monitor = new CrypnosticController(
         new ExchangeMonitorConfig());
 
       int count = monitor.allCoins.Count();
@@ -21,7 +21,7 @@ namespace Crypnostic.Tests
     [TestMethod()]
     public void AllTradingPairs()
     {
-      monitor = new ExchangeMonitor(
+      monitor = new CrypnosticController(
         new ExchangeMonitorConfig(
           ExchangeName.Binance,
           ExchangeName.Cryptopia,
@@ -35,7 +35,7 @@ namespace Crypnostic.Tests
     [TestMethod()]
     public void BitcoinPairs()
     {
-      monitor = new ExchangeMonitor(
+      monitor = new CrypnosticController(
         new ExchangeMonitorConfig(
           ExchangeName.Binance,
           ExchangeName.Cryptopia,

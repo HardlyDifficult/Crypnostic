@@ -4,7 +4,7 @@ namespace Crypnostic.Tests
 {
   public class MonitorTests
   {
-    protected ExchangeMonitor monitor;
+    protected CrypnosticController monitor;
 
     [TestCleanup]
     public void Cleanup()

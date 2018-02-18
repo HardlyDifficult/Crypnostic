@@ -47,7 +47,7 @@ namespace Crypnostic
       = TimeSpan.FromSeconds(30); // TODO config
 
     #region Data
-    protected readonly ExchangeMonitor exchangeMonitor;
+    protected readonly CrypnosticController exchangeMonitor;
 
     internal protected readonly Dictionary<string, Coin>
       tickerLowerToCoin = new Dictionary<string, Coin>();
@@ -70,7 +70,7 @@ namespace Crypnostic
 
     #region Init
     public static Exchange LoadExchange(
-      ExchangeMonitor exchangeMonitor,
+      CrypnosticController exchangeMonitor,
       ExchangeName exchangeName)
     {
       switch (exchangeName)
@@ -96,7 +96,7 @@ namespace Crypnostic
     }
 
     protected Exchange(
-      ExchangeMonitor exchangeMonitor,
+      CrypnosticController exchangeMonitor,
       ExchangeName exchangeName,
       int maxRequestsPerMinute)
     {
@@ -142,7 +142,7 @@ namespace Crypnostic
             Console.WriteLine(e); // TODO log
             if (exchangeMonitor.shouldStop == false)
             {
-              await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.instance.random.Next(30)));
+              await Task.Delay(TimeSpan.FromSeconds(20 + CrypnosticController.instance.random.Next(30)));
               continue;
             }
           }
@@ -170,7 +170,7 @@ namespace Crypnostic
           if (exchangeMonitor.shouldStop == false)
 
           {
-            await Task.Delay(TimeSpan.FromSeconds(20 + ExchangeMonitor.instance.random.Next(30)));
+            await Task.Delay(TimeSpan.FromSeconds(20 + CrypnosticController.instance.random.Next(30)));
             continue;
           }
         }

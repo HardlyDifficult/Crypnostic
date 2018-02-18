@@ -13,7 +13,7 @@ namespace Crypnostic.Exchanges
     /// No stated throttle limit, going with the same as Crytpopia
     /// </summary>
     public KucoinExchange(
-      ExchangeMonitor exchangeMonitor)
+      CrypnosticController exchangeMonitor)
       : base(exchangeMonitor, ExchangeName.Kucoin, 1_000_000 / 1_440, "https://api.kucoin.com")
     {
       exchangeMonitor.AddAlias("USDT", "Tether");

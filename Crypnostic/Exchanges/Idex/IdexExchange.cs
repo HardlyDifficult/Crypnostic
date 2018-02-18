@@ -25,7 +25,7 @@ namespace Crypnostic.Exchanges
     /// No stated throttle limit, going with the same as Crytpopia
     /// </summary>
     public IdexExchange(
-      ExchangeMonitor exchangeMonitor)
+      CrypnosticController exchangeMonitor)
       : base(exchangeMonitor, ExchangeName.Idex, 1_000_000 / 1_440,
           "https://api.idex.market", Method.POST)
     {

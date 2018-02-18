@@ -12,7 +12,7 @@ namespace Crypnostic.Exchanges.GDax
   internal class GDaxExchange : RestExchange
   {
     public GDaxExchange(
-      ExchangeMonitor exchangeMonitor)
+      CrypnosticController exchangeMonitor)
       : base(exchangeMonitor, ExchangeName.GDax, 3 * 60, "https://api.gdax.com")
     {
       exchangeMonitor.AddAlias("Ether", "Ethereum");
