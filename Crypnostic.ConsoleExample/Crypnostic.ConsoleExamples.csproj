@@ -48,7 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CrypConnect\CrypConnect.csproj">
+    <ProjectReference Include="..\Crypnostic\Crypnostic.csproj">
       <Project>{c4ea014d-bd4d-4a1a-b517-3656eba47723}</Project>
       <Name>CrypConnect</Name>
     </ProjectReference>

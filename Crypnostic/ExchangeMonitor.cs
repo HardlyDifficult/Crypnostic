@@ -1,4 +1,5 @@
-﻿using CrypConnect.CoinMarketCap;
+﻿using Common.Logging;
+using CrypConnect.CoinMarketCap;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,6 +22,8 @@ namespace CrypConnect
     #endregion
 
     #region Internal/Private Data
+    readonly ILog log = LogManager.GetLogger<ExchangeMonitor>();
+
     internal static ExchangeMonitor instance;
 
     internal readonly Random random = new Random();

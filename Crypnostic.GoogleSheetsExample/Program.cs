@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Common.Logging;
+using Common.Logging.Configuration;
+using NLog.Config;
+using NLog.Targets;
+using System;
 using System.Collections.Generic;
 
 namespace CrypConnect.GoogleSheetsExamples
@@ -17,6 +21,22 @@ namespace CrypConnect.GoogleSheetsExamples
     static void Main(
       string[] args)
     {
+      // Run once for the application
+      FileTarget target = new FileTarget(
+        "Something, Anything goes here... and does... nothing?")
+      {
+        FileName = "Log.txt"
+      };
+
+      LoggingConfiguration loggingConfig = new LoggingConfiguration();
+      loggingConfig.AddTarget(target);
+      loggingConfig.AddRuleForAllLevels(target, "*");
+      NLog.LogManager.Configuration = loggingConfig;
+      LogManager.Adapter = new Common.Logging.NLog.NLogLoggerFactoryAdapter(
+        new NameValueCollection());
+
+
+
       GoogleSheetPriceMonitor priceMonitor = new GoogleSheetPriceMonitor();
       priceMonitor.Start();
 
