@@ -20,8 +20,9 @@ namespace CrypConnect.GoogleSheetsExamples
     const string settingsTab = "CrypConnectSettings";
     const string arbAlarmTab = "ArbAlarm";
 
-    const decimal arbPurchasePriceETH = .5m;
-    const decimal arbPurchasePriceBTC = .05m;
+    // TODO USD goal
+    const decimal arbPurchasePriceETH = 1m;
+    const decimal arbPurchasePriceBTC = .1m;
 
     readonly GoogleSheet sheet;
 
@@ -47,10 +48,12 @@ namespace CrypConnect.GoogleSheetsExamples
         ExchangeName.Binance,
         ExchangeName.Cryptopia,
         ExchangeName.Kucoin,
-        ExchangeName.AEX,
+        //ExchangeName.AEX,
         ExchangeName.GDax,
         ExchangeName.Idex
         );
+
+
       IList<IList<object>> settings = await sheet.Read(settingsTab, "A:A");
       List<string> blacklist = new List<string>();
       foreach (var row in settings)
@@ -168,7 +171,8 @@ namespace CrypConnect.GoogleSheetsExamples
 
           decimal sellAmount = await quoteCoin.CalcSellPrice(
             bidExchange, bidBaseCoin,
-            quantityOfCoin: quantity);
+            quantityOfCoin: quantity * 2);
+          sellAmount /= 2;
           if (bidBaseCoin == Coin.bitcoin)
           {
             sellAmount *= bestBtcUsdBid.bidPrice;

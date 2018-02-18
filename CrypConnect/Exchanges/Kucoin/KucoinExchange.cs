@@ -86,6 +86,11 @@ namespace CrypConnect.Exchanges
     static Order[] ExtractOrders(
       decimal[][] resultList)
     {
+      if(resultList == null)
+      {
+        return new Order[0];
+      }
+
       Order[] orderList = new Order[resultList.Length];
       for (int i = 0; i < orderList.Length; i++)
       {
