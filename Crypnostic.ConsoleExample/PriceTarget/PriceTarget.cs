@@ -1,8 +1,8 @@
 ﻿using System;
-using CrypConnect;
+using Crypnostic;
 using System.Collections.Generic;
 
-namespace CrypConnect.ConsoleExamples.PriceTarget
+namespace Crypnostic.ConsoleExamples.PriceTarget
 {
   public class PriceTarget : IDisposable
   {

@@ -17,13 +17,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hardly.Common", "HardlyComm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypnostic", "Crypnostic\Crypnostic.csproj", "{C4EA014D-BD4D-4A1A-B517-3656EBA47723}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypnostic.ConsoleExamples", "Crypnostic.ConsoleExample\Crypnostic.ConsoleExamples.csproj", "{F11BDE06-24BA-4898-AF21-5187754B9A27}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypnostic.ConsoleExample", "Crypnostic.ConsoleExample\Crypnostic.ConsoleExample.csproj", "{F11BDE06-24BA-4898-AF21-5187754B9A27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypnostic.GoogleSheetsExamples", "Crypnostic.GoogleSheetsExample\Crypnostic.GoogleSheetsExamples.csproj", "{B07A409D-EFB7-466D-8631-444EA2BE822D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypnostic.GoogleSheetsExample", "Crypnostic.GoogleSheetsExample\Crypnostic.GoogleSheetsExample.csproj", "{B07A409D-EFB7-466D-8631-444EA2BE822D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypnostic.Tests", "Crypnostic.Tests\Crypnostic.Tests.csproj", "{1828B97B-4983-4763-B012-DA004EC10975}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrypConnect.WPFExamples", "Crypnostic.WPFExample\CrypConnect.WPFExamples.csproj", "{56535F14-5377-4167-ACF0-471ED55ED8CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypnostic.WPFExample", "Crypnostic.WPFExample\Crypnostic.WPFExample.csproj", "{56535F14-5377-4167-ACF0-471ED55ED8CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

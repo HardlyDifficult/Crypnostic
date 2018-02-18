@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Media;
 using System.Timers;
 using System.Linq;
-using static CrypConnect.GoogleSheetsExamples.AboutCoin;
+using static Crypnostic.GoogleSheetsExamples.AboutCoin;
 using System.Threading.Tasks;
 
-namespace CrypConnect.GoogleSheetsExamples
+namespace Crypnostic.GoogleSheetsExamples
 {
   /// <summary>
   /// TODO
@@ -16,8 +16,8 @@ namespace CrypConnect.GoogleSheetsExamples
   /// </summary>
   public class GoogleSheetPriceMonitor
   {
-    const string dataDumpTab = "CrypConnect";
-    const string settingsTab = "CrypConnectSettings";
+    const string dataDumpTab = "Crypnostic";
+    const string settingsTab = "CrypnosticSettings";
     const string arbAlarmTab = "ArbAlarm";
 
     // TODO USD goal

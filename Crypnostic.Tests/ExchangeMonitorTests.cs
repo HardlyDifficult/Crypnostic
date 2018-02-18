@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CrypConnect.Tests
+namespace Crypnostic.Tests
 {
   public abstract class ExchangeMonitorTests : MonitorTests
   {

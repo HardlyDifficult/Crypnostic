@@ -7,8 +7,8 @@
     <ProjectGuid>{C4EA014D-BD4D-4A1A-B517-3656EBA47723}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CrypConnect</RootNamespace>
-    <AssemblyName>CrypConnect</AssemblyName>
+    <RootNamespace>Crypnostic</RootNamespace>
+    <AssemblyName>Crypnostic</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>

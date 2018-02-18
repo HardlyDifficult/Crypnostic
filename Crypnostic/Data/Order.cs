@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CrypConnect
+namespace Crypnostic
 {
   public struct Order
   {

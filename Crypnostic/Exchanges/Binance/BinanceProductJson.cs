@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CrypConnect.Exchanges.Binance
+namespace Crypnostic.Exchanges.Binance
 {
   public class BinanceProductListJson
   {

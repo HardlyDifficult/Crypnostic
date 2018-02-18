@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace CrypConnect.WPFExamples
+namespace Crypnostic.WPFExamples
 {
   public abstract class WpfDataContext : INotifyPropertyChanged
   {

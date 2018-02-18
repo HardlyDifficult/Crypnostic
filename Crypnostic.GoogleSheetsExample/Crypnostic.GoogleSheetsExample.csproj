@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B07A409D-EFB7-466D-8631-444EA2BE822D}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>CrypConnect.GoogleSheetsExamples</RootNamespace>
-    <AssemblyName>CrypConnect.GoogleSheetsExamples</AssemblyName>
+    <RootNamespace>Crypnostic.GoogleSheetsExample</RootNamespace>
+    <AssemblyName>Crypnostic.GoogleSheetsExample</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -30,6 +30,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Crypnostic.GoogleSheetsExamples.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
@@ -107,7 +110,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Crypnostic\Crypnostic.csproj">
       <Project>{c4ea014d-bd4d-4a1a-b517-3656eba47723}</Project>
-      <Name>CrypConnect</Name>
+      <Name>Crypnostic</Name>
     </ProjectReference>
     <ProjectReference Include="..\HardlyCommon\Hardly.Common.csproj">
       <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>

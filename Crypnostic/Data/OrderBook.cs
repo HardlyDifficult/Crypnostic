@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace CrypConnect
+namespace Crypnostic
 {
   public struct OrderBook
   {

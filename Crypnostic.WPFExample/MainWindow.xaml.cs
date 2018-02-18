@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 
-namespace CrypConnect.WPFExamples
+namespace Crypnostic.WPFExamples
 {
   public partial class MainWindow : Window
   {

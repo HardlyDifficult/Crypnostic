@@ -1,12 +1,12 @@
 ﻿//using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using CrypConnect;
+//using Crypnostic;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
 
 // TODO
 
-//namespace CrypConnect.Tests.Exchanges
+//namespace Crypnostic.Tests.Exchanges
 //{
 //  [TestClass()]
 //  public class EtherDeltaTests : ExchangeMonitorTests

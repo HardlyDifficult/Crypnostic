@@ -7,8 +7,8 @@
     <ProjectGuid>{F11BDE06-24BA-4898-AF21-5187754B9A27}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CrypConnect.ConsoleExamples</RootNamespace>
-    <AssemblyName>CrypConnect.Examples.Console</AssemblyName>
+    <RootNamespace>Crypnostic.ConsoleExample</RootNamespace>
+    <AssemblyName>Crypnostic.ConsoleExample</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>CrypConnect.ConsoleExamples.PriceTarget.PriceTargetProgram</StartupObject>
+    <StartupObject>Crypnostic.ConsoleExamples.PriceTarget.PriceTargetProgram</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -50,7 +50,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Crypnostic\Crypnostic.csproj">
       <Project>{c4ea014d-bd4d-4a1a-b517-3656eba47723}</Project>
-      <Name>CrypConnect</Name>
+      <Name>Crypnostic</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CrypConnect.Tests
+namespace Crypnostic.Tests
 {
   public class MonitorTests
   {

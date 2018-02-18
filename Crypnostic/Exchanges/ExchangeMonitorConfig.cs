@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using CrypConnect;
+using Crypnostic;
 
-namespace CrypConnect
+namespace Crypnostic
 {
   [Serializable]
   public class ExchangeMonitorConfig

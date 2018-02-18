@@ -7,8 +7,8 @@
     <ProjectGuid>{1828B97B-4983-4763-B012-DA004EC10975}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CrypConnect.Tests</RootNamespace>
-    <AssemblyName>CrypConnect.Tests</AssemblyName>
+    <RootNamespace>Crypnostic.Tests</RootNamespace>
+    <AssemblyName>Crypnostic.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -89,7 +89,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Crypnostic\Crypnostic.csproj">
       <Project>{C4EA014D-BD4D-4A1A-B517-3656EBA47723}</Project>
-      <Name>CrypConnect</Name>
+      <Name>Crypnostic</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

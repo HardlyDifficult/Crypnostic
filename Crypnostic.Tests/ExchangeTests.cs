@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CrypConnect.Tests
+namespace Crypnostic.Tests
 {
   [TestClass()]
   public class ExchangeTests : MonitorTests

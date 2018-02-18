@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using HD;
 using System.Diagnostics;
 
-namespace CrypConnect
+namespace Crypnostic
 {
   /// <remarks>
   /// https://www.cryptopia.co.nz/Forum/Thread/255

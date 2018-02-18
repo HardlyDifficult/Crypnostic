@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLog.Config;
 using NLog.Targets;
 
-namespace CrypConnect.Tests
+namespace Crypnostic.Tests
 {
   [TestClass()]
   public class LogTests //: MonitorTests

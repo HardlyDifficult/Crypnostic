@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CrypConnect.GoogleSheetsExamples
+namespace Crypnostic.GoogleSheetsExamples
 {
   internal class AboutCoin
   {

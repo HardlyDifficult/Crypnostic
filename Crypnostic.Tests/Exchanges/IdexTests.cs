@@ -1,8 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CrypConnect;
+using Crypnostic;
 using System;
 
-namespace CrypConnect.Tests.Exchanges
+namespace Crypnostic.Tests.Exchanges
 {
   [TestClass()]
   public class IdexTests : ExchangeMonitorTests

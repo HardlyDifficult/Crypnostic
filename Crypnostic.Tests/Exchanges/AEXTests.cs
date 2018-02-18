@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CrypConnect;
+using Crypnostic;
 using System;
 using System.Threading.Tasks;
 
-namespace CrypConnect.Tests.Exchanges
+namespace Crypnostic.Tests.Exchanges
 {
   [TestClass()]
   public class AEXTests : ExchangeMonitorTests

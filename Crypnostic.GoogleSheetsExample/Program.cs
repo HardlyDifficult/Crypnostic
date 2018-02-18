@@ -5,12 +5,12 @@ using NLog.Targets;
 using System;
 using System.Collections.Generic;
 
-namespace CrypConnect.GoogleSheetsExamples
+namespace Crypnostic.GoogleSheetsExamples
 {
   /// <summary>
   /// Getting Started:
   ///  - Follow Steps 1 here to create a client_id.json and place it
-  ///  in the CrypConnect.GoogleSheetsExamples\bin directory 
+  ///  in the Crypnostic.GoogleSheetsExamples\bin directory 
   ///  https://developers.google.com/sheets/api/quickstart/dotnet
   ///  - Follow Steps 2 from the same guide to install the nuget package
   ///  - In GoogleSheetPriceMonitor change the sheet Id to one that you own

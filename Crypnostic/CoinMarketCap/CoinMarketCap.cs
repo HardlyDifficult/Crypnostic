@@ -1,4 +1,4 @@
-﻿using CrypConnect.CoinMarketCap;
+﻿using Crypnostic.CoinMarketCap;
 using HD;
 using RestSharp;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CrypConnect.CoinMarketCap
+namespace Crypnostic.CoinMarketCap
 {
   /// <summary>
   /// https://coinmarketcap.com/api/

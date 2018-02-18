@@ -3,7 +3,7 @@ using System;
 using System.Threading.Tasks;
 using HD;
 
-namespace CrypConnect.Exchanges
+namespace Crypnostic.Exchanges
 {
   public abstract class RestExchange : Exchange
   {

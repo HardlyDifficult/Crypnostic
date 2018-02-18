@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace CrypConnect
+namespace Crypnostic
 {
   public class TradingPair
   {

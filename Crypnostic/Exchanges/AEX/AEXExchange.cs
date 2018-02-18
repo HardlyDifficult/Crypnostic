@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CrypConnect.Exchanges.Kucoin;
+using Crypnostic.Exchanges.Kucoin;
 using RestSharp;
 using HD;
 using System.Collections.Generic;
-using CrypConnect.Exchanges.AEX;
+using Crypnostic.Exchanges.AEX;
 using System.Diagnostics;
 
-namespace CrypConnect.Exchanges
+namespace Crypnostic.Exchanges
 {
   /// <remarks>
   /// https://www.aex.com/page/api_detailed.html

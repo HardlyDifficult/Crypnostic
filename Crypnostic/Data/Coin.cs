@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using CrypConnect.CoinMarketCap;
+using Crypnostic.CoinMarketCap;
 using HD;
 
-namespace CrypConnect
+namespace Crypnostic
 {
   public class Coin
   {

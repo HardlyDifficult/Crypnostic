@@ -3,9 +3,9 @@
 //using System.Collections.Generic;
 //using System.Threading.Tasks;
 //using HD;
-//using CrypConnect.Exchanges;
+//using Crypnostic.Exchanges;
 
-//namespace CrypConnect
+//namespace Crypnostic
 //{
 //  /// <summary>
 //  /// TODO EtherDelta lastTrade

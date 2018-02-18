@@ -10,14 +10,14 @@ using System.Threading;
 using HD;
 using System.Threading.Tasks;
 
-namespace CrypConnect.GoogleSheetsExamples
+namespace Crypnostic.GoogleSheetsExamples
 {
   public class GoogleSheet
   {
     // If modifying these scopes, delete your previously saved credentials
     // at ~/.credentials/sheets.googleapis.com-dotnet-quickstart.json
     static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
-    const string ApplicationName = "CrypConnect";
+    const string ApplicationName = "Crypnostic";
 
     readonly SheetsService service;
 

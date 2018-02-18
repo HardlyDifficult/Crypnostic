@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
 
-namespace CrypConnect.Exchanges.GDax
+namespace Crypnostic.Exchanges.GDax
 {
   /// <remarks>
   /// https://docs.gdax.com/#introduction

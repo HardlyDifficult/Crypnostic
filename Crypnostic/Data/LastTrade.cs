@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CrypConnect
+namespace Crypnostic
 {
   public struct LastTrade
   {

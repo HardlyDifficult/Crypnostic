@@ -1,11 +1,11 @@
 ﻿using Common.Logging;
-using CrypConnect.CoinMarketCap;
+using Crypnostic.CoinMarketCap;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace CrypConnect
+namespace Crypnostic
 {
   public class ExchangeMonitor
   {

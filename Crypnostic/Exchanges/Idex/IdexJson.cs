@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CrypConnect.Exchanges.Idex
+namespace Crypnostic.Exchanges.Idex
 {
 
   public class IdexTickerInfoJson

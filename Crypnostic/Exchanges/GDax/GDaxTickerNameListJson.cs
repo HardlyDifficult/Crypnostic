@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CrypConnect.Exchanges.GDax
+namespace Crypnostic.Exchanges.GDax
 {
   public class GDaxTickerNameListJson
   {

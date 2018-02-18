@@ -1,5 +1,5 @@
-﻿using CrypConnect.Exchanges;
-using CrypConnect.Exchanges.GDax;
+﻿using Crypnostic.Exchanges;
+using Crypnostic.Exchanges.GDax;
 using HD;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace CrypConnect
+namespace Crypnostic
 {
   public abstract class Exchange
   {

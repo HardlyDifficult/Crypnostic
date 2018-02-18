@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Timers;
 
-namespace CrypConnect.WPFExamples
+namespace Crypnostic.WPFExamples
 {
   public class WatchedCoin : WpfDataContext
   {

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{56535F14-5377-4167-ACF0-471ED55ED8CF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>CrypConnect.WPFExamples</RootNamespace>
-    <AssemblyName>CrypConnect.WPFExamples</AssemblyName>
+    <RootNamespace>Crypnostic.WPFExample</RootNamespace>
+    <AssemblyName>Crypnostic.WPFExample</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -33,6 +33,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>ExampleWPF.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -100,7 +103,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Crypnostic\Crypnostic.csproj">
       <Project>{c4ea014d-bd4d-4a1a-b517-3656eba47723}</Project>
-      <Name>CrypConnect</Name>
+      <Name>Crypnostic</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
