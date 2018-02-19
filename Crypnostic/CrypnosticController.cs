@@ -32,7 +32,7 @@ namespace Crypnostic
     #endregion
 
     #region Internal/Private Data
-    internal static CrypnosticController instance;
+    public static CrypnosticController instance;
 
     /// <summary>
     /// Canceled when Stop() is called.

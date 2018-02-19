@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Crypnostic.Tools;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Timers;
@@ -16,7 +17,7 @@ namespace Crypnostic.WPFExamples
     {
       get
       {
-        TradingPair pair = coin.Best(Coin.bitcoin, true);
+        TradingPair pair = CoinTools.Best(coin, Coin.bitcoin, true);
         return $"{coin.fullName} {pair?.bidPrice} BTC on {pair?.exchange.exchangeName}";
       }
     }

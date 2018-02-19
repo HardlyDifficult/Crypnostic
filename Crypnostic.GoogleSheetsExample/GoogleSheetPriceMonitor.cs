@@ -5,6 +5,7 @@ using System.Timers;
 using System.Linq;
 using static Crypnostic.GoogleSheetsExamples.AboutCoin;
 using System.Threading.Tasks;
+using Crypnostic.Tools;
 
 namespace Crypnostic.GoogleSheetsExamples
 {
@@ -119,10 +120,10 @@ namespace Crypnostic.GoogleSheetsExamples
 
       List<string[]> dataToWrite = new List<string[]>(results.Count);
 
-      TradingPair bestBtcUsdAsk = Coin.bitcoin.Best(Coin.usd, false);
-      TradingPair bestBtcUsdBid = Coin.bitcoin.Best(Coin.usd, true);
-      TradingPair bestEthUsdAsk = Coin.ethereum.Best(Coin.usd, false);
-      TradingPair bestEthUsdBid = Coin.ethereum.Best(Coin.usd, true);
+      TradingPair bestBtcUsdAsk = CoinTools.Best(Coin.bitcoin, Coin.usd, false);
+      TradingPair bestBtcUsdBid = CoinTools.Best(Coin.bitcoin, Coin.usd, true);
+      TradingPair bestEthUsdAsk = CoinTools.Best(Coin.ethereum, Coin.usd, false);
+      TradingPair bestEthUsdBid = CoinTools.Best(Coin.ethereum, Coin.usd, true);
 
       for (int iRow = 0; iRow < results.Count; iRow++)
       {
@@ -158,7 +159,8 @@ namespace Crypnostic.GoogleSheetsExamples
             purchasePriceInBase = arbPurchasePriceBTC;
           }
 
-          (decimal purchaseAmount, decimal quantity) = await quoteCoin.CalcPurchasePrice(
+          (decimal purchaseAmount, decimal quantity) = await CoinTools.CalcPurchasePrice(
+            quoteCoin,
             askExchange, askBaseCoin,
             purchasePriceInBase: purchasePriceInBase);
           if (askBaseCoin == Coin.bitcoin)
@@ -170,7 +172,8 @@ namespace Crypnostic.GoogleSheetsExamples
             purchaseAmount *= bestEthUsdAsk.askPrice;
           }
 
-          decimal sellAmount = await quoteCoin.CalcSellPrice(
+          decimal sellAmount = await CoinTools.CalcSellPrice(
+            quoteCoin,
             bidExchange, bidBaseCoin,
             quantityOfCoin: quantity * 2);
           sellAmount /= 2;
@@ -229,62 +232,62 @@ namespace Crypnostic.GoogleSheetsExamples
 
       about.columns[(int)Column.CoinName] = coin.fullName;
 
-      TradingPair bestBtcBid = coin.Best(Coin.bitcoin, true);
+      TradingPair bestBtcBid = CoinTools.Best(coin, Coin.bitcoin, true);
       if (bestBtcBid != null)
       {
         about.columns[(int)Column.BestBidBTC] = bestBtcBid.bidPrice.ToString();
         about.columns[(int)Column.BestBidBTCExchange] = bestBtcBid.exchange.exchangeName.ToString();
 
-        TradingPair bestBtcUsdBid = Coin.bitcoin.Best(Coin.usd, true);
+        TradingPair bestBtcUsdBid = CoinTools.Best(Coin.bitcoin, Coin.usd, true);
         if (bestBtcUsdBid != null)
         {
           about.columns[(int)Column.BestBidBTCUSD] = (bestBtcUsdBid.bidPrice * bestBtcBid.bidPrice).ToString();
         }
       }
-      TradingPair bestBtcAsk = coin.Best(Coin.bitcoin, false);
+      TradingPair bestBtcAsk = CoinTools.Best(coin, Coin.bitcoin, false);
       if (bestBtcAsk != null)
       {
         about.columns[(int)Column.BestAskBTC] = bestBtcAsk.askPrice.ToString();
         about.columns[(int)Column.BestAskBTCExchange] = bestBtcAsk.exchange.exchangeName.ToString();
 
-        TradingPair bestBtcUsdAsk = Coin.bitcoin.Best(Coin.usd, false);
+        TradingPair bestBtcUsdAsk = CoinTools.Best(Coin.bitcoin, Coin.usd, false);
         if (bestBtcUsdAsk != null)
         {
           about.columns[(int)Column.BestAskBTCUSD] = (bestBtcUsdAsk.askPrice * bestBtcAsk.askPrice).ToString();
         }
       }
-      TradingPair bestEthBid = coin.Best(Coin.ethereum, true);
+      TradingPair bestEthBid = CoinTools.Best(coin, Coin.ethereum, true);
       if (bestEthBid != null)
       {
         about.columns[(int)Column.BestBidETH] = bestEthBid.bidPrice.ToString();
         about.columns[(int)Column.BestBidETHExchange] = bestEthBid.exchange.exchangeName.ToString();
 
-        TradingPair bestEthUsdBid = Coin.ethereum.Best(Coin.usd, true);
+        TradingPair bestEthUsdBid = CoinTools.Best(Coin.ethereum, Coin.usd, true);
         if (bestEthUsdBid != null)
         {
           about.columns[(int)Column.BestBidETHUSD] = (bestEthUsdBid.bidPrice * bestEthBid.bidPrice).ToString();
         }
       }
-      TradingPair bestEthAsk = coin.Best(Coin.ethereum, false);
+      TradingPair bestEthAsk = CoinTools.Best(coin, Coin.ethereum, false);
       if (bestEthAsk != null)
       {
         about.columns[(int)Column.BestAskETH] = bestEthAsk.askPrice.ToString();
         about.columns[(int)Column.BestAskETHExchange] = bestEthAsk.exchange.exchangeName.ToString();
 
-        TradingPair bestEthUsdAsk = Coin.ethereum.Best(Coin.usd, false);
+        TradingPair bestEthUsdAsk = CoinTools.Best(Coin.ethereum, Coin.usd, false);
         if (bestEthUsdAsk != null)
         {
           about.columns[(int)Column.BestAskETHUSD] = (bestEthUsdAsk.askPrice * bestEthAsk.askPrice).ToString();
         }
       }
 
-      TradingPair bestUsdBid = coin.Best(Coin.usd, true);
+      TradingPair bestUsdBid = CoinTools.Best(coin, Coin.usd, true);
       if (bestUsdBid != null)
       {
         about.columns[(int)Column.BestBidUSD] = bestUsdBid.bidPrice.ToString();
         about.columns[(int)Column.BestBidUSDExchange] = bestUsdBid.exchange.exchangeName.ToString();
       }
-      TradingPair bestUsdAsk = coin.Best(Coin.usd, false);
+      TradingPair bestUsdAsk = CoinTools.Best(coin, Coin.usd, false);
       if (bestUsdAsk != null)
       {
         about.columns[(int)Column.BestAskUSD] = bestUsdAsk.askPrice.ToString();

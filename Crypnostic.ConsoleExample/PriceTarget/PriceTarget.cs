@@ -2,6 +2,7 @@
 using Crypnostic;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Crypnostic.Tools;
 
 namespace Crypnostic.ConsoleExamples.PriceTarget
 {
@@ -17,7 +18,7 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
     {
       get
       {
-        return Coin.ethereum.Best(Coin.usd, sellVsBuy: true).bidPrice;
+        return CoinTools.Best(Coin.ethereum, Coin.usd, sellVsBuy: true).bidPrice;
       }
     }
     #endregion
@@ -59,7 +60,7 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
       Coin coin,
       TradingPair pair)
     {
-      TradingPair bestEthPair = coin.Best(Coin.ethereum, sellVsBuy: true);
+      TradingPair bestEthPair = CoinTools.Best(coin, Coin.ethereum, sellVsBuy: true);
       decimal currentValue = bestEthPair.bidPrice;
       decimal goalInEth = coinToTargetEthPrice[coin];
 
@@ -93,7 +94,7 @@ Price is up for {coin.fullName} ({currentValue} ETH / {usd:C}), make {percentPro
 
       decimal goalInEth;
       { // Target a tiny price increase so that the test completes quickly
-        TradingPair bestEthPair = coinToMonitor.Best(Coin.ethereum, sellVsBuy: true);
+        TradingPair bestEthPair = CoinTools.Best(coinToMonitor, Coin.ethereum, sellVsBuy: true);
         decimal originalValue = bestEthPair.bidPrice;
         goalInEth = originalValue * 1.0001m;
         decimal usd = originalValue * ethToUsd;

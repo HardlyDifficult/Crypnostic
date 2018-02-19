@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F11BDE06-24BA-4898-AF21-5187754B9A27}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{685C4FAC-7241-45FD-B882-384370C7F72B}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Crypnostic.ConsoleExample</RootNamespace>
-    <AssemblyName>Crypnostic.ConsoleExample</AssemblyName>
+    <RootNamespace>Crypnostic.Tools</RootNamespace>
+    <AssemblyName>Crypnostic.Tools</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -29,36 +29,30 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>Crypnostic.ConsoleExamples.PriceTarget.PriceTargetProgram</StartupObject>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PriceTarget\PriceTarget.cs" />
-    <Compile Include="PriceTarget\PriceTargetProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CoinTools.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Crypnostic.Tools\Crypnostic.Tools.csproj">
-      <Project>{685c4fac-7241-45fd-b882-384370c7f72b}</Project>
-      <Name>Crypnostic.Tools</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Crypnostic\Crypnostic.csproj">
       <Project>{c4ea014d-bd4d-4a1a-b517-3656eba47723}</Project>
       <Name>Crypnostic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HardlyCommon\Hardly.Common.csproj">
+      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
+      <Name>Hardly.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

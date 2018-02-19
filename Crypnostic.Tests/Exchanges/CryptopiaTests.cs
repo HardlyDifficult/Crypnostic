@@ -33,25 +33,5 @@ namespace Crypnostic.Tests.Exchanges
         return Coin.FromName("OmiseGO");
       }
     } 
-
-    [TestMethod()]
-    public async Task CryptopiaClosedBooks()
-    {
-      monitor = new CrypnosticController(
-        new ExchangeMonitorConfig(exchangeName));
-      await monitor.Start();
-      Coin doge = Coin.FromName("Dogecoin");
-      Assert.IsTrue(doge != null);
-
-      Coin monero = Coin.FromName("Monero");
-      Assert.IsTrue(monero != null);
-      TradingPair pair = monero.Best(doge, true);
-      Assert.IsTrue(pair == null || pair.isInactive);
-
-      Coin omg = Coin.FromName("OmiseGo");
-      Assert.IsTrue(omg != null);
-      TradingPair omgPair = omg.Best(doge, true);
-      Assert.IsTrue(omgPair == null || omgPair.isInactive);
-    }
   }
 }

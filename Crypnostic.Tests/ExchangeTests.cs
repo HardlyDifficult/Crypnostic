@@ -34,23 +34,5 @@ namespace Crypnostic.Tests
       int count = omg.allTradingPairs.Count();
       Assert.IsTrue(count >= 5); // ~2 each (BTC and ETH)
     }
-
-    [TestMethod()]
-    public async Task BitcoinPairs()
-    {
-      monitor = new CrypnosticController(
-        new ExchangeMonitorConfig(
-          ExchangeName.Binance,
-          ExchangeName.Cryptopia,
-          ExchangeName.Kucoin));
-      await monitor.Start();
-
-      Coin ark = Coin.FromName("Ark");
-      TradingPair pair = Coin.bitcoin.Best(ark, true);
-      Assert.IsTrue(pair == null);
-
-      TradingPair otherPair = ark.Best(Coin.bitcoin, true);
-      Assert.IsTrue(otherPair != null);
-    }
   }
 }

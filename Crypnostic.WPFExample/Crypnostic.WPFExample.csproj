@@ -101,6 +101,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Crypnostic.Tools\Crypnostic.Tools.csproj">
+      <Project>{685c4fac-7241-45fd-b882-384370c7f72b}</Project>
+      <Name>Crypnostic.Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Crypnostic\Crypnostic.csproj">
       <Project>{c4ea014d-bd4d-4a1a-b517-3656eba47723}</Project>
       <Name>Crypnostic</Name>

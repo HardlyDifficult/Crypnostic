@@ -31,8 +31,7 @@ namespace Crypnostic.Tests
       monitor = new CrypnosticController(config);
       await monitor.Start();
 
-      TradingPair pair = popularQuoteCoin.Best(popularBaseCoin, true);
-      Assert.IsTrue(pair.askPrice > 0);
+      Assert.IsTrue(popularQuoteCoin.hasValidTradingPairs);
     }
 
     [TestMethod()]
