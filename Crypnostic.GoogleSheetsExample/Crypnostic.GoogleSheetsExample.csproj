@@ -107,10 +107,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HardlyDifficult.Google.Sheets\HardlyDifficult.Google.Sheets.csproj">
-      <Project>{6c848a5b-9006-4bb7-9e26-c7cd3bdce36c}</Project>
-      <Name>HardlyDifficult.Google.Sheets</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Crypnostic.Tools\Crypnostic.Tools.csproj">
       <Project>{685c4fac-7241-45fd-b882-384370c7f72b}</Project>
       <Name>Crypnostic.Tools</Name>

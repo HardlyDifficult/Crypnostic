@@ -33,7 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{92A7D73D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{35AEE25D-254A-4429-8642-FFB82E176BE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HardlyDifficult.Google.Sheets", "..\HardlyDifficult.Google.Sheets\HardlyDifficult.Google.Sheets.csproj", "{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HardlyDifficult.Google.Sheets", "HardlyDifficult.Google.Sheets\HardlyDifficult.Google.Sheets.csproj", "{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
