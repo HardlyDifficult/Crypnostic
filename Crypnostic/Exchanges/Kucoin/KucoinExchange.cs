@@ -59,7 +59,7 @@ namespace Crypnostic.Exchanges
         if (pair != null)
         {
           pair.lastTrade = new LastTrade(
-            new decimal(ticker.lastDealPrice), new decimal(ticker.vol));
+            new decimal(ticker.lastDealPrice));
         }
       }
     }

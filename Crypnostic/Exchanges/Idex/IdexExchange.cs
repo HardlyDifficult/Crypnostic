@@ -129,8 +129,7 @@ namespace Crypnostic.Exchanges
 
         if (pair != null)
         {
-          // TODO Unknown last volume without a follow up request
-          pair.lastTrade = new LastTrade(Parse(ticker.Value.last), 0); 
+          pair.lastTrade = new LastTrade(Parse(ticker.Value.last)); 
         }
       }
     }

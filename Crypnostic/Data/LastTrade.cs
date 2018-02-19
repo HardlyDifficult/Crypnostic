@@ -1,22 +1,27 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Crypnostic
 {
+  /// <summary>
+  /// The last price and the time it was last refreshed.
+  /// 
+  /// Different exchanges will update this value at different rates.
+  /// </summary>
   public struct LastTrade
   {
+    /// <summary>
+    /// Price of 0 means no recent trade
+    /// (different than an unknown state)
+    /// </summary>
     public readonly decimal price;
-
-    // TODO what do we do about the fact not all exchanges get this at the same time? e.g. idex
-    public readonly decimal volume;
 
     public readonly DateTime dateCreated;
 
     public LastTrade(
-      decimal price,
-      decimal volume)
+      decimal price)
     {
       this.price = price;
-      this.volume = volume;
       this.dateCreated = DateTime.Now;
     }
   }

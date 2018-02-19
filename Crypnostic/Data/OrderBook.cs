@@ -5,21 +5,21 @@ namespace Crypnostic
 {
   public struct OrderBook
   {
-    public readonly Order[] asks;
+    public readonly Order[] asksOrOffersYouCanBuy;
 
-    public readonly Order[] bids;
+    public readonly Order[] bidsOrOffersYouCanSell;
 
     public readonly DateTime dateCreated;
 
     public OrderBook(
-      Order[] asks,
-      Order[] bids)
+      Order[] asksOrOffersYouCanBuy,
+      Order[] bidsOrOffersYouCanSell)
     {
-      DebugAssertSortedPrices(asks, true);
-      DebugAssertSortedPrices(bids, false);
+      DebugAssertSortedPrices(asksOrOffersYouCanBuy, true);
+      DebugAssertSortedPrices(bidsOrOffersYouCanSell, false);
 
-      this.asks = asks;
-      this.bids = bids;
+      this.asksOrOffersYouCanBuy = asksOrOffersYouCanBuy;
+      this.bidsOrOffersYouCanSell = bidsOrOffersYouCanSell;
       this.dateCreated = DateTime.Now;
     }
 

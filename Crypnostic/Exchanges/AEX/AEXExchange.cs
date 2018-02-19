@@ -101,7 +101,7 @@ namespace Crypnostic.Exchanges
 
           if (pair != null && ticker.Value.ticker != null)
           {
-            pair.lastTrade = new LastTrade(ticker.Value.ticker.last, 0);
+            pair.lastTrade = new LastTrade(ticker.Value.ticker.last);
           }
         }
       }

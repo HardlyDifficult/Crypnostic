@@ -43,16 +43,16 @@ namespace Crypnostic.Tests
       Exchange exchange = monitor.GetExchange(exchangeName);
 
       OrderBook orderBook = await exchange.GetOrderBook(popularQuoteCoin, popularBaseCoin);
-      Assert.IsTrue(orderBook.asks.Length > 0);
-      Assert.IsTrue(orderBook.asks[0].price > 0);
-      Assert.IsTrue(orderBook.asks[0].volume > 0);
-      Assert.IsTrue(orderBook.bids.Length > 0);
-      Assert.IsTrue(orderBook.bids[0].price > 0);
-      Assert.IsTrue(orderBook.bids[0].volume > 0);
+      Assert.IsTrue(orderBook.asksOrOffersYouCanBuy.Length > 0);
+      Assert.IsTrue(orderBook.asksOrOffersYouCanBuy[0].price > 0);
+      Assert.IsTrue(orderBook.asksOrOffersYouCanBuy[0].volume > 0);
+      Assert.IsTrue(orderBook.bidsOrOffersYouCanSell.Length > 0);
+      Assert.IsTrue(orderBook.bidsOrOffersYouCanSell[0].price > 0);
+      Assert.IsTrue(orderBook.bidsOrOffersYouCanSell[0].volume > 0);
 
-      Assert.IsTrue(orderBook.asks[0].price >= orderBook.bids[0].price);
-      Assert.IsTrue(orderBook.asks[1].price >= orderBook.asks[0].price);
-      Assert.IsTrue(orderBook.bids[0].price >= orderBook.bids[1].price);
+      Assert.IsTrue(orderBook.asksOrOffersYouCanBuy[0].price >= orderBook.bidsOrOffersYouCanSell[0].price);
+      Assert.IsTrue(orderBook.asksOrOffersYouCanBuy[1].price >= orderBook.asksOrOffersYouCanBuy[0].price);
+      Assert.IsTrue(orderBook.bidsOrOffersYouCanSell[0].price >= orderBook.bidsOrOffersYouCanSell[1].price);
     }
 
   }

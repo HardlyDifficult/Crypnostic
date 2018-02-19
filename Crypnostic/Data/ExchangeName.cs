@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Crypnostic
 {
   public enum ExchangeName
   {
+    AEX,
     Binance,
     Cryptopia,
     //EtherDelta,
-    Kucoin,
     GDax,
     Idex,
-    AEX
+    Kucoin,
   }
 }

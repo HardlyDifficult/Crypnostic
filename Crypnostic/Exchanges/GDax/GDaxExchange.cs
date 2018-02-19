@@ -55,8 +55,7 @@ namespace Crypnostic.Exchanges.GDax
         if (pair != null)
         {
           pair.lastTrade = new LastTrade(
-            decimal.Parse(productTicker.price),
-            decimal.Parse(productTicker.size));
+            decimal.Parse(productTicker.price));
         }
       }
     }

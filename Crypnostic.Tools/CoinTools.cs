@@ -41,7 +41,7 @@ namespace Crypnostic.Tools
           continue;
         }
 
-        decimal value = sellVsBuy ? pair.bidPrice : pair.askPrice;
+        decimal value = sellVsBuy ? pair.bidPriceOrOfferYouCanSell : pair.askPriceOrOfferYouCanBuy;
         if (value <= 0)
         { // No bid/ask to consider here
           continue;
@@ -72,9 +72,9 @@ namespace Crypnostic.Tools
       Exchange exchange = CrypnosticController.instance.GetExchange(askExchange);
       OrderBook orderBook = await exchange.GetOrderBook(quoteCoin, askBaseCoin);
 
-      for (int i = 0; i < orderBook.asks.Length; i++)
+      for (int i = 0; i < orderBook.asksOrOffersYouCanBuy.Length; i++)
       {
-        Order order = orderBook.asks[i];
+        Order order = orderBook.asksOrOffersYouCanBuy[i];
         decimal purchaseAmountFromOrder = Math.Min(purchasePriceInBase,
           order.price * order.volume);
 
@@ -102,9 +102,9 @@ namespace Crypnostic.Tools
       Exchange exchange = CrypnosticController.instance.GetExchange(bidExchange);
       OrderBook orderBook = await exchange.GetOrderBook(quoteCoin, bidBaseCoin);
 
-      for (int i = 0; i < orderBook.bids.Length; i++)
+      for (int i = 0; i < orderBook.bidsOrOffersYouCanSell.Length; i++)
       {
-        Order order = orderBook.bids[i];
+        Order order = orderBook.bidsOrOffersYouCanSell[i];
         decimal sellAmountFromOrder = Math.Min(quantityOfCoin, order.volume);
 
         sellAmount += sellAmountFromOrder * order.price;

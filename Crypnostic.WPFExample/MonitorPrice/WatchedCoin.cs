@@ -18,7 +18,7 @@ namespace Crypnostic.WPFExamples
       get
       {
         TradingPair pair = CoinTools.Best(coin, Coin.bitcoin, true);
-        return $"{coin.fullName} {pair?.bidPrice} BTC on {pair?.exchange.exchangeName}";
+        return $"{coin.fullName} {pair?.bidPriceOrOfferYouCanSell} BTC on {pair?.exchange.exchangeName}";
       }
     }
     #endregion

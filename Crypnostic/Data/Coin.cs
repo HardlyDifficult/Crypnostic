@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Common.Logging;
 using Crypnostic.CoinMarketCap;
 using Crypnostic.Data;
 using HD;
@@ -93,6 +94,8 @@ namespace Crypnostic
     #endregion
 
     #region Private Data
+    static readonly ILog log = LogManager.GetLogger<Coin>();
+
     /// <summary>
     /// Cached in this form for performance.
     /// </summary>
@@ -129,11 +132,11 @@ namespace Crypnostic
           {
             continue;
           }
-          if (pair.Value.bidPrice > 0)
+          if (pair.Value.bidPriceOrOfferYouCanSell > 0)
           {
             hasBid = true;
           }
-          if (pair.Value.askPrice > 0)
+          if (pair.Value.askPriceOrOfferYouCanBuy > 0)
           {
             hasAsk = true;
           }
@@ -251,6 +254,8 @@ namespace Crypnostic
 
       this.fullName = fullName;
       this.fullNameLower = fullName.ToLowerInvariant();
+
+      log.Trace($"Created {fullName}");
 
       CrypnosticController.instance.OnNewCoin(this);
     }

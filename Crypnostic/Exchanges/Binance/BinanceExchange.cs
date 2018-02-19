@@ -105,8 +105,7 @@ namespace Crypnostic
       {
         BinanceTradeJson history = tradeHistory[0];
         decimal price = decimal.Parse(history.price);
-        decimal volume = decimal.Parse(history.qty);
-        tradingPair.lastTrade = new LastTrade(price, volume);
+        tradingPair.lastTrade = new LastTrade(price);
       }
     }
 
