@@ -119,6 +119,10 @@
       <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
       <Name>Hardly.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HardlyDifficult.Google.Sheets\HardlyDifficult.Google.Sheets.csproj">
+      <Project>{6c848a5b-9006-4bb7-9e26-c7cd3bdce36c}</Project>
+      <Name>HardlyDifficult.Google.Sheets</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

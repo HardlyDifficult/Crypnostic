@@ -21,7 +21,7 @@ namespace Crypnostic.GoogleSheetsExamples
     static void Main(
       string[] args)
     {
-      // Run once for the application
+      // Configure logging once for the application
       FileTarget target = new FileTarget(
         "Something, Anything goes here... and does... nothing?")
       {

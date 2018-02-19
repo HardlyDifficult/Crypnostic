@@ -6,6 +6,7 @@ using System.Linq;
 using static Crypnostic.GoogleSheetsExamples.AboutCoin;
 using System.Threading.Tasks;
 using Crypnostic.Tools;
+using HardlyDifficult.Google.Sheets;
 
 namespace Crypnostic.GoogleSheetsExamples
 {
@@ -33,7 +34,8 @@ namespace Crypnostic.GoogleSheetsExamples
 
     public GoogleSheetPriceMonitor()
     {
-      sheet = new GoogleSheet("1e6jCpqkQEGwICemF0iVzRDBQwmNUskpZoT5nY3SRd24");
+      sheet = new GoogleSheet("Crypnostic Example",
+        "1jEEQF_gAHFSQPOS9mE3HkOwA7HOdpxFf6np9MLJtpyY");
 
       refreshTimer = new Timer()
       {
