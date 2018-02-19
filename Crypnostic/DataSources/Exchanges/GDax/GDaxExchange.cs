@@ -11,14 +11,13 @@ namespace Crypnostic.Exchanges.GDax
   /// </remarks>
   internal class GDaxExchange : RestExchange
   {
-    public GDaxExchange(
-      CrypnosticController exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.GDax, 3 * 60, "https://api.gdax.com")
+    public GDaxExchange()
+      : base(ExchangeName.GDax, "https://api.gdax.com", 3 * 60)
     {
-      exchangeMonitor.AddAlias("Ether", "Ethereum");
+      CrypnosticController.instance.AddCoinAlias("Ethereum", "Ether");
     }
 
-    public override async Task LoadTickerNames()
+    protected override async Task RefreshTickers()
     {
       List<GDaxTickerNameJson> productList =
         await Get<List<GDaxTickerNameJson>>("currencies");
@@ -28,11 +27,11 @@ namespace Crypnostic.Exchanges.GDax
         GDaxTickerNameJson product = productList[i];
         bool isInactive = product.status.Equals("online",
           StringComparison.InvariantCultureIgnoreCase) == false;
-        AddTicker(product.id, CreateFromName(product.name), isInactive);
+        AddTicker(CreateFromName(product.name), product.id, isInactive);
       }
     }
 
-    protected override async Task GetAllTradingPairs()
+    protected override async Task RefreshTradingPairs()
     {
       await throttle.WaitTillReady();
 
@@ -67,7 +66,7 @@ namespace Crypnostic.Exchanges.GDax
       return $"{quoteSymbol}-{baseSymbol}";
     }
 
-    protected override async Task<OrderBook> GetOrderBookInternal(
+    protected override async Task<OrderBook> GetOrderBook(
      string pairId)
     {
       GDaxDepthListJson depthJson = await Get<GDaxDepthListJson>($"products/{pairId}/book?level=2");

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Crypnostic.Exchanges.Kucoin;
 using RestSharp;
 using HD;
 using System.Collections.Generic;
@@ -14,30 +13,32 @@ namespace Crypnostic.Exchanges
   /// </remarks>
   internal class AEXExchange : RestExchange
   {
-    readonly IRestClient client;
+    readonly IRestClient wwwClient;
 
     readonly HashSet<string> marketList = new HashSet<string>();
 
     /// <summary>
     /// Every 60 seconds the number of calls can not be more than 120 times.
     /// </summary>
-    public AEXExchange(
-      CrypnosticController exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.AEX, 120, "https://api.aex.com")
+    public AEXExchange()
+      : base(ExchangeName.AEX, "https://api.aex.com", 120)
     {
-      client = new RestClient("https://www.aex.com");
-      exchangeMonitor.AddAlias("BitcoinGod", "Bitcoin God");
-      exchangeMonitor.AddAlias("Tether USD", "Tether");
-      exchangeMonitor.AddAlias("CanYa", "CanYaCoin");
-      exchangeMonitor.AddAlias("New Economy Movement", "NEM");
-      exchangeMonitor.AddAlias("Lightning Bitcoin", "Lightning Bitcoin [Futures]");
-      exchangeMonitor.AddAlias("UnitedBitcoin", "United Bitcoin");
+      // Two base URLs are required for this exchange
+      wwwClient = new RestClient("https://www.aex.com");
+
+      CrypnosticController.instance.AddCoinAlias(
+        new[] { "Bitcoin God", "BitcoinGod" },
+        new[] { "Tether", "Tether USD" },
+        new[] { "CanYaCoin", "CanYa" },
+        new[] { "NEM", "New Economy Movement" },
+        new[] { "Lightning Bitcoin [Futures]", "Lightning Bitcoin" },
+        new[] { "United Bitcoin", "UnitedBitcoin" });
     }
 
-    public override async Task LoadTickerNames()
+    protected override async Task RefreshTickers()
     {
       await throttle.WaitTillReady();
-      string jsContent = await client.AsyncDownload("page/statics/js/lib/commonFun.js");
+      string jsContent = await wwwClient.AsyncDownload("page/statics/js/lib/commonFun.js");
       string nameListJs = jsContent.GetBetween("all_name={", "}");
       string[] nameList = nameListJs.Split(',');
       for (int i = 0; i < nameList.Length; i++)
@@ -50,7 +51,7 @@ namespace Crypnostic.Exchanges
         // Is this possible to determine?
         bool isInactive = false;
 
-        AddTicker(ticker, coin, isInactive);
+        AddTicker(coin, ticker, isInactive);
       }
 
       string marketListJs = jsContent.GetBetween("alias_arr={", "}");
@@ -67,7 +68,7 @@ namespace Crypnostic.Exchanges
       }
     }
 
-    protected override async Task GetAllTradingPairs()
+    protected override async Task RefreshTradingPairs()
     {
       foreach (string market in marketList)
       {
@@ -97,7 +98,7 @@ namespace Crypnostic.Exchanges
             bidPrice = ticker.Value.ticker.buy;
           }
 
-          TradingPair pair = AddTradingPair(baseCoin, quoteCoinTicker, askPrice, bidPrice, isInactive);
+          TradingPair pair = AddTradingPair(quoteCoinTicker, baseCoin, askPrice, bidPrice, isInactive);
 
           if (pair != null && ticker.Value.ticker != null)
           {
@@ -115,7 +116,7 @@ namespace Crypnostic.Exchanges
       return $"c={quoteSymbol.ToLowerInvariant()}&mk_type={baseSymbol.ToLowerInvariant()}";
     }
 
-    protected override async Task<OrderBook> GetOrderBookInternal(
+    protected override async Task<OrderBook> GetOrderBook(
      string pairId)
     {
       AexDepthJson depthJson = await Get<AexDepthJson>($"depth.php?{pairId}");

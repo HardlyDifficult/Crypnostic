@@ -12,23 +12,23 @@ namespace Crypnostic.Exchanges
     /// <summary>
     /// No stated throttle limit, going with the same as Crytpopia
     /// </summary>
-    public KucoinExchange(
-      CrypnosticController exchangeMonitor)
-      : base(exchangeMonitor, ExchangeName.Kucoin, 1_000_000 / 1_440, "https://api.kucoin.com")
+    public KucoinExchange()
+      : base(ExchangeName.Kucoin, "https://api.kucoin.com", 1_000_000 / 1_440)
     {
-      exchangeMonitor.AddAlias("USDT", "Tether");
-      exchangeMonitor.AddAlias("Raiden Network", "Raiden Network Token");
-      exchangeMonitor.AddAlias("Request", "Request Network");
-      exchangeMonitor.AddAlias("TenXPay", "TenX");
-      exchangeMonitor.AddAlias("CanYa", "CanYaCoin");
-      exchangeMonitor.AddAlias("BlockMason", "BlockMason Credit Protocol");
-      exchangeMonitor.AddAlias("High Performance Blockch", "High Performance Blockchain");
-      exchangeMonitor.AddAlias("NeoGas", "Gas");
-      exchangeMonitor.AddAlias("Oyster Pearl", "Oyster");
-      exchangeMonitor.AddAlias("Trinity", "Trinity Network Credit");
+      CrypnosticController.instance.AddCoinAlias(
+        new[] { "Tether", "USDT" },
+        new[] { "Raiden Network Token", "Raiden Network" },
+        new[] { "Request Network", "Request" },
+        new[] { "TenX", "TenXPay" },
+        new[] { "CanYaCoin", "CanYa" },
+        new[] { "BlockMason Credit Protocol", "BlockMason" },
+        new[] { "High Performance Blockchain", "High Performance Blockch" },
+        new[] { "Gas", "NeoGas" },
+        new[] { "Oyster", "Oyster Pearl" },
+        new[] { "Trinity Network Credit", "Trinity" });
     }
 
-    public override async Task LoadTickerNames()
+    protected override async Task RefreshTickers()
     {
       KucoinProductListJson productList = await Get<KucoinProductListJson>(
         "v1/market/open/coins");
@@ -38,11 +38,11 @@ namespace Crypnostic.Exchanges
         string fullName = product.name;
         Coin coin = CreateFromName(fullName);
         bool isInactive = product.enableDeposit == false || product.enableWithdraw == false;
-        AddTicker(ticker, coin, isInactive);
+        AddTicker(coin, ticker, isInactive);
       }
     }
 
-    protected override async Task GetAllTradingPairs()
+    protected override async Task RefreshTradingPairs()
     {
       KucoinTickerListJson tickerList = await Get<KucoinTickerListJson>("v1/open/tick");
 
@@ -71,7 +71,7 @@ namespace Crypnostic.Exchanges
       return $"{quoteSymbol.ToUpperInvariant()}-{baseSymbol.ToUpperInvariant()}";
     }
 
-    protected override async Task<OrderBook> GetOrderBookInternal(
+    protected override async Task<OrderBook> GetOrderBook(
      string pairId)
     {
       KucoinDepthListJson depthJson = await Get<KucoinDepthListJson>(
@@ -86,7 +86,7 @@ namespace Crypnostic.Exchanges
     static Order[] ExtractOrders(
       decimal[][] resultList)
     {
-      if(resultList == null)
+      if (resultList == null)
       {
         return new Order[0];
       }

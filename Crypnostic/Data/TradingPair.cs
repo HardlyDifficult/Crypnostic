@@ -53,6 +53,8 @@ namespace Crypnostic
       private get; set;
     }
 
+    OrderBook orderBook;
+
     bool _isInactive;
     #endregion
 
@@ -119,6 +121,42 @@ namespace Crypnostic
     }
     #endregion
 
+    #region Public API
+    /// <summary>Get's the most recent successful trade for this pair.</summary>
+    /// <param name="maxCacheAgeInSeconds">
+    /// Use the cache unless the last refresh was more than this ago.
+    /// </param>
+    public async Task<LastTrade> GetLastTrade(
+      int maxCacheAgeInSeconds)
+    {
+      if ((DateTime.Now - lastTrade.dateCreated).TotalSeconds > maxCacheAgeInSeconds)
+      {
+        await exchange.RefreshLastTrade(this);
+      }
+
+      return lastTrade;
+    }
+
+    /// <summary>
+    /// Gets approx 100 bids and asks, allowing you to review market depth for a trading pair.
+    /// </summary>
+    /// <param name="maxCacheAgeInSeconds">
+    /// Use the cache unless the last refresh was more than this ago.
+    /// </param>
+    public async Task<OrderBook> GetOrderBook(
+      TimeSpan maxCacheAgeInSeconds = default(TimeSpan))
+    {
+      if ((DateTime.Now - orderBook.dateCreated) < maxCacheAgeInSeconds)
+      {
+        return orderBook;
+      }
+
+      orderBook = await exchange.GetOrderBook(quoteCoin, baseCoin);
+
+      return orderBook;
+    }
+    #endregion
+
     #region Internal Write API
     internal void Update(
       decimal askPriceOrOfferYouCanBuy,
@@ -135,22 +173,6 @@ namespace Crypnostic
       this.bidPriceOrOfferYouCanSell = bidPriceOrOfferYouCanSell;
       this.lastUpdated = DateTime.Now;
       onPriceUpdate?.Invoke();
-    }
-    #endregion
-
-    #region Public Read API
-    /// <param name="maxCacheAgeInSeconds">
-    /// Use the cache unless the last refresh was more than this ago.
-    /// </param>
-    public async Task<LastTrade> GetLastTrade(
-      int maxCacheAgeInSeconds)
-    {
-      if ((DateTime.Now - lastTrade.dateCreated).TotalSeconds > maxCacheAgeInSeconds)
-      {
-        await exchange.RefreshLastTrade(this);
-      }
-
-      return lastTrade;
     }
     #endregion
 

@@ -17,19 +17,19 @@ namespace Crypnostic.Tests.Exchanges
     public async Task CryptopiaClosedBooks()
     {
       monitor = new CrypnosticController(
-        new ExchangeMonitorConfig(exchangeName));
+        new CrypnosticConfig(exchangeName));
       await monitor.Start();
       Coin doge = Coin.FromName("Dogecoin");
       Assert.IsTrue(doge != null);
 
       Coin monero = Coin.FromName("Monero");
       Assert.IsTrue(monero != null);
-      TradingPair pair = CoinTools.Best(monero, doge, true);
+      TradingPair pair = monero.FindBestOffer(doge, OrderType.Sell);
       Assert.IsTrue(pair == null || pair.isInactive);
 
       Coin omg = Coin.FromName("OmiseGo");
       Assert.IsTrue(omg != null);
-      TradingPair omgPair = CoinTools.Best(omg, doge, true);
+      TradingPair omgPair = omg.FindBestOffer(doge, OrderType.Sell);
       Assert.IsTrue(omgPair == null || omgPair.isInactive);
     }
   }

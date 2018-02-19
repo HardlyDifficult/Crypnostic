@@ -27,7 +27,7 @@ namespace Crypnostic.Tests
     [TestMethod()]
     public async Task BasicExchange()
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(exchangeName);
+      CrypnosticConfig config = new CrypnosticConfig(exchangeName);
       monitor = new CrypnosticController(config);
       await monitor.Start();
 
@@ -37,12 +37,12 @@ namespace Crypnostic.Tests
     [TestMethod()]
     public async Task OrderBook()
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(exchangeName);
+      CrypnosticConfig config = new CrypnosticConfig(exchangeName);
       monitor = new CrypnosticController(config);
       await monitor.Start();
-      Exchange exchange = monitor.GetExchange(exchangeName);
 
-      OrderBook orderBook = await exchange.GetOrderBook(popularQuoteCoin, popularBaseCoin);
+      TradingPair tradingPair = popularQuoteCoin.GetTradingPair(popularBaseCoin, exchangeName);
+      OrderBook orderBook = await tradingPair.GetOrderBook();
       Assert.IsTrue(orderBook.asksOrOffersYouCanBuy.Length > 0);
       Assert.IsTrue(orderBook.asksOrOffersYouCanBuy[0].price > 0);
       Assert.IsTrue(orderBook.asksOrOffersYouCanBuy[0].volume > 0);

@@ -27,30 +27,29 @@ namespace Crypnostic
     ///   1200 requests per minute is the stated max.
     ///   Targeting half that to avoid issues.
     /// </summary>
-    public BinanceExchange(
-      CrypnosticController exchangeMonitor)
-      : base(exchangeMonitor,
-          ExchangeName.Binance,
-          1200,
-          "https://www.binance.com")
+    public BinanceExchange()
+      : base(ExchangeName.Binance,
+          "https://www.binance.com",
+          1200)
     {
-      exchangeMonitor.AddAlias("TetherUS", "Tether");
-      exchangeMonitor.AddAlias("KyberNetwork", "Kyber Network");
-      exchangeMonitor.AddAlias("EnjinCoin", "Enjin Coin");
-      exchangeMonitor.AddAlias("iExecRLC", "iExec RLC");
-      exchangeMonitor.AddAlias("MIOTA", "IOTA");
-      exchangeMonitor.AddAlias("NeoGas", "Gas");
-      exchangeMonitor.AddAlias("PowerLedger", "Power Ledger");
-      exchangeMonitor.AddAlias("Stellar Lumens", "Stellar");
-      exchangeMonitor.AddAlias("Walton", "Waltonchain");
-      exchangeMonitor.AddAlias("Amber", "AmberCoin");
-      exchangeMonitor.AddAlias("CHAT", "ChatCoin");
+      CrypnosticController.instance.AddCoinAlias(
+        new[] { "Tether", "TetherUS" },
+        new[] { "Kyber Network", "KyberNetwork" },
+        new[] { "Enjin Coin", "EnjinCoin" },
+        new[] { "iExec RLC", "iExecRLC" },
+        new[] { "IOTA", "MIOTA" },
+        new[] { "Gas", "NeoGas" },
+        new[] { "Power Ledger", "PowerLedger" },
+        new[] { "Stellar", "Stellar Lumens" },
+        new[] { "Waltonchain", "Walton" },
+        new[] { "AmberCoin", "Amber" },
+        new[] { "ChatCoin", "CHAT" });
 
       ApiClient api = new ApiClient(null, null);
       client = new BinanceClient(api);
     }
 
-    public override async Task LoadTickerNames()
+    protected override async Task RefreshTickers()
     {
       BinanceProductListJson productList =
         await Get<BinanceProductListJson>("exchange/public/product");
@@ -62,14 +61,14 @@ namespace Crypnostic
           StringComparison.InvariantCultureIgnoreCase) == false;
         Coin baseCoin = CreateFromName(product.baseAssetName);
         // TODO Binance: how-to determine the coin's status (e.g. deposit paused)
-        AddTicker(product.baseAsset, baseCoin, false);
+        AddTicker(baseCoin, product.baseAsset, false);
         Coin quoteCoin = CreateFromName(product.quoteAssetName);
-        AddTicker(product.quoteAsset, quoteCoin, false);
+        AddTicker(quoteCoin, product.quoteAsset, false);
         baseCoin?.UpdatePairStatus(this, quoteCoin, isInactive);
       }
     }
 
-    protected override async Task GetAllTradingPairs()
+    protected override async Task RefreshTradingPairs()
     {
       await throttle.WaitTillReady();
       IEnumerable<OrderBookTicker> tickerList = await client.GetOrderBookTicker();
@@ -110,13 +109,13 @@ namespace Crypnostic
     }
 
     protected override string GetPairId(
-      string quoteSymbol, 
+      string quoteSymbol,
       string baseSymbol)
     {
       return $"{quoteSymbol.ToUpperInvariant()}{baseSymbol.ToUpperInvariant()}";
     }
 
-    protected override async Task<OrderBook> GetOrderBookInternal(
+    protected override async Task<OrderBook> GetOrderBook(
      string pairId)
     {
       BinanceDepthJson depthJson = await Get<BinanceDepthJson>($"api/v1/depth?symbol={pairId}");
@@ -133,7 +132,7 @@ namespace Crypnostic
       Order[] orderList = new Order[resultList.Length];
       for (int i = 0; i < orderList.Length; i++)
       {
-        orderList[i] = new Order(decimal.Parse((string)resultList[i][0]), 
+        orderList[i] = new Order(decimal.Parse((string)resultList[i][0]),
           decimal.Parse((string)resultList[i][1]));
       }
 

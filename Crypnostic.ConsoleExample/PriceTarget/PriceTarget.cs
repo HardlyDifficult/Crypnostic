@@ -18,7 +18,7 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
     {
       get
       {
-        return CoinTools.Best(Coin.ethereum, Coin.usd, sellVsBuy: true).bidPriceOrOfferYouCanSell;
+        return Coin.ethereum.FindBestOffer(Coin.usd, OrderType.Sell).bidPriceOrOfferYouCanSell;
       }
     }
     #endregion
@@ -26,17 +26,13 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
     #region Init
     public PriceTarget()
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(
+      CrypnosticConfig config = new CrypnosticConfig(
         ExchangeName.Binance,
         ExchangeName.Cryptopia,
         ExchangeName.Kucoin,
         ExchangeName.GDax);
 
-      config.AddCoinMap(
-        new[] { "TetherUS", "USDT", "Tether" },
-        new[] { "TenX", "TenXPay" });
-
-      config.BlacklistCoins("TetherUS", "Bitcoin Cash");
+      config.BlacklistCoins("Tether", "Bitcoin Cash");
 
       monitor = new CrypnosticController(config);
     }
@@ -60,7 +56,7 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
       Coin coin,
       TradingPair pair)
     {
-      TradingPair bestEthPair = CoinTools.Best(coin, Coin.ethereum, sellVsBuy: true);
+      TradingPair bestEthPair = coin.FindBestOffer(Coin.ethereum, OrderType.Sell);
       decimal currentValue = bestEthPair.bidPriceOrOfferYouCanSell;
       decimal goalInEth = coinToTargetEthPrice[coin];
 
@@ -94,7 +90,7 @@ Price is up for {coin.fullName} ({currentValue} ETH / {usd:C}), make {percentPro
 
       decimal goalInEth;
       { // Target a tiny price increase so that the test completes quickly
-        TradingPair bestEthPair = CoinTools.Best(coinToMonitor, Coin.ethereum, sellVsBuy: true);
+        TradingPair bestEthPair = coinToMonitor.FindBestOffer(Coin.ethereum, OrderType.Sell);
         decimal originalValue = bestEthPair.bidPriceOrOfferYouCanSell;
         goalInEth = originalValue * 1.0001m;
         decimal usd = originalValue * ethToUsd;

@@ -36,14 +36,14 @@ namespace Crypnostic
 
     /// <summary>
     /// Canceled when Stop() is called.
-    /// 
-    /// TODO how to we wire this into async calls?
     /// </summary>
     internal readonly CancellationTokenSource cancellationTokenSource
       = new CancellationTokenSource();
 
     /// <summary>
     /// Populated from config on construction.
+    /// 
+    /// Note the Coin for an alias may be null (e.g. if it's blacklisted)
     /// </summary>
     internal readonly Dictionary<string, Coin> aliasLowerToCoin
       = new Dictionary<string, Coin>();
@@ -68,7 +68,7 @@ namespace Crypnostic
     /// </summary>
     readonly Exchange[] exchangeList;
 
-    internal readonly CoinMarketCapAPI coinMarketCap = new CoinMarketCapAPI();
+    internal readonly CoinMarketCapAPI coinMarketCap;
     #endregion
 
     #region Init
@@ -76,7 +76,7 @@ namespace Crypnostic
     /// Before using this controller, call Start().
     /// </summary>
     public CrypnosticController(
-      ExchangeMonitorConfig config)
+      CrypnosticConfig config)
     {
       log.Trace(nameof(CrypnosticController));
 
@@ -85,9 +85,11 @@ namespace Crypnostic
       Debug.Assert(instance == null);
       instance = this;
 
+      coinMarketCap = new CoinMarketCapAPI(); 
+
       foreach (KeyValuePair<string, string> aliasToName in config.coinAliasToName)
       {
-        AddAlias(aliasToName.Key, aliasToName.Value);
+        AddCoinAlias(aliasToName.Value, aliasToName.Key);
       }
 
       foreach (string blacklistedCoin in config.blacklistedCoins)
@@ -100,7 +102,7 @@ namespace Crypnostic
       for (int i = 0; i < config.supportedExchangeList.Length; i++)
       {
         ExchangeName name = config.supportedExchangeList[i];
-        Exchange exchange = Exchange.LoadExchange(this, name);
+        Exchange exchange = Exchange.LoadExchange(name);
         exchangeList[i] = exchange;
       }
     }
@@ -115,10 +117,10 @@ namespace Crypnostic
 
       List<Task> taskList = new List<Task>();
 
-      taskList.Add(coinMarketCap.Refresh());
+      taskList.Add(coinMarketCap.Start());
       for (int i = 0; i < exchangeList.Length; i++)
       {
-        taskList.Add(exchangeList[i].GetAllPairs(true));
+        taskList.Add(exchangeList[i].Start());
       }
 
       await Task.WhenAll(taskList);
@@ -160,9 +162,9 @@ namespace Crypnostic
     /// Be careful: too aggressive leads incorrect matches, not enough 
     /// and you may miss opportunities.
     /// </summary>
-    public void AddAlias(
-     string alias,
-     string fullName)
+    public void AddCoinAlias(
+      string fullName,
+      string alias)
     {
       Debug.Assert(string.IsNullOrWhiteSpace(alias) == false);
       Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
@@ -176,9 +178,43 @@ namespace Crypnostic
       }
 
       Coin coin = Coin.CreateFromName(fullName);
-      if (coin != null)
-      {
         aliasLowerToCoin.Add(alias, coin);
+    }
+
+    /// <summary>
+    /// Defines aliases for a coin.  
+    /// e.g. TetherUS maps to Tether so it matches with other exchanges.
+    /// </summary>
+    /// <param name="coinFullNameToAliasList">
+    /// The first string is the coin's official full name we will use going forward.
+    /// The other strings are aliases which will map to the first.
+    /// 
+    /// When in doubt, use the full name from CoinMarketCap.
+    /// </param>
+    public void AddCoinAlias(
+      params string[][] coinFullNameToAliasList)
+    {
+      Debug.Assert(coinFullNameToAliasList != null);
+      Debug.Assert(coinFullNameToAliasList.Length > 0);
+
+      for (int i = 0; i < coinFullNameToAliasList.Length; i++)
+      {
+        string[] coinFullNameToAlias = coinFullNameToAliasList[i];
+        Debug.Assert(coinFullNameToAlias != null);
+        Debug.Assert(coinFullNameToAlias.Length > 1);
+
+        string primaryFullName = coinFullNameToAlias[0];
+        Debug.Assert(string.IsNullOrWhiteSpace(primaryFullName) == false);
+
+        for (int j = 1; j < coinFullNameToAlias.Length; j++)
+        {
+          string alias = coinFullNameToAlias[j];
+          Debug.Assert(string.IsNullOrWhiteSpace(alias) == false);
+          Debug.Assert(alias.Equals(primaryFullName,
+            StringComparison.InvariantCultureIgnoreCase) == false);
+
+          AddCoinAlias(primaryFullName, alias);
+        }
       }
     }
     #endregion

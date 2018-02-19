@@ -262,6 +262,13 @@ namespace Crypnostic
     #endregion
 
     #region Public Read
+    public TradingPair GetTradingPair(
+      Coin baseCoin, 
+      ExchangeName exchangeName)
+    {
+      return tradingPairs[(exchangeName, baseCoin)];
+    }
+
     /// <summary>
     /// True if the exchange lists the coin and is not
     /// currently reporting an issue.

@@ -13,7 +13,7 @@ namespace Crypnostic.Tests
     public async Task AllExchanges()
     {
       monitor = new CrypnosticController(
-        new ExchangeMonitorConfig());
+        new CrypnosticConfig());
       await monitor.Start();
 
       int count = monitor.allCoins.Count();
@@ -24,7 +24,7 @@ namespace Crypnostic.Tests
     public async Task AllTradingPairs()
     {
       monitor = new CrypnosticController(
-        new ExchangeMonitorConfig(
+        new CrypnosticConfig(
           ExchangeName.Binance,
           ExchangeName.Cryptopia,
           ExchangeName.Kucoin));

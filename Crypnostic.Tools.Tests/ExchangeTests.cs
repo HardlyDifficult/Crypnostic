@@ -14,17 +14,17 @@ namespace Crypnostic.Tests
     public async Task BitcoinPairs()
     {
       monitor = new CrypnosticController(
-        new ExchangeMonitorConfig(
+        new CrypnosticConfig(
           ExchangeName.Binance,
           ExchangeName.Cryptopia,
           ExchangeName.Kucoin));
       await monitor.Start();
 
       Coin ark = Coin.FromName("Ark");
-      TradingPair pair = CoinTools.Best(Coin.bitcoin, ark, true);
+      TradingPair pair = Coin.bitcoin.FindBestOffer(ark, OrderType.Sell);
       Assert.IsTrue(pair == null);
 
-      TradingPair otherPair = CoinTools.Best(ark, Coin.bitcoin, true);
+      TradingPair otherPair = ark.FindBestOffer(Coin.bitcoin, OrderType.Sell);
       Assert.IsTrue(otherPair != null);
     }
   }

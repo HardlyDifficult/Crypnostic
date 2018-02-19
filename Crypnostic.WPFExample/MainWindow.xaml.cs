@@ -25,7 +25,7 @@ namespace Crypnostic.WPFExamples
       object sender, 
       DoWorkEventArgs e)
     {
-      ExchangeMonitorConfig config = new ExchangeMonitorConfig(
+      CrypnosticConfig config = new CrypnosticConfig(
         ExchangeName.Binance,
         ExchangeName.Cryptopia,
         ExchangeName.Kucoin);
