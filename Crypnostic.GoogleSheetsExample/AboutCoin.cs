@@ -8,23 +8,10 @@ namespace Crypnostic.GoogleSheetsExamples
     {
       CoinName,
       BestBidBTC,
-      BestBidBTCUSD,
       BestBidBTCExchange,
       BestAskBTC,
-      BestAskBTCUSD,
       BestAskBTCExchange,
-      BestBidETH,
-      BestBidETHUSD,
-      BestBidETHExchange,
-      BestAskETH,
-      BestAskETHUSD,
-      BestAskETHExchange,
-      BestBidUSD,
-      BestBidUSDExchange,
-      BestAskUSD,
-      BestAskUSDExchange,
-      MarketCapUSD,
-      TotalVolumeSeen
+      MarketCapUSD
     }
 
     public readonly string[] columns;

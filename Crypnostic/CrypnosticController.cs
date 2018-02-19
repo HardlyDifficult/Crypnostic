@@ -146,8 +146,10 @@ namespace Crypnostic
       Coin coin)
     {
       Debug.Assert(coin != null);
+      // TODO
+      //Debug.Assert(fullNameLowerToCoin.ContainsKey(coin.fullNameLower) == false);
 
-      fullNameLowerToCoin.Add(coin.fullNameLower, coin);
+      fullNameLowerToCoin[coin.fullNameLower] = coin;
       onNewCoin?.Invoke(coin);
     }
     #endregion
