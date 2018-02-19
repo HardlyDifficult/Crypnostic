@@ -100,8 +100,6 @@ namespace Crypnostic
       this.bidPrice = bidPrice;
       this.lastUpdated = DateTime.Now;
       this.isInactive = isInactive;
-
-      quoteCoin.AddPair(this);
     }
     #endregion
 

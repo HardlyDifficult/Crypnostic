@@ -68,7 +68,7 @@ namespace Crypnostic
     /// </summary>
     readonly Exchange[] exchangeList;
 
-    readonly CoinMarketCapAPI coinMarketCap = new CoinMarketCapAPI();
+    internal readonly CoinMarketCapAPI coinMarketCap = new CoinMarketCapAPI();
     #endregion
 
     #region Init
@@ -92,6 +92,7 @@ namespace Crypnostic
 
       foreach (string blacklistedCoin in config.blacklistedCoins)
       {
+        Debug.Assert(fullNameLowerToCoin.ContainsKey(blacklistedCoin.ToLowerInvariant()) == false);
         blacklistedFullNameLowerList.Add(blacklistedCoin.ToLowerInvariant());
       }
 
@@ -108,7 +109,6 @@ namespace Crypnostic
     /// Completes an initial download from every exchange (before returning)
     /// and then starts auto-refreshing.
     /// </summary>
-    /// <returns></returns>
     public async Task Start()
     {
       log.Trace(nameof(Start));
@@ -124,6 +124,10 @@ namespace Crypnostic
       await Task.WhenAll(taskList);
     }
 
+    /// <summary>
+    /// Call this when exiting the application
+    /// or any other time you want the auto-refresh to stop.
+    /// </summary>
     public void Stop()
     {
       log.Trace(nameof(Stop));
@@ -147,26 +151,40 @@ namespace Crypnostic
     #endregion
 
     #region Public Write API
+    /// <summary>
+    /// Aliases will take a coin's full name and map it to another.
+    /// When in doubt, use the full name from CoinMarketCap.com
+    /// 
+    /// Currently various Exchange implementations add some aliases they require.
+    /// 
+    /// Be careful: too aggressive leads incorrect matches, not enough 
+    /// and you may miss opportunities.
+    /// </summary>
     public void AddAlias(
      string alias,
-     string name)
+     string fullName)
     {
-      alias = alias.ToLowerInvariant();
-      Debug.Assert(fullNameLowerToCoin.ContainsKey(alias) == false);
+      Debug.Assert(string.IsNullOrWhiteSpace(alias) == false);
+      Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
+      Debug.Assert(alias.Equals(fullName, StringComparison.InvariantCultureIgnoreCase) == false);
+      Debug.Assert(fullNameLowerToCoin.ContainsKey(alias.ToLowerInvariant()) == false);
 
+      alias = alias.ToLowerInvariant();
       if (aliasLowerToCoin.ContainsKey(alias))
       { // De-dupe
         return;
       }
 
-      Coin coin = Coin.CreateFromName2(name);
-
-      aliasLowerToCoin.Add(alias, coin);
+      Coin coin = Coin.CreateFromName(fullName);
+      if (coin != null)
+      {
+        aliasLowerToCoin.Add(alias, coin);
+      }
     }
     #endregion
 
     #region Public Read API
-    public Exchange FindExchange(
+    public Exchange GetExchange(
       ExchangeName onExchange)
     {
       for (int i = 0; i < exchangeList.Length; i++)

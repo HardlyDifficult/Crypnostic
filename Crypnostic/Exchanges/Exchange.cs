@@ -217,6 +217,9 @@ namespace Crypnostic
       Coin quoteCoin,
       Coin baseCoin)
     {
+      Debug.Assert(quoteCoin != null);
+      Debug.Assert(baseCoin != null);
+      Debug.Assert(quoteCoin != baseCoin);
       Debug.Assert(coinToTickerLower.ContainsKey(quoteCoin));
       Debug.Assert(coinToTickerLower.ContainsKey(baseCoin));
 
@@ -376,7 +379,7 @@ namespace Crypnostic
         return null;
       }
 
-      return Coin.CreateFromName2(name);
+      return Coin.CreateFromName(name);
     }
     #endregion
   }

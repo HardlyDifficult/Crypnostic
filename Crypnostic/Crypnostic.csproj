@@ -58,6 +58,7 @@
     <Compile Include="Data\Coin.cs" />
     <Compile Include="CoinMarketCap\CoinMarketCap.cs" />
     <Compile Include="CoinMarketCap\CoinMarketCapTickerJson.cs" />
+    <Compile Include="Data\MarketCap.cs" />
     <Compile Include="Exchanges\ExchangeMonitorConfig.cs" />
     <Compile Include="Exchanges\Binance\BinanceProductJson.cs" />
     <Compile Include="Exchanges\GDax\GDaxExchange.cs" />

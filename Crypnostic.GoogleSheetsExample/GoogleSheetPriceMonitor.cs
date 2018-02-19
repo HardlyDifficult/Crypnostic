@@ -293,7 +293,7 @@ namespace Crypnostic.GoogleSheetsExamples
 
       if (coin.coinMarketCapData != null)
       {
-        about.columns[(int)Column.MarketCapUSD] = coin.coinMarketCapData.market_cap_usd ?? "?";
+        about.columns[(int)Column.MarketCapUSD] = coin.coinMarketCapData.marketCapUsd?.ToString() ?? "?";
       }
 
       return about;

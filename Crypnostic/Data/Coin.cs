@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Crypnostic.CoinMarketCap;
+using Crypnostic.Data;
 using HD;
 
 namespace Crypnostic
 {
+  /// <summary>
+  /// This tracks a single currency across all exchanges.  
+  /// e.g. Ethereum.
+  /// </summary>
   public class Coin
   {
     #region Public Static 
@@ -17,7 +22,7 @@ namespace Crypnostic
     {
       get
       {
-        return Coin.FromName("Bitcoin");
+        return FromName("Bitcoin");
       }
     }
 
@@ -28,7 +33,7 @@ namespace Crypnostic
     {
       get
       {
-        return Coin.FromName("Ethereum");
+        return FromName("Ethereum");
       }
     }
 
@@ -39,7 +44,7 @@ namespace Crypnostic
     {
       get
       {
-        return Coin.FromName("United States Dollar");
+        return FromName("United States Dollar");
       }
     }
 
@@ -50,7 +55,7 @@ namespace Crypnostic
     {
       get
       {
-        return Coin.FromName("Litecoin");
+        return FromName("Litecoin");
       }
     }
     #endregion
@@ -67,6 +72,7 @@ namespace Crypnostic
 
     /// <summary>
     /// Called when a TradingPair for this Coin has a status change.
+    /// e.g. switching from maintaince to running again
     /// </summary>
     public event OnUpdate onStatusUpdate;
 
@@ -77,36 +83,13 @@ namespace Crypnostic
     /// </summary>
     public event OnUpdate onNewTradingPairListed;
 
-    public bool hasValidTradingPairs
-    {
-      get
-      {
-        bool hasBid = false;
-        bool hasAsk = false;
-        foreach (var pair in exchangeInfo)
-        {
-          if (pair.Value.isInactive == false)
-          {
-            if (pair.Value.bidPrice > 0)
-            {
-              hasBid = true;
-            }
-            if (pair.Value.askPrice > 0)
-            {
-              hasAsk = true;
-            }
-            if (hasBid && hasAsk)
-            {
-              return true;
-            }
-          }
-        }
-
-        return false;
-      }
-    }
-
-    public CoinMarketCapTickerJson coinMarketCapData;
+    /// <summary>
+    /// Data about the coin from CoinMarketCap, if available.
+    /// 
+    /// The app will attempt to load this data on Start,
+    /// and will then refresh periodically.
+    /// </summary>
+    public MarketCap coinMarketCapData;
     #endregion
 
     #region Private Data
@@ -115,49 +98,121 @@ namespace Crypnostic
     /// </summary>
     internal readonly string fullNameLower;
 
-    readonly Dictionary<(ExchangeName, Coin baseCoin), TradingPair> exchangeInfo
+    /// <summary>
+    /// All known pairs for this coin.
+    /// 
+    /// TradingPairs are updated (not replaced) periodically.
+    /// </summary>
+    readonly Dictionary<(ExchangeName, Coin baseCoin), TradingPair> tradingPairs
       = new Dictionary<(ExchangeName, Coin baseCoin), TradingPair>();
-
     #endregion
 
     #region Public Properties
+    /// <summary>
+    /// Checks if there is both a valid bid and a valid ask
+    /// for this coin.
+    /// 
+    /// Valid means:
+    ///  - From a supported exchange
+    ///  - Price > 0
+    ///  - The exchange is not reporting an issue
+    /// </summary>
+    public bool hasValidTradingPairs
+    {
+      get
+      {
+        bool hasBid = false;
+        bool hasAsk = false;
+        foreach (var pair in tradingPairs)
+        {
+          if (pair.Value.isInactive)
+          {
+            continue;
+          }
+          if (pair.Value.bidPrice > 0)
+          {
+            hasBid = true;
+          }
+          if (pair.Value.askPrice > 0)
+          {
+            hasAsk = true;
+          }
+          if (hasBid && hasAsk)
+          {
+            return true;
+          }
+        }
+
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// You can use this to review all known pairs for this coin.
+    /// </summary>
     public IEnumerable<TradingPair> allTradingPairs
     {
       get
       {
-        return exchangeInfo.Values;
+        return tradingPairs.Values;
       }
     }
     #endregion
 
     #region Init
-    Coin(
-      string fullName)
-    {
-      Debug.Assert(CrypnosticController.instance.fullNameLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
-      Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
-      Debug.Assert(CrypnosticController.instance.aliasLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
-      Debug.Assert(CrypnosticController.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()) == false);
-      Debug.Assert(fullName.Equals("Ether", StringComparison.InvariantCultureIgnoreCase) == false);
-      Debug.Assert(fullName.Equals("BTC", StringComparison.InvariantCultureIgnoreCase) == false);
-      Debug.Assert(fullName.Equals("TetherUS", StringComparison.InvariantCultureIgnoreCase) == false);
-      Debug.Assert(fullName.Equals("USDT", StringComparison.InvariantCultureIgnoreCase) == false);
-
-      this.fullName = fullName;
-      this.fullNameLower = fullName.ToLowerInvariant();
-
-      CrypnosticController.instance.OnNewCoin(this);
-    }
-
+    /// <summary>
+    /// Finds a coin by its full name.
+    /// 
+    /// When in doubt, use the name from CoinMarketCap.
+    /// </summary>
     public static Coin FromName(
       string fullName)
     {
-      return CreateFromName2(fullName, true);
+      Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
+
+      return CreateFromName(fullName);
     }
 
-    internal static Coin CreateFromName2(
-      string fullName,
-      bool skipCreationIfDoesNotExist = false)
+    /// <summary>
+    /// Finds a coin by its ticker.
+    /// 
+    /// Note that tickers are not standard:
+    ///  - The same ticker may be different coins on different exchanges
+    ///  - Different tickers may actually be the same coin.
+    /// </summary>
+    /// <param name="onExchange">
+    /// If null, use ticker names from CoinMarketCap.
+    /// </param>
+    public static Coin FromTicker(
+      string ticker,
+      ExchangeName? onExchange)
+    {
+      Debug.Assert(string.IsNullOrWhiteSpace(ticker) == false);
+
+      ticker = ticker.ToLowerInvariant();
+
+      Dictionary<string, Coin> tickerLowerToCoin;
+      if (onExchange == null)
+      {
+        tickerLowerToCoin = CrypnosticController.instance.coinMarketCap.tickerLowerToCoin;
+      }
+      else
+      {
+        Exchange exchange = CrypnosticController.instance.GetExchange(onExchange.Value);
+        tickerLowerToCoin = exchange.tickerLowerToCoin;
+      }
+      Debug.Assert(tickerLowerToCoin != null);
+
+      if (tickerLowerToCoin.TryGetValue(ticker, out Coin coin))
+      {
+        return coin;
+      }
+
+      return null;
+    }
+
+    internal static Coin CreateFromName(
+      string fullName)
     {
       // Blacklist
       if (CrypnosticController.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()))
@@ -177,35 +232,208 @@ namespace Crypnostic
         return coin;
       }
 
-      if (skipCreationIfDoesNotExist)
-      {
-        return null;
-      }
-
       // New Coin
       coin = new Coin(fullName);
       return coin;
     }
 
-    public static Coin FromTicker(
-      string ticker,
-      ExchangeName onExchange)
+    Coin(
+      string fullName)
     {
-      ticker = ticker.ToLowerInvariant();
+      Debug.Assert(CrypnosticController.instance.fullNameLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
+      Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
+      Debug.Assert(CrypnosticController.instance.aliasLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
+      Debug.Assert(CrypnosticController.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()) == false);
+      Debug.Assert(fullName.Equals("Ether", StringComparison.InvariantCultureIgnoreCase) == false);
+      Debug.Assert(fullName.Equals("BTC", StringComparison.InvariantCultureIgnoreCase) == false);
+      Debug.Assert(fullName.Equals("TetherUS", StringComparison.InvariantCultureIgnoreCase) == false);
+      Debug.Assert(fullName.Equals("USDT", StringComparison.InvariantCultureIgnoreCase) == false);
 
-      Exchange exchange = CrypnosticController.instance.FindExchange(onExchange);
-      Debug.Assert(exchange != null);
+      this.fullName = fullName;
+      this.fullNameLower = fullName.ToLowerInvariant();
 
-      if (exchange.tickerLowerToCoin.TryGetValue(ticker, out Coin coin))
-      {
-        return coin;
-      }
-
-      return null;
+      CrypnosticController.instance.OnNewCoin(this);
     }
     #endregion
 
     #region Public Read
+    /// <summary>
+    /// True if the exchange lists the coin and is not
+    /// currently reporting an issue.
+    /// </summary>
+    public bool IsActiveOn(
+      ExchangeName exchangeName)
+    {
+      return CrypnosticController.instance.GetExchange(exchangeName).IsCoinActive(this);
+    }
+    #endregion
+
+    #region Internal Write
+    /// <summary>
+    /// Creates a new pair or updates the existing one.
+    /// 
+    /// Use price == 0 if not known/invalid.
+    /// </summary>
+    internal TradingPair AddPair(
+      Exchange exchange,
+      Coin baseCoin,
+      decimal askPrice,
+      decimal bidPrice)
+    {
+      Debug.Assert(exchange != null);
+      Debug.Assert(baseCoin != null);
+      Debug.Assert(baseCoin != this);
+
+      (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
+      if (tradingPairs.TryGetValue(key, out TradingPair pair))
+      {
+        pair.Update(askPrice, bidPrice);
+      }
+      else
+      {
+        pair = new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
+        AddPair(pair);
+        onNewTradingPairListed?.Invoke(this, pair);
+      }
+
+      onPriceUpdate?.Invoke(this, pair);
+
+      return pair;
+    }
+
+    /// <summary>
+    /// Notes the status for a pair.
+    /// 
+    /// e.g. the exchange paused the book.
+    /// </summary>
+    internal void UpdatePairStatus(
+      Exchange exchange,
+      Coin baseCoin,
+      bool isInactive)
+    {
+      Debug.Assert(exchange != null);
+      Debug.Assert(baseCoin != this);
+
+      if (baseCoin == null)
+      { // May be a blacklisted coin
+        return;
+      }
+
+      (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
+      if (tradingPairs.TryGetValue(key, out TradingPair pair) == false)
+      {
+        pair = new TradingPair(exchange, baseCoin, this, 0, 0, isInactive);
+        AddPair(pair);
+      }
+
+      if (pair.isInactive != isInactive)
+      {
+        pair.isInactive = isInactive;
+        onStatusUpdate?.Invoke(this, pair);
+      }
+    }
+
+    void AddPair(
+      TradingPair pair)
+    {
+      Debug.Assert(pair != null);
+      Debug.Assert(pair.quoteCoin == this);
+      Debug.Assert(tradingPairs.ContainsKey((pair.exchange.exchangeName, pair.baseCoin)) == false);
+
+      tradingPairs.Add((pair.exchange.exchangeName, pair.baseCoin), pair);
+
+      onPriceUpdate?.Invoke(this, pair);
+    }
+    #endregion
+
+    #region Operators
+    public static bool operator ==(
+      Coin a,
+      Coin b)
+    {
+      return a?.fullNameLower == b?.fullNameLower;
+    }
+
+    public static bool operator !=(
+      Coin a,
+      Coin b)
+    {
+      return a?.fullNameLower != b?.fullNameLower;
+    }
+
+    public override bool Equals(
+      object obj)
+    {
+      if (obj is Coin otherCoin)
+      {
+        return fullNameLower == otherCoin.fullNameLower;
+      }
+
+      return false;
+    }
+
+    public override int GetHashCode()
+    {
+      return fullNameLower.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+      return fullName;
+    }
+    #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //////////// TODO: tools below
+
+
+
+
+
+
+
+
+
+
     /// <summary>
     /// </summary>
     /// <param name="sellVsBuy">
@@ -224,7 +452,7 @@ namespace Crypnostic
       TradingPair bestPair = null;
       decimal? bestValue = null;
       foreach (KeyValuePair<(ExchangeName, Coin baseCoin), TradingPair> pair
-        in exchangeInfo)
+        in tradingPairs)
       {
         if (exchangeName != null && pair.Key.Item1 != exchangeName.Value)
         { // Filter by exchange (optional)
@@ -268,20 +496,20 @@ namespace Crypnostic
       decimal purchaseAmount = 0;
       decimal quantity = 0;
 
-      Exchange exchange = CrypnosticController.instance.FindExchange(askExchange);
+      Exchange exchange = CrypnosticController.instance.GetExchange(askExchange);
       OrderBook orderBook = await exchange.GetOrderBook(this, askBaseCoin);
 
       for (int i = 0; i < orderBook.asks.Length; i++)
       {
         Order order = orderBook.asks[i];
-        decimal purchaseAmountFromOrder = Math.Min(purchasePriceInBase, 
+        decimal purchaseAmountFromOrder = Math.Min(purchasePriceInBase,
           order.price * order.volume);
 
         purchaseAmount += purchaseAmountFromOrder;
         quantity += purchaseAmountFromOrder / order.price;
         purchasePriceInBase -= purchaseAmountFromOrder;
 
-        if(purchasePriceInBase <= 0)
+        if (purchasePriceInBase <= 0)
         {
           break;
         }
@@ -291,13 +519,13 @@ namespace Crypnostic
     }
 
     public async Task<decimal> CalcSellPrice(
-      ExchangeName bidExchange, 
-      Coin bidBaseCoin, 
+      ExchangeName bidExchange,
+      Coin bidBaseCoin,
       decimal quantityOfCoin)
     {
       decimal sellAmount = 0;
 
-      Exchange exchange = CrypnosticController.instance.FindExchange(bidExchange);
+      Exchange exchange = CrypnosticController.instance.GetExchange(bidExchange);
       OrderBook orderBook = await exchange.GetOrderBook(this, bidBaseCoin);
 
       for (int i = 0; i < orderBook.bids.Length; i++)
@@ -317,103 +545,5 @@ namespace Crypnostic
       return sellAmount;
     }
 
-    public bool IsActiveOn(
-      ExchangeName exchangeName)
-    {
-      return CrypnosticController.instance.FindExchange(exchangeName).IsCoinActive(this);
-    }
-    #endregion
-
-    #region Internal Write
-    internal void AddPair(
-      TradingPair pair)
-    {
-      Debug.Assert(exchangeInfo.ContainsKey((pair.exchange.exchangeName, pair.baseCoin)) == false);
-
-      exchangeInfo[(pair.exchange.exchangeName, pair.baseCoin)] = pair;
-      onPriceUpdate?.Invoke(this, pair);
-    }
-
-    internal TradingPair AddPair(
-      Exchange exchange,
-      Coin baseCoin,
-      decimal askPrice,
-      decimal bidPrice)
-    {
-      (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
-      if (exchangeInfo.TryGetValue(key, out TradingPair pair))
-      {
-        pair.Update(askPrice, bidPrice);
-      }
-      else
-      {
-        pair = new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
-        onNewTradingPairListed?.Invoke(this, pair);
-      }
-
-      onPriceUpdate?.Invoke(this, pair);
-      return pair;
-    }
-
-    internal void UpdatePairStatus(
-      Exchange exchange,
-      Coin baseCoin,
-      bool isInactive)
-    {
-      if (baseCoin == null)
-      { // May be a blacklisted coin
-        return;
-      }
-
-      (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
-      if (exchangeInfo.TryGetValue(key, out TradingPair pair) == false)
-      {
-        pair = new TradingPair(exchange, baseCoin, this, 0, 0, isInactive);
-      }
-
-      if (pair.isInactive != isInactive)
-      {
-        pair.isInactive = isInactive;
-        onStatusUpdate?.Invoke(this, pair);
-      }
-    }
-    #endregion
-
-    #region Operators
-    public static bool operator ==(
-      Coin a,
-      Coin b)
-    {
-      return a?.fullNameLower == b?.fullNameLower;
-    }
-
-    public static bool operator !=(
-      Coin a,
-      Coin b)
-    {
-      return a?.fullNameLower != b?.fullNameLower;
-    }
-
-    public override bool Equals(
-      object obj)
-    {
-      if (obj is Coin otherCoin)
-      {
-        return fullNameLower == otherCoin.fullNameLower;
-      }
-
-      return false;
-    }
-
-    public override int GetHashCode()
-    {
-      return fullNameLower.GetHashCode();
-    }
-
-    public override string ToString()
-    {
-      return $"{fullName} {exchangeInfo.Count} pairs";
-    }
-    #endregion
   }
 }

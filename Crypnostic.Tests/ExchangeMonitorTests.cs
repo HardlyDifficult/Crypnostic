@@ -41,7 +41,7 @@ namespace Crypnostic.Tests
       ExchangeMonitorConfig config = new ExchangeMonitorConfig(exchangeName);
       monitor = new CrypnosticController(config);
       await monitor.Start();
-      Exchange exchange = monitor.FindExchange(exchangeName);
+      Exchange exchange = monitor.GetExchange(exchangeName);
 
       OrderBook orderBook = await exchange.GetOrderBook(popularQuoteCoin, popularBaseCoin);
       Assert.IsTrue(orderBook.asks.Length > 0);
