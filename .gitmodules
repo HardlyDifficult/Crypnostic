@@ -10,3 +10,7 @@
 	path = CryptopiaApi-Csharp
 	url = https://github.com/hardlydifficult/CryptopiaApi-Csharp.git
 	branch = master
+[submodule "HardlyDifficult.Google.Sheets"]
+	path = HardlyDifficult.Google.Sheets
+	url = https://github.com/hardlydifficult/HardlyDifficult.Google.Sheets.git
+	branch = master

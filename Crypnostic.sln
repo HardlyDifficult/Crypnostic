@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{92A7D73D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{35AEE25D-254A-4429-8642-FFB82E176BE9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HardlyDifficult.Google.Sheets", "..\HardlyDifficult.Google.Sheets\HardlyDifficult.Google.Sheets.csproj", "{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,14 @@ Global
 		{ADE62523-C663-4F8E-B367-E6EEF8F35E34}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ADE62523-C663-4F8E-B367-E6EEF8F35E34}.Taker|Any CPU.ActiveCfg = Release|Any CPU
 		{ADE62523-C663-4F8E-B367-E6EEF8F35E34}.Taker|Any CPU.Build.0 = Release|Any CPU
+		{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}.Maker|Any CPU.ActiveCfg = Release|Any CPU
+		{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}.Maker|Any CPU.Build.0 = Release|Any CPU
+		{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}.Taker|Any CPU.ActiveCfg = Release|Any CPU
+		{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C}.Taker|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -152,6 +162,7 @@ Global
 		{1828B97B-4983-4763-B012-DA004EC10975} = {92A7D73D-A03A-455B-9EBB-3116EA14031B}
 		{56535F14-5377-4167-ACF0-471ED55ED8CF} = {35AEE25D-254A-4429-8642-FFB82E176BE9}
 		{ADE62523-C663-4F8E-B367-E6EEF8F35E34} = {92A7D73D-A03A-455B-9EBB-3116EA14031B}
+		{6C848A5B-9006-4BB7-9E26-C7CD3BDCE36C} = {528B303F-0399-470E-988E-03AF81C6126F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {335C3BA7-8125-4E74-9D77-85C2FAB58160}
