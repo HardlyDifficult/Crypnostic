@@ -66,7 +66,7 @@ namespace Crypnostic.CoinMarketCap
         CoinMarketCapTickerJson ticker = resultList[i];
         Debug.Assert(ticker != null);
 
-        Coin coin = Coin.CreateFromName(ticker.name);
+        Coin coin = await CrypnosticController.instance.CreateFromName(ticker.name);
         if (coin == null)
         { // Blacklisted
           continue;

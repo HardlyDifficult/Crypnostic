@@ -21,13 +21,17 @@ namespace Crypnostic.Exchanges.GDax
     {
       List<GDaxTickerNameJson> productList =
         await Get<List<GDaxTickerNameJson>>("currencies");
+      if(productList == null)
+      {
+        return;
+      }
 
       for (int i = 0; i < productList.Count; i++)
       {
         GDaxTickerNameJson product = productList[i];
         bool isInactive = product.status.Equals("online",
           StringComparison.InvariantCultureIgnoreCase) == false;
-        AddTicker(CreateFromName(product.name), product.id, isInactive);
+        await AddTicker(await CreateFromName(product.name), product.id, isInactive);
       }
     }
 
@@ -36,6 +40,10 @@ namespace Crypnostic.Exchanges.GDax
       await throttle.WaitTillReady();
 
       List<GDaxProductJson> productList = await Get<List<GDaxProductJson>>("products");
+      if(productList == null)
+      {
+        return;
+      }
 
       for (int i = 0; i < productList.Count; i++)
       {
@@ -45,8 +53,12 @@ namespace Crypnostic.Exchanges.GDax
 
         GDaxProductTickerJson productTicker
           = await Get<GDaxProductTickerJson>($"products/{product.id}/ticker");
+        if(productTicker == null)
+        {
+          continue;
+        }
 
-        TradingPair pair = AddTradingPair(product.quote_currency, product.base_currency,
+        TradingPair pair = await AddTradingPair(product.quote_currency, product.base_currency,
           decimal.Parse(productTicker.ask),
           decimal.Parse(productTicker.bid),
           isInactive);
@@ -70,6 +82,10 @@ namespace Crypnostic.Exchanges.GDax
      string pairId)
     {
       GDaxDepthListJson depthJson = await Get<GDaxDepthListJson>($"products/{pairId}/book?level=2");
+      if(depthJson == null)
+      {
+        return default(OrderBook);
+      }
 
       Order[] bids = ExtractOrders(depthJson.bids);
       Order[] asks = ExtractOrders(depthJson.asks);

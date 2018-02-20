@@ -46,12 +46,12 @@ namespace Crypnostic.Exchanges
         string tickerToName = nameList[i];
         string ticker = tickerToName.GetBefore(":");
         string name = tickerToName.GetBetween("\"", "\"");
-        Coin coin = CreateFromName(name);
+        Coin coin = await CreateFromName(name);
 
         // Is this possible to determine?
         bool isInactive = false;
 
-        AddTicker(coin, ticker, isInactive);
+        await AddTicker(coin, ticker, isInactive);
       }
 
       string marketListJs = jsContent.GetBetween("alias_arr={", "}");
@@ -79,6 +79,10 @@ namespace Crypnostic.Exchanges
         }
 
         Dictionary<string, AexCoinJson> tickerList = await Get<Dictionary<string, AexCoinJson>>("ticker.php?c=all&mk_type=btc");
+        if(tickerList == null)
+        {
+          return;
+        }
 
         foreach (KeyValuePair<string, AexCoinJson> ticker in tickerList)
         {
@@ -98,7 +102,7 @@ namespace Crypnostic.Exchanges
             bidPrice = ticker.Value.ticker.buy;
           }
 
-          TradingPair pair = AddTradingPair(quoteCoinTicker, baseCoin, askPrice, bidPrice, isInactive);
+          TradingPair pair = await AddTradingPair(quoteCoinTicker, baseCoin, askPrice, bidPrice, isInactive);
 
           if (pair != null && ticker.Value.ticker != null)
           {
@@ -120,6 +124,10 @@ namespace Crypnostic.Exchanges
      string pairId)
     {
       AexDepthJson depthJson = await Get<AexDepthJson>($"depth.php?{pairId}");
+      if(depthJson == null)
+      {
+        return default(OrderBook);
+      }
 
       Order[] bids = ExtractOrders(depthJson.bids);
       Order[] asks = ExtractOrders(depthJson.asks);

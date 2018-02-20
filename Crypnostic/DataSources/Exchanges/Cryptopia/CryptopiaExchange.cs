@@ -116,7 +116,7 @@ namespace Crypnostic
         {
           isCoinActive = false;
         }
-        AddTicker(CreateFromName(product.Name), product.Symbol, isCoinActive);
+        await AddTicker(await CreateFromName(product.Name), product.Symbol, isCoinActive);
       }
 
       await throttle.WaitTillReady();
@@ -124,8 +124,8 @@ namespace Crypnostic
       for (int i = 0; i < tradePairsResponse.Data.Count; i++)
       {
         TradePairResult tradePair = tradePairsResponse.Data[i];
-        (Coin, Coin) entry = (CreateFromName(tradePair.Currency),
-          CreateFromName(tradePair.BaseCurrency));
+        (Coin, Coin) entry = (await CreateFromName(tradePair.Currency),
+          await CreateFromName(tradePair.BaseCurrency));
         entry.Item1?.UpdatePairStatus(this, entry.Item2, tradePair.Status != "OK");
       }
     }
@@ -138,7 +138,7 @@ namespace Crypnostic
       MarketsResponse tickerList = await publicApi.GetMarkets(new MarketsRequest());
       foreach (MarketResult ticker in tickerList.Data)
       {
-        TradingPair pair = AddTradingPair(baseCoinTicker: ticker.Label.GetAfter(tradingPairSeparator),
+        TradingPair pair = await AddTradingPair(baseCoinTicker: ticker.Label.GetAfter(tradingPairSeparator),
           quoteCoinTicker: ticker.Label.GetBefore(tradingPairSeparator),
           askPrice: ticker.AskPrice,
           bidPrice: ticker.BidPrice);

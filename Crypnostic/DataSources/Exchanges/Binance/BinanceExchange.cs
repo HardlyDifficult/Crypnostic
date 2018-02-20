@@ -53,17 +53,21 @@ namespace Crypnostic
     {
       BinanceProductListJson productList =
         await Get<BinanceProductListJson>("exchange/public/product");
+      if (productList == null)
+      {
+        return;
+      }
 
       for (int i = 0; i < productList.data.Length; i++)
       {
         BinanceProductJson product = productList.data[i];
         bool isInactive = product.status.Equals("TRADING",
           StringComparison.InvariantCultureIgnoreCase) == false;
-        Coin baseCoin = CreateFromName(product.baseAssetName);
+        Coin baseCoin = await CreateFromName(product.baseAssetName);
         // TODO Binance: how-to determine the coin's status (e.g. deposit paused)
-        AddTicker(baseCoin, product.baseAsset, false);
-        Coin quoteCoin = CreateFromName(product.quoteAssetName);
-        AddTicker(quoteCoin, product.quoteAsset, false);
+        await AddTicker(baseCoin, product.baseAsset, false);
+        Coin quoteCoin = await CreateFromName(product.quoteAssetName);
+        await AddTicker(quoteCoin, product.quoteAsset, false);
         baseCoin?.UpdatePairStatus(this, quoteCoin, isInactive);
       }
     }
@@ -87,7 +91,7 @@ namespace Crypnostic
 
         string quoteCoinTicker = ticker.Symbol.Substring(0, ticker.Symbol.Length - baseCoinTicker?.Length ?? 0);
 
-        AddTradingPair(baseCoinTicker: baseCoinTicker,
+        await AddTradingPair(baseCoinTicker: baseCoinTicker,
           quoteCoinTicker: quoteCoinTicker,
           askPrice: ticker.AskPrice,
           bidPrice: ticker.BidPrice);
@@ -100,12 +104,14 @@ namespace Crypnostic
       // https://www.binance.com/api/v1/trades?symbol=ETHBTC&limit=1
       List<BinanceTradeJson> tradeHistory = await Get<List<BinanceTradeJson>>(
         $"api/v1/trades?symbol={GetPairId(tradingPair)}&limit=1");
-      if (tradeHistory.Count > 0)
+      if (tradeHistory == null || tradeHistory.Count == 0)
       {
-        BinanceTradeJson history = tradeHistory[0];
-        decimal price = decimal.Parse(history.price);
-        tradingPair.lastTrade = new LastTrade(price);
+        return;
       }
+
+      BinanceTradeJson history = tradeHistory[0];
+      decimal price = decimal.Parse(history.price);
+      tradingPair.lastTrade = new LastTrade(price);
     }
 
     protected override string GetPairId(
@@ -119,6 +125,10 @@ namespace Crypnostic
      string pairId)
     {
       BinanceDepthJson depthJson = await Get<BinanceDepthJson>($"api/v1/depth?symbol={pairId}");
+      if(depthJson == null)
+      {
+        return default(OrderBook);
+      }
 
       Order[] bids = ExtractOrders(depthJson.bids);
       Order[] asks = ExtractOrders(depthJson.asks);

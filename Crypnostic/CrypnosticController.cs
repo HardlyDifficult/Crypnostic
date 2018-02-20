@@ -63,6 +63,9 @@ namespace Crypnostic
 
     static readonly ILog log = LogManager.GetLogger<CrypnosticController>();
 
+    readonly SemaphoreSlim semaphore1 = new SemaphoreSlim(1);
+    readonly SemaphoreSlim semaphore2 = new SemaphoreSlim(1);
+
     /// <summary>
     /// In priority order, so first exchange is my most preferred trading platform.
     /// </summary>
@@ -82,10 +85,10 @@ namespace Crypnostic
 
       Debug.Assert(config != null);
       Debug.Assert(config.supportedExchangeList.Length > 0);
-      Debug.Assert(instance == null);
+      //Debug.Assert(instance == null); // won't be true if you stop then start.
       instance = this;
 
-      coinMarketCap = new CoinMarketCapAPI(); 
+      coinMarketCap = new CoinMarketCapAPI();
 
       foreach (KeyValuePair<string, string> aliasToName in config.coinAliasToName)
       {
@@ -137,7 +140,6 @@ namespace Crypnostic
       Debug.Assert(instance == this);
 
       cancellationTokenSource.Cancel();
-      instance = null;
     }
     #endregion
 
@@ -146,8 +148,7 @@ namespace Crypnostic
       Coin coin)
     {
       Debug.Assert(coin != null);
-      // TODO
-      //Debug.Assert(fullNameLowerToCoin.ContainsKey(coin.fullNameLower) == false);
+      Debug.Assert(fullNameLowerToCoin.ContainsKey(coin.fullNameLower) == false);
 
       fullNameLowerToCoin[coin.fullNameLower] = coin;
       onNewCoin?.Invoke(coin);
@@ -173,14 +174,19 @@ namespace Crypnostic
       Debug.Assert(alias.Equals(fullName, StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullNameLowerToCoin.ContainsKey(alias.ToLowerInvariant()) == false);
 
+      semaphore1.Wait();
+
       alias = alias.ToLowerInvariant();
       if (aliasLowerToCoin.ContainsKey(alias))
       { // De-dupe
+        semaphore1.Release();
         return;
       }
 
-      Coin coin = Coin.CreateFromName(fullName);
-        aliasLowerToCoin.Add(alias, coin);
+      Coin coin = CreateFromName(fullName).Result;
+      aliasLowerToCoin.Add(alias, coin);
+
+      semaphore1.Release();
     }
 
     /// <summary>
@@ -235,6 +241,42 @@ namespace Crypnostic
       }
 
       return null;
+    }
+    #endregion
+
+    #region Internal Write
+    internal async Task<Coin> CreateFromName(
+      string fullName)
+    {
+      await semaphore2.WaitAsync();
+
+      // Blacklist
+      if (blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()))
+      {
+        semaphore2.Release();
+        return null;
+      }
+
+      // Alias
+      if (aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
+      {
+        semaphore2.Release();
+        return coin;
+      }
+
+      // Existing Coin
+      if (fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out coin))
+      {
+        semaphore2.Release(); // Better pattern?
+        return coin;
+      }
+
+      // New Coin
+      coin = new Coin(fullName);
+      OnNewCoin(coin);
+
+      semaphore2.Release();
+      return coin;
     }
     #endregion
   }

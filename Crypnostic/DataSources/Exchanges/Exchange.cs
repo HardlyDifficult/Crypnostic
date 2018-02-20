@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Threading;
+using Common.Logging;
 
 namespace Crypnostic
 {
@@ -62,6 +64,10 @@ namespace Crypnostic
     readonly HashSet<Coin> inactiveCoins = new HashSet<Coin>();
 
     DateTime lastLoadTickerNames;
+
+    readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
+
+    static readonly ILog log = LogManager.GetLogger<Exchange>();
     #endregion
 
     #region Public Properties
@@ -111,16 +117,16 @@ namespace Crypnostic
     {
       Debug.Assert(maxRequestsPerMinute > 0);
 
-      if(timeBetweenAutoUpdates <= TimeSpan.Zero)
+      if (timeBetweenAutoUpdates <= TimeSpan.Zero)
       {
         timeBetweenAutoUpdates = TimeSpan.FromSeconds(10);
       }
 
       this.exchangeName = exchangeName;
       this.throttle = new Throttle(TimeSpan.FromMinutes(2 * 1.0 / maxRequestsPerMinute));
-      this.autoUpdate = new AutoUpdateWithThrottle(OnAutoUpdate, 
-        timeBetweenAutoUpdates, 
-        throttle, 
+      this.autoUpdate = new AutoUpdateWithThrottle(OnAutoUpdate,
+        timeBetweenAutoUpdates,
+        throttle,
         CrypnosticController.instance.cancellationTokenSource.Token);
     }
 
@@ -223,7 +229,7 @@ namespace Crypnostic
     /// <summary>
     /// Register the ticker and status for a coin on this exchange.
     /// </summary>
-    protected void AddTicker(
+    protected async Task AddTicker(
       Coin coin,
       string ticker,
       bool isCoinActive)
@@ -241,6 +247,8 @@ namespace Crypnostic
         return;
       }
 
+      await semaphore.WaitAsync();
+
       if (isCoinActive)
       {
         inactiveCoins.Remove(coin);
@@ -253,19 +261,56 @@ namespace Crypnostic
       if (tickerLowerToCoin.ContainsKey(ticker))
       { // Ignore dupes
         Debug.Assert(tickerLowerToCoin[ticker] == coin);
+        semaphore.Release();
         return;
       }
 
-      tickerLowerToCoin.Add(ticker, coin);
-      coinToTickerLower.Add(coin, ticker);
+      if (coinToTickerLower.TryGetValue(coin, out string otherTicker))
+      { // Dupe, find the more legit version by checking books
+        tickerLowerToCoin.Remove(otherTicker);
+        string preferredTicker = GetPreferredTicker(ticker, otherTicker, coin);
+        preferredTicker = preferredTicker.ToLowerInvariant();
+        coinToTickerLower[coin] = preferredTicker;
+        tickerLowerToCoin.Add(preferredTicker, coin);
+      }
+      else
+      {
+        tickerLowerToCoin.Add(ticker, coin);
+        coinToTickerLower.Add(coin, ticker);
+      }
 
       onNewCoin?.Invoke(this, coin);
+
+      semaphore.Release();
+    }
+
+    protected virtual string GetPreferredTicker(
+      string ticker, 
+      string otherTicker, 
+      Coin coin)
+    {
+      ticker = ticker.ToLowerInvariant();
+      otherTicker.ToLowerInvariant();
+
+      if(ticker.Contains("new")
+        || otherTicker.Contains("old"))
+      {
+        return ticker;
+      }
+      if(ticker.Contains("old")
+        || otherTicker.Contains("new"))
+      {
+        return otherTicker;
+      }
+
+      Debug.Fail(""); // Now what? exchange specific?
+      return null;
     }
 
     /// <summary>
     /// Add or update a trading pair for this exchange.
     /// </summary>
-    internal TradingPair AddTradingPair(
+    internal async Task<TradingPair> AddTradingPair(
       string baseCoinTicker,
       string quoteCoinTicker,
       decimal askPrice,
@@ -289,13 +334,13 @@ namespace Crypnostic
         return null;
       }
 
-      return AddTradingPair(quoteCoinTicker, baseCoin, askPrice, bidPrice, isInactive);
+      return await AddTradingPair(quoteCoinTicker, baseCoin, askPrice, bidPrice, isInactive);
     }
 
     /// <summary>
     /// Add or update a trading pair for this exchange.
     /// </summary>
-    internal TradingPair AddTradingPair(
+    internal async Task<TradingPair> AddTradingPair(
       string quoteCoinTicker,
       Coin baseCoin,
       decimal askPriceOrOfferYouCanBuy,
@@ -305,13 +350,16 @@ namespace Crypnostic
       Debug.Assert(baseCoin != null);
       Debug.Assert(string.IsNullOrWhiteSpace(quoteCoinTicker) == false);
 
+      await semaphore.WaitAsync();
+
       if (tickerLowerToCoin.TryGetValue(quoteCoinTicker.ToLowerInvariant(),
         out Coin quoteCoin) == false)
       { // May be missing due to book's listing status
+        semaphore.Release();
         return null;
       }
 
-      TradingPair pair = quoteCoin.AddPair(this,
+      TradingPair pair = await quoteCoin.AddPair(this,
         baseCoin,
         askPriceOrOfferYouCanBuy,
         bidPriceOrOfferYouCanSell);
@@ -321,13 +369,14 @@ namespace Crypnostic
         pair.isInactive = isInactive.Value;
       }
 
+      semaphore.Release();
       return pair;
     }
 
     /// <summary>
     /// Get or create a coin if it is not blacklisted by this exchange.
     /// </summary>
-    protected Coin CreateFromName(
+    protected async Task<Coin> CreateFromName(
       string fullName)
     {
       Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
@@ -337,7 +386,7 @@ namespace Crypnostic
         return null;
       }
 
-      return Coin.CreateFromName(fullName);
+      return await CrypnosticController.instance.CreateFromName(fullName);
     }
     #endregion
 

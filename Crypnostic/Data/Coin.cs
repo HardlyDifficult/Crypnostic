@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using Crypnostic.CoinMarketCap;
@@ -94,6 +95,8 @@ namespace Crypnostic
     #endregion
 
     #region Private Data
+    readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
+
     static readonly ILog log = LogManager.GetLogger<Coin>();
 
     /// <summary>
@@ -173,7 +176,10 @@ namespace Crypnostic
     {
       Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
 
-      return CreateFromName(fullName);
+      Task<Coin> task = CrypnosticController.instance.CreateFromName(fullName);
+      task.Wait();
+
+      return task.Result;
     }
 
     /// <summary>
@@ -214,33 +220,11 @@ namespace Crypnostic
       return null;
     }
 
-    internal static Coin CreateFromName(
-      string fullName)
-    {
-      // Blacklist
-      if (CrypnosticController.instance.blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()))
-      {
-        return null;
-      }
-
-      // Alias
-      if (CrypnosticController.instance.aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
-      {
-        return coin;
-      }
-
-      // Existing Coin
-      if (CrypnosticController.instance.fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out coin))
-      {
-        return coin;
-      }
-
-      // New Coin
-      coin = new Coin(fullName);
-      return coin;
-    }
-
-    Coin(
+    /// <summary>
+    /// Only called by CrypnosticController
+    /// </summary>
+    /// <param name="fullName"></param>
+    internal Coin(
       string fullName)
     {
       Debug.Assert(CrypnosticController.instance.fullNameLowerToCoin.ContainsKey(fullName.ToLowerInvariant()) == false);
@@ -250,14 +234,15 @@ namespace Crypnostic
       Debug.Assert(fullName.Equals("Ether", StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullName.Equals("BTC", StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullName.Equals("TetherUS", StringComparison.InvariantCultureIgnoreCase) == false);
+      Debug.Assert(fullName.Equals("Tether USD", StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullName.Equals("USDT", StringComparison.InvariantCultureIgnoreCase) == false);
-
+      Debug.Assert(fullName.Equals("808", StringComparison.InvariantCultureIgnoreCase) == false);
+      Debug.Assert(fullName.Equals("High Performance Blockch", StringComparison.InvariantCultureIgnoreCase) == false);
+      
       this.fullName = fullName;
       this.fullNameLower = fullName.ToLowerInvariant();
 
       log.Trace($"Created {fullName}");
-
-      CrypnosticController.instance.OnNewCoin(this);
     }
     #endregion
 
@@ -286,7 +271,7 @@ namespace Crypnostic
     /// 
     /// Use price == 0 if not known/invalid.
     /// </summary>
-    internal TradingPair AddPair(
+    internal async Task<TradingPair> AddPair(
       Exchange exchange,
       Coin baseCoin,
       decimal askPrice,
@@ -295,6 +280,8 @@ namespace Crypnostic
       Debug.Assert(exchange != null);
       Debug.Assert(baseCoin != null);
       Debug.Assert(baseCoin != this);
+
+      await semaphore.WaitAsync();
 
       (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
       if (tradingPairs.TryGetValue(key, out TradingPair pair))
@@ -310,6 +297,8 @@ namespace Crypnostic
 
       onPriceUpdate?.Invoke(this, pair);
 
+      semaphore.Release();
+
       return pair;
     }
 
@@ -318,13 +307,15 @@ namespace Crypnostic
     /// 
     /// e.g. the exchange paused the book.
     /// </summary>
-    internal void UpdatePairStatus(
+    internal async Task UpdatePairStatus(
       Exchange exchange,
       Coin baseCoin,
       bool isInactive)
     {
       Debug.Assert(exchange != null);
       Debug.Assert(baseCoin != this);
+
+      await semaphore.WaitAsync();
 
       if (baseCoin == null)
       { // May be a blacklisted coin
@@ -343,6 +334,8 @@ namespace Crypnostic
         pair.isInactive = isInactive;
         onStatusUpdate?.Invoke(this, pair);
       }
+
+      semaphore.Release();
     }
 
     void AddPair(

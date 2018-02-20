@@ -101,15 +101,19 @@ namespace Crypnostic.Exchanges
     {
       Dictionary<string, IdexTickerInfoJson> productList = await Get<Dictionary<string, IdexTickerInfoJson>>(
         "returnCurrencies");
+      if(productList == null)
+      {
+        return;
+      }
 
       foreach (KeyValuePair<string, IdexTickerInfoJson> product
         in productList)
       {
         string ticker = product.Key;
         string fullName = product.Value.name;
-        Coin coin = CreateFromName(fullName);
+        Coin coin = await CreateFromName(fullName);
         bool isInactive = false;
-        AddTicker(coin, ticker, isInactive);
+        await AddTicker(coin, ticker, isInactive);
       }
     }
 
@@ -117,6 +121,10 @@ namespace Crypnostic.Exchanges
     {
       Dictionary<string, IdexReturnTickerJson> tickerList = await Get<Dictionary<string, IdexReturnTickerJson>>(
         "returnTicker");
+      if(tickerList == null)
+      {
+        return;
+      }
 
       foreach (KeyValuePair<string, IdexReturnTickerJson> ticker in tickerList)
       {
@@ -126,7 +134,7 @@ namespace Crypnostic.Exchanges
         decimal bidPrice = Parse(ticker.Value.highestBid);
         bool isInactive = false;
 
-        TradingPair pair = AddTradingPair(baseCoinTicker, quoteCoinTicker, askPrice, bidPrice, isInactive);
+        TradingPair pair = await AddTradingPair(baseCoinTicker, quoteCoinTicker, askPrice, bidPrice, isInactive);
 
         if (pair != null)
         {
@@ -162,6 +170,10 @@ namespace Crypnostic.Exchanges
       request.market = pairId;
       IdexDepthListJson depthJson = await Get<IdexDepthListJson>(
         $"returnOrderBook", request);
+      if(depthJson == null)
+      {
+        return default(OrderBook);
+      }
 
       Order[] bids = ExtractOrders(depthJson.Bids);
       Order[] asks = ExtractOrders(depthJson.Asks);

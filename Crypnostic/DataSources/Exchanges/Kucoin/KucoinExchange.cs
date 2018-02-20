@@ -32,19 +32,28 @@ namespace Crypnostic.Exchanges
     {
       KucoinProductListJson productList = await Get<KucoinProductListJson>(
         "v1/market/open/coins");
+      if(productList == null)
+      {
+        return;
+      }
+
       foreach (KucoinProductListJson.ProductJson product in productList.data)
       {
         string ticker = product.coin;
         string fullName = product.name;
-        Coin coin = CreateFromName(fullName);
+        Coin coin = await CreateFromName(fullName);
         bool isInactive = product.enableDeposit == false || product.enableWithdraw == false;
-        AddTicker(coin, ticker, isInactive);
+        await AddTicker(coin, ticker, isInactive);
       }
     }
 
     protected override async Task RefreshTradingPairs()
     {
       KucoinTickerListJson tickerList = await Get<KucoinTickerListJson>("v1/open/tick");
+      if(tickerList == null)
+      {
+        return;
+      }
 
       foreach (KucoinTickerListJson.TickerJson ticker in tickerList.data)
       {
@@ -54,7 +63,7 @@ namespace Crypnostic.Exchanges
         decimal bidPrice = new decimal(ticker.buy ?? 0);
         bool isInactive = ticker.trading == false;
 
-        TradingPair pair = AddTradingPair(baseCoinTicker, quoteCoinTicker, askPrice, bidPrice, isInactive);
+        TradingPair pair = await AddTradingPair(baseCoinTicker, quoteCoinTicker, askPrice, bidPrice, isInactive);
 
         if (pair != null)
         {
@@ -76,6 +85,10 @@ namespace Crypnostic.Exchanges
     {
       KucoinDepthListJson depthJson = await Get<KucoinDepthListJson>(
         $"v1/open/orders?symbol={pairId}&limit=100");
+      if(depthJson == null)
+      {
+        return default(OrderBook);
+      }
 
       Order[] bids = ExtractOrders(depthJson.data.BUY);
       Order[] asks = ExtractOrders(depthJson.data.SELL);
