@@ -9,6 +9,14 @@ namespace Crypnostic.Exchanges
   /// </remarks>
   internal class KucoinExchange : RestExchange
   {
+    public override bool supportsOverlappingBooks
+    {
+      get
+      { // Rare, but it happens 
+        return true;
+      }
+    }
+
     /// <summary>
     /// No stated throttle limit, going with the same as Crytpopia
     /// </summary>
