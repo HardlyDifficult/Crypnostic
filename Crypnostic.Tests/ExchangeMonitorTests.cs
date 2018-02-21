@@ -68,12 +68,14 @@ namespace Crypnostic.Tests
       TradingPair tradingPair = popularQuoteCoin.GetTradingPair(popularBaseCoin, exchangeName);
 
       int count = 0;
-      decimal lastPrice = 0;
+      decimal lastPrice = 0, lastVolume = 0;
       tradingPair.orderBook.onUpdate += (book) =>
       {
-        if (book.bidsOrOffersYouCanSell[0].price != lastPrice)
+        if (book.bidsOrOffersYouCanSell[0].price != lastPrice
+        || book.bidsOrOffersYouCanSell[0].volume != lastVolume)
         {
           lastPrice = book.bidsOrOffersYouCanSell[0].price;
+          lastVolume = book.bidsOrOffersYouCanSell[0].volume;
           count++;
         }
       };

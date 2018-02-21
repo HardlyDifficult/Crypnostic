@@ -8,8 +8,32 @@ namespace Crypnostic
   {
     public readonly TradingPair tradingPair;
 
-    Action<OrderBook> _onUpdate;
+    public Order[] asksOrOffersYouCanBuy
+    {
+      get; private set;
+    }
 
+    public Order[] bidsOrOffersYouCanSell
+    {
+      get; private set;
+    }
+
+    public DateTime lastUpdated
+    {
+      get; private set;
+    }
+
+    Action<OrderBook> _onUpdate;
+    
+    /// <summary>
+    /// By subscribing to this event you are enabling auto-updates
+    /// on this book, which occur each time the exchange updates prices.
+    /// 
+    /// Note that updating the OrderBook requires an API call for each book
+    /// individually, so limit subs to maintain good performance.
+    /// 
+    /// Unsubscribe to stop the auto-updates for this book.
+    /// </summary>
     public event Action<OrderBook> onUpdate
     {
       add
@@ -29,21 +53,6 @@ namespace Crypnostic
           tradingPair.exchange.autoUpdatingBooks.Remove(this);
         }
       }
-    }
-
-    public Order[] asksOrOffersYouCanBuy
-    {
-      get; private set;
-    }
-
-    public Order[] bidsOrOffersYouCanSell
-    {
-      get; private set;
-    }
-
-    public DateTime lastUpdated
-    {
-      get; private set;
     }
 
     internal OrderBook(
