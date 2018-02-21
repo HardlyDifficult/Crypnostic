@@ -247,57 +247,61 @@ namespace Crypnostic
         return;
       }
 
-      await semaphore.WaitAsync();
-
-      if (isCoinActive)
+      try
       {
-        inactiveCoins.Remove(coin);
-      }
-      else
-      {
-        inactiveCoins.Add(coin);
-      }
+        await semaphore.WaitAsync();
 
-      if (tickerLowerToCoin.ContainsKey(ticker))
-      { // Ignore dupes
-        Debug.Assert(tickerLowerToCoin[ticker] == coin);
+        if (isCoinActive)
+        {
+          inactiveCoins.Remove(coin);
+        }
+        else
+        {
+          inactiveCoins.Add(coin);
+        }
+
+        if (tickerLowerToCoin.ContainsKey(ticker))
+        { // Ignore dupes
+          Debug.Assert(tickerLowerToCoin[ticker] == coin);
+          return;
+        }
+
+        if (coinToTickerLower.TryGetValue(coin, out string otherTicker))
+        { // Dupe, find the more legit version by checking books
+          tickerLowerToCoin.Remove(otherTicker);
+          string preferredTicker = GetPreferredTicker(ticker, otherTicker, coin);
+          preferredTicker = preferredTicker.ToLowerInvariant();
+          coinToTickerLower[coin] = preferredTicker;
+          tickerLowerToCoin.Add(preferredTicker, coin);
+        }
+        else
+        {
+          tickerLowerToCoin.Add(ticker, coin);
+          coinToTickerLower.Add(coin, ticker);
+        }
+
+        onNewCoin?.Invoke(this, coin);
+      }
+      finally
+      {
         semaphore.Release();
-        return;
       }
-
-      if (coinToTickerLower.TryGetValue(coin, out string otherTicker))
-      { // Dupe, find the more legit version by checking books
-        tickerLowerToCoin.Remove(otherTicker);
-        string preferredTicker = GetPreferredTicker(ticker, otherTicker, coin);
-        preferredTicker = preferredTicker.ToLowerInvariant();
-        coinToTickerLower[coin] = preferredTicker;
-        tickerLowerToCoin.Add(preferredTicker, coin);
-      }
-      else
-      {
-        tickerLowerToCoin.Add(ticker, coin);
-        coinToTickerLower.Add(coin, ticker);
-      }
-
-      onNewCoin?.Invoke(this, coin);
-
-      semaphore.Release();
     }
 
     protected virtual string GetPreferredTicker(
-      string ticker, 
-      string otherTicker, 
+      string ticker,
+      string otherTicker,
       Coin coin)
     {
       ticker = ticker.ToLowerInvariant();
       otherTicker.ToLowerInvariant();
 
-      if(ticker.Contains("new")
+      if (ticker.Contains("new")
         || otherTicker.Contains("old"))
       {
         return ticker;
       }
-      if(ticker.Contains("old")
+      if (ticker.Contains("old")
         || otherTicker.Contains("new"))
       {
         return otherTicker;
@@ -350,27 +354,32 @@ namespace Crypnostic
       Debug.Assert(baseCoin != null);
       Debug.Assert(string.IsNullOrWhiteSpace(quoteCoinTicker) == false);
 
-      await semaphore.WaitAsync();
-
-      if (tickerLowerToCoin.TryGetValue(quoteCoinTicker.ToLowerInvariant(),
-        out Coin quoteCoin) == false)
-      { // May be missing due to book's listing status
-        semaphore.Release();
-        return null;
-      }
-
-      TradingPair pair = await quoteCoin.AddPair(this,
-        baseCoin,
-        askPriceOrOfferYouCanBuy,
-        bidPriceOrOfferYouCanSell);
-
-      if (isInactive != null)
+      try
       {
-        pair.isInactive = isInactive.Value;
-      }
+        await semaphore.WaitAsync();
 
-      semaphore.Release();
-      return pair;
+        if (tickerLowerToCoin.TryGetValue(quoteCoinTicker.ToLowerInvariant(),
+          out Coin quoteCoin) == false)
+        { // May be missing due to book's listing status
+          return null;
+        }
+
+        TradingPair pair = await quoteCoin.AddPair(this,
+          baseCoin,
+          askPriceOrOfferYouCanBuy,
+          bidPriceOrOfferYouCanSell);
+
+        if (isInactive != null)
+        {
+          pair.isInactive = isInactive.Value;
+        }
+
+        return pair;
+      }
+      finally
+      {
+        semaphore.Release();
+      }
     }
 
     /// <summary>

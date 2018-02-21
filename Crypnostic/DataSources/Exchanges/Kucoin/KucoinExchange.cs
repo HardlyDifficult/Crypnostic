@@ -23,6 +23,8 @@ namespace Crypnostic.Exchanges
     public KucoinExchange()
       : base(ExchangeName.Kucoin, "https://api.kucoin.com", 1_000_000 / 1_440)
     {
+      Coin c;
+
       CrypnosticController.instance.AddCoinAlias(
         new[] { "Tether", "USDT" },
         new[] { "Raiden Network Token", "Raiden Network" },

@@ -238,7 +238,7 @@ namespace Crypnostic
       Debug.Assert(fullName.Equals("USDT", StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullName.Equals("808", StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullName.Equals("High Performance Blockch", StringComparison.InvariantCultureIgnoreCase) == false);
-      
+
       this.fullName = fullName;
       this.fullNameLower = fullName.ToLowerInvariant();
 
@@ -248,7 +248,7 @@ namespace Crypnostic
 
     #region Public Read
     public TradingPair GetTradingPair(
-      Coin baseCoin, 
+      Coin baseCoin,
       ExchangeName exchangeName)
     {
       return tradingPairs[(exchangeName, baseCoin)];
@@ -281,25 +281,30 @@ namespace Crypnostic
       Debug.Assert(baseCoin != null);
       Debug.Assert(baseCoin != this);
 
-      await semaphore.WaitAsync();
-
-      (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
-      if (tradingPairs.TryGetValue(key, out TradingPair pair))
+      try
       {
-        pair.Update(askPrice, bidPrice);
+        await semaphore.WaitAsync();
+
+        (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
+        if (tradingPairs.TryGetValue(key, out TradingPair pair))
+        {
+          pair.Update(askPrice, bidPrice);
+        }
+        else
+        {
+          pair = new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
+          AddPair(pair);
+          onNewTradingPairListed?.Invoke(this, pair);
+        }
+
+        onPriceUpdate?.Invoke(this, pair);
+
+        return pair;
       }
-      else
+      finally
       {
-        pair = new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
-        AddPair(pair);
-        onNewTradingPairListed?.Invoke(this, pair);
+        semaphore.Release();
       }
-
-      onPriceUpdate?.Invoke(this, pair);
-
-      semaphore.Release();
-
-      return pair;
     }
 
     /// <summary>
@@ -315,27 +320,32 @@ namespace Crypnostic
       Debug.Assert(exchange != null);
       Debug.Assert(baseCoin != this);
 
-      await semaphore.WaitAsync();
-
-      if (baseCoin == null)
-      { // May be a blacklisted coin
-        return;
-      }
-
-      (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
-      if (tradingPairs.TryGetValue(key, out TradingPair pair) == false)
+      try
       {
-        pair = new TradingPair(exchange, baseCoin, this, 0, 0, isInactive);
-        AddPair(pair);
-      }
+        await semaphore.WaitAsync();
 
-      if (pair.isInactive != isInactive)
+        if (baseCoin == null)
+        { // May be a blacklisted coin
+          return;
+        }
+
+        (ExchangeName, Coin) key = (exchange.exchangeName, baseCoin);
+        if (tradingPairs.TryGetValue(key, out TradingPair pair) == false)
+        {
+          pair = new TradingPair(exchange, baseCoin, this, 0, 0, isInactive);
+          AddPair(pair);
+        }
+
+        if (pair.isInactive != isInactive)
+        {
+          pair.isInactive = isInactive;
+          onStatusUpdate?.Invoke(this, pair);
+        }
+      }
+      finally
       {
-        pair.isInactive = isInactive;
-        onStatusUpdate?.Invoke(this, pair);
+        semaphore.Release();
       }
-
-      semaphore.Release();
     }
 
     void AddPair(

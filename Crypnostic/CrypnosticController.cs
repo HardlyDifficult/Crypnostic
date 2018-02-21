@@ -173,20 +173,23 @@ namespace Crypnostic
       Debug.Assert(string.IsNullOrWhiteSpace(fullName) == false);
       Debug.Assert(alias.Equals(fullName, StringComparison.InvariantCultureIgnoreCase) == false);
       Debug.Assert(fullNameLowerToCoin.ContainsKey(alias.ToLowerInvariant()) == false);
+      try
+      {
+        semaphore1.Wait();
 
-      semaphore1.Wait();
+        alias = alias.ToLowerInvariant();
+        if (aliasLowerToCoin.ContainsKey(alias))
+        { // De-dupe
+          return;
+        }
 
-      alias = alias.ToLowerInvariant();
-      if (aliasLowerToCoin.ContainsKey(alias))
-      { // De-dupe
-        semaphore1.Release();
-        return;
+        Coin coin = CreateFromName(fullName).Result;
+        aliasLowerToCoin.Add(alias, coin);
       }
-
-      Coin coin = CreateFromName(fullName).Result;
-      aliasLowerToCoin.Add(alias, coin);
-
-      semaphore1.Release();
+      finally
+      {
+        semaphore1.Release();
+      }
     }
 
     /// <summary>
@@ -248,35 +251,38 @@ namespace Crypnostic
     internal async Task<Coin> CreateFromName(
       string fullName)
     {
-      await semaphore2.WaitAsync();
-
-      // Blacklist
-      if (blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()))
+      try
       {
-        semaphore2.Release();
-        return null;
-      }
+        await semaphore2.WaitAsync();
 
-      // Alias
-      if (aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
-      {
-        semaphore2.Release();
+        // Blacklist
+        if (blacklistedFullNameLowerList.Contains(fullName.ToLowerInvariant()))
+        {
+          return null;
+        }
+
+        // Alias
+        if (aliasLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out Coin coin))
+        {
+          return coin;
+        }
+
+        // Existing Coin
+        if (fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out coin))
+        {
+          return coin;
+        }
+
+        // New Coin
+        coin = new Coin(fullName);
+        OnNewCoin(coin);
+
         return coin;
       }
-
-      // Existing Coin
-      if (fullNameLowerToCoin.TryGetValue(fullName.ToLowerInvariant(), out coin))
+      finally
       {
-        semaphore2.Release(); // Better pattern?
-        return coin;
+        semaphore2.Release();
       }
-
-      // New Coin
-      coin = new Coin(fullName);
-      OnNewCoin(coin);
-
-      semaphore2.Release();
-      return coin;
     }
     #endregion
   }
