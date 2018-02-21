@@ -40,6 +40,8 @@ namespace Crypnostic
     {
       get; private set;
     }
+
+    public readonly OrderBook orderBook;
     #endregion
 
     #region Internal Data
@@ -53,7 +55,6 @@ namespace Crypnostic
       private get; set;
     }
 
-    OrderBook orderBook;
 
     bool _isInactive;
     #endregion
@@ -118,6 +119,7 @@ namespace Crypnostic
       this.bidPriceOrOfferYouCanSell = bidPriceOrOfferYouCanSell;
       this.lastUpdated = DateTime.Now;
       this.isInactive = isInactive;
+      this.orderBook = new OrderBook(this);
     }
     #endregion
 
@@ -126,6 +128,7 @@ namespace Crypnostic
     /// <param name="maxCacheAgeInSeconds">
     /// Use the cache unless the last refresh was more than this ago.
     /// </param>
+    // TODO move to last trade?
     public async Task<LastTrade> GetLastTradeAsync(
       int maxCacheAgeInSeconds)
     {
@@ -135,25 +138,6 @@ namespace Crypnostic
       }
 
       return lastTrade;
-    }
-
-    /// <summary>
-    /// Gets approx 100 bids and asks, allowing you to review market depth for a trading pair.
-    /// </summary>
-    /// <param name="maxCacheAgeInSeconds">
-    /// Use the cache unless the last refresh was more than this ago.
-    /// </param>
-    public async Task<OrderBook> GetOrderBookAsync(
-      TimeSpan maxCacheAgeInSeconds = default(TimeSpan))
-    {
-      if ((DateTime.Now - orderBook.dateCreated) < maxCacheAgeInSeconds)
-      {
-        return orderBook;
-      }
-
-      orderBook = await exchange.GetOrderBook(quoteCoin, baseCoin);
-
-      return orderBook;
     }
     #endregion
 

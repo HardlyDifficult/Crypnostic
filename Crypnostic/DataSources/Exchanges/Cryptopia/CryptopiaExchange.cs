@@ -156,8 +156,9 @@ namespace Crypnostic.Internal
       return $"{quoteSymbol.ToUpperInvariant()}_{baseSymbol.ToUpperInvariant()}";
     }
 
-    protected override async Task<OrderBook> GetOrderBook(
-      string pairId)
+    protected override async Task UpdateOrderBook(
+      string pairId,
+      OrderBook orderBook)
     {
       MarketOrdersRequest ordersRequest = new MarketOrdersRequest(pairId);
       MarketOrdersResponse ordersResponse = await publicApi.GetMarketOrders(ordersRequest);
@@ -165,7 +166,7 @@ namespace Crypnostic.Internal
       Order[] bids = ExtractOrders(ordersResponse.Data.Buy);
       Order[] asks = ExtractOrders(ordersResponse.Data.Sell);
 
-      return new OrderBook(asks, bids);
+      orderBook.Update(asks, bids);
     }
 
     static Order[] ExtractOrders(

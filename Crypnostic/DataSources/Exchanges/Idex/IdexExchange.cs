@@ -161,8 +161,9 @@ namespace Crypnostic.Internal
       return $"{baseSymbol.ToUpperInvariant()}_{quoteSymbol.ToUpperInvariant()}";
     }
 
-    protected override async Task<OrderBook> GetOrderBook(
-     string pairId)
+    protected override async Task UpdateOrderBook(
+     string pairId,
+     OrderBook orderBook)
     {
       IdexRequestForMarket request = new IdexRequestForMarket();
       request.market = pairId;
@@ -170,13 +171,13 @@ namespace Crypnostic.Internal
         $"returnOrderBook", request);
       if(depthJson == null)
       {
-        return default(OrderBook);
+        return;
       }
 
       Order[] bids = ExtractOrders(depthJson.Bids);
       Order[] asks = ExtractOrders(depthJson.Asks);
 
-      return new OrderBook(asks, bids);
+      orderBook.Update(asks, bids);
     }
 
     static Order[] ExtractOrders(

@@ -78,19 +78,20 @@ namespace Crypnostic.Internal
       return $"{quoteSymbol}-{baseSymbol}";
     }
 
-    protected override async Task<OrderBook> GetOrderBook(
-     string pairId)
+    protected override async Task UpdateOrderBook(
+     string pairId,
+     OrderBook orderBook)
     {
       GDaxDepthListJson depthJson = await Get<GDaxDepthListJson>($"products/{pairId}/book?level=2");
       if(depthJson == null)
       {
-        return default(OrderBook);
+        return;
       }
 
       Order[] bids = ExtractOrders(depthJson.bids);
       Order[] asks = ExtractOrders(depthJson.asks);
 
-      return new OrderBook(asks, bids);
+      orderBook.Update(asks, bids);
     }
 
     static Order[] ExtractOrders(

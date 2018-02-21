@@ -30,7 +30,7 @@ namespace Crypnostic.Tests.Exchanges
     {
       get
       {
-        return Coin.FromName("OmiseGO");
+        return Coin.FromName("Litecoin");
       }
     } 
   }

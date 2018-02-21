@@ -87,20 +87,21 @@ namespace Crypnostic.Internal
       return $"{quoteSymbol.ToUpperInvariant()}-{baseSymbol.ToUpperInvariant()}";
     }
 
-    protected override async Task<OrderBook> GetOrderBook(
-     string pairId)
+    protected override async Task UpdateOrderBook(
+     string pairId,
+     OrderBook orderBook)
     {
       KucoinDepthListJson depthJson = await Get<KucoinDepthListJson>(
         $"v1/open/orders?symbol={pairId}&limit=100");
       if(depthJson == null)
       {
-        return default(OrderBook);
+        return;
       }
 
       Order[] bids = ExtractOrders(depthJson.data.BUY);
       Order[] asks = ExtractOrders(depthJson.data.SELL);
 
-      return new OrderBook(asks, bids);
+      orderBook.Update(asks, bids);
     }
 
     static Order[] ExtractOrders(

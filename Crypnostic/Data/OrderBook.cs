@@ -1,17 +1,68 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Crypnostic
 {
-  public struct OrderBook
+  public class OrderBook
   {
-    public readonly Order[] asksOrOffersYouCanBuy;
+    public readonly TradingPair tradingPair;
 
-    public readonly Order[] bidsOrOffersYouCanSell;
+    Action<OrderBook> _onUpdate;
 
-    public readonly DateTime dateCreated;
+    public event Action<OrderBook> onUpdate
+    {
+      add
+      {
+        if(_onUpdate == null)
+        {
+          tradingPair.exchange.autoUpdatingBooks.Add(this);
+        }
+        _onUpdate += value;
+      }
+      remove
+      {
+        _onUpdate -= value;
 
-    public OrderBook(
+        if (_onUpdate == null)
+        {
+          tradingPair.exchange.autoUpdatingBooks.Remove(this);
+        }
+      }
+    }
+
+    public Order[] asksOrOffersYouCanBuy
+    {
+      get; private set;
+    }
+
+    public Order[] bidsOrOffersYouCanSell
+    {
+      get; private set;
+    }
+
+    public DateTime lastUpdated
+    {
+      get; private set;
+    }
+
+    internal OrderBook(
+      TradingPair tradingPair)
+    {
+      Debug.Assert(tradingPair != null);
+
+      this.tradingPair = tradingPair;
+    }
+
+    /// <summary>
+    /// Gets approx 100 bids and asks, allowing you to review market depth for a trading pair.
+    /// </summary>
+    public async Task RefreshAsync()
+    {
+      await tradingPair.exchange.UpdateOrderBook(this);
+    }
+
+    internal void Update(
       Order[] asksOrOffersYouCanBuy,
       Order[] bidsOrOffersYouCanSell)
     {
@@ -20,7 +71,9 @@ namespace Crypnostic
 
       this.asksOrOffersYouCanBuy = asksOrOffersYouCanBuy;
       this.bidsOrOffersYouCanSell = bidsOrOffersYouCanSell;
-      this.dateCreated = DateTime.Now;
+      this.lastUpdated = DateTime.Now;
+
+      _onUpdate?.Invoke(this);
     }
 
     [Conditional("DEBUG")]
@@ -28,7 +81,7 @@ namespace Crypnostic
       Order[] orders,
       bool isGoingUp)
     {
-      if(orders.Length == 0)
+      if (orders.Length == 0)
       {
         return;
       }

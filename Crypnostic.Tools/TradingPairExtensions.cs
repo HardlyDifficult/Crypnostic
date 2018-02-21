@@ -14,7 +14,8 @@ namespace Crypnostic.Tools
       decimal purchaseAmount = 0;
       decimal quantity = 0;
 
-      OrderBook orderBook = await tradingPair.GetOrderBookAsync();
+      OrderBook orderBook = tradingPair.orderBook;
+      await orderBook.RefreshAsync();
 
       for (int i = 0; i < orderBook.asksOrOffersYouCanBuy.Length; i++)
       {
@@ -41,7 +42,8 @@ namespace Crypnostic.Tools
     {
       decimal sellAmount = 0;
 
-      OrderBook orderBook = await tradingPair.GetOrderBookAsync();
+      OrderBook orderBook = tradingPair.orderBook;
+      await orderBook.RefreshAsync();
 
       for (int i = 0; i < orderBook.bidsOrOffersYouCanSell.Length; i++)
       {

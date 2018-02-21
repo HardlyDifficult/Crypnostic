@@ -53,6 +53,8 @@ namespace Crypnostic
 
     protected readonly Throttle throttle;
 
+    internal readonly HashSet<OrderBook> autoUpdatingBooks = new HashSet<OrderBook>();
+
     readonly AutoUpdateWithThrottle autoUpdate;
 
     readonly HashSet<string> blacklistedTickerLower = new HashSet<string>();
@@ -196,20 +198,25 @@ namespace Crypnostic
 
       await RefreshTradingPairs();
       onPriceUpdate?.Invoke(this);
+
+      foreach (OrderBook orderBook in autoUpdatingBooks)
+      {
+        await orderBook.RefreshAsync();
+      }
     }
     #endregion
 
     #region Internal Write
-    internal async Task<OrderBook> GetOrderBook(
-      Coin quoteCoin,
-      Coin baseCoin)
+    internal async Task UpdateOrderBook(
+      OrderBook orderBook)
     {
-      string pairId = GetPairId(quoteCoin, baseCoin);
-      return await GetOrderBook(pairId);
+      string pairId = GetPairId(orderBook.tradingPair.quoteCoin, orderBook.tradingPair.baseCoin);
+      await UpdateOrderBook(pairId, orderBook);
     }
 
-    protected abstract Task<OrderBook> GetOrderBook(
-      string pairId);
+    protected abstract Task UpdateOrderBook(
+      string pairId,
+      OrderBook orderBook);
 
     protected abstract Task RefreshTickers();
 

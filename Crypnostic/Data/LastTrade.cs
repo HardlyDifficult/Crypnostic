@@ -8,6 +8,7 @@ namespace Crypnostic
   /// 
   /// Different exchanges will update this value at different rates.
   /// </summary>
+  // TODO make class with auto-update option
   public struct LastTrade
   {
     /// <summary>

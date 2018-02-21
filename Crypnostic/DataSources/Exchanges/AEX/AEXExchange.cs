@@ -119,19 +119,20 @@ namespace Crypnostic.Internal
       return $"c={quoteSymbol.ToLowerInvariant()}&mk_type={baseSymbol.ToLowerInvariant()}";
     }
 
-    protected override async Task<OrderBook> GetOrderBook(
-     string pairId)
+    protected override async Task UpdateOrderBook(
+     string pairId,
+     OrderBook orderBook)
     {
       AexDepthJson depthJson = await Get<AexDepthJson>($"depth.php?{pairId}");
       if(depthJson == null)
       {
-        return default(OrderBook);
+        return;
       }
 
       Order[] bids = ExtractOrders(depthJson.bids);
       Order[] asks = ExtractOrders(depthJson.asks);
 
-      return new OrderBook(asks, bids);
+      orderBook.Update(asks, bids);
     }
 
     static Order[] ExtractOrders(

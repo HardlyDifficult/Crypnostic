@@ -119,19 +119,20 @@ namespace Crypnostic.Internal
       return $"{quoteSymbol.ToUpperInvariant()}{baseSymbol.ToUpperInvariant()}";
     }
 
-    protected override async Task<OrderBook> GetOrderBook(
-     string pairId)
+    protected override async Task UpdateOrderBook(
+     string pairId,
+     OrderBook orderBook)
     {
       BinanceDepthJson depthJson = await Get<BinanceDepthJson>($"api/v1/depth?symbol={pairId}");
       if(depthJson == null)
       {
-        return default(OrderBook);
+        return;
       }
 
       Order[] bids = ExtractOrders(depthJson.bids);
       Order[] asks = ExtractOrders(depthJson.asks);
 
-      return new OrderBook(asks, bids);
+      orderBook.Update(asks, bids);
     }
 
     static Order[] ExtractOrders(
