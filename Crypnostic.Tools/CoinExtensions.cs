@@ -23,6 +23,16 @@ namespace Crypnostic.Tools
       decimal? bestValue = null;
       foreach (TradingPair pair in quoteCoin.allTradingPairs)
       {
+        if (pair.baseCoin != baseCoin)
+        { // Filter by baseCoin
+          continue;
+        }
+
+        if (pair.isInactive)
+        { // Ignore inactive pairs
+          continue;
+        }
+
         if (onlyOnTheseExchanges != null)
         { // Filter by exchange (optional)
           for (int i = 0; i < onlyOnTheseExchanges.Length; i++)
@@ -32,16 +42,6 @@ namespace Crypnostic.Tools
               continue;
             }
           }
-        }
-
-        if (pair.baseCoin != baseCoin)
-        { // Filter by baseCoin
-          continue;
-        }
-
-        if (pair.isInactive)
-        { // Ignore inactive pairs
-          continue;
         }
 
         decimal value = orderType == OrderType.Buy

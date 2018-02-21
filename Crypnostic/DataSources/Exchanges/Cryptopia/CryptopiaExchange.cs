@@ -144,7 +144,7 @@ namespace Crypnostic.Internal
           bidPrice: ticker.BidPrice);
         if (pair != null)
         {
-          pair.lastTrade = new LastTrade(ticker.LastPrice);
+          pair.lastTrade.Update(ticker.LastPrice);
         }
       }
     }

@@ -109,7 +109,7 @@ namespace Crypnostic.Internal
 
       BinanceTradeJson history = tradeHistory[0];
       decimal price = decimal.Parse(history.price);
-      tradingPair.lastTrade = new LastTrade(price);
+      tradingPair.lastTrade.Update(price);
     }
 
     protected override string GetPairId(

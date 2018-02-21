@@ -23,8 +23,40 @@ namespace Crypnostic
       get; private set;
     }
 
+    bool _autoRefresh;
+
     Action<OrderBook> _onUpdate;
-    
+
+    /// <summary>
+    /// Note that updating the OrderBook requires an API call for each book
+    /// individually, so limit subs to maintain good performance.
+    /// </summary>
+    public bool autoRefresh
+    {
+      get
+      {
+        return _autoRefresh || _onUpdate != null;
+      }
+      set
+      {
+        if (_autoRefresh == value)
+        {
+          return;
+        }
+
+        _autoRefresh = value;
+
+        if (autoRefresh)
+        {
+          tradingPair.exchange.autoUpdatingBooks.Add(this);
+        }
+        else
+        {
+          tradingPair.exchange.autoUpdatingBooks.Remove(this);
+        }
+      }
+    }
+
     /// <summary>
     /// By subscribing to this event you are enabling auto-updates
     /// on this book, which occur each time the exchange updates prices.
@@ -38,17 +70,18 @@ namespace Crypnostic
     {
       add
       {
-        if(_onUpdate == null)
+        if (_onUpdate == null && _autoRefresh == false)
         {
           tradingPair.exchange.autoUpdatingBooks.Add(this);
         }
+
         _onUpdate += value;
       }
       remove
       {
         _onUpdate -= value;
 
-        if (_onUpdate == null)
+        if (_onUpdate == null && _autoRefresh == false)
         {
           tradingPair.exchange.autoUpdatingBooks.Remove(this);
         }

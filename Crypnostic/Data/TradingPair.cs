@@ -42,20 +42,14 @@ namespace Crypnostic
     }
 
     public readonly OrderBook orderBook;
+
+    public readonly LastTrade lastTrade;
     #endregion
 
     #region Internal Data
     static readonly ILog log = LogManager.GetLogger<TradingPair>();
 
-    /// <summary>
-    /// Use the GetLastTrade to allow for async and caching.
-    /// </summary>
-    internal LastTrade lastTrade
-    {
-      private get; set;
-    }
-
-
+    
     bool _isInactive;
     #endregion
 
@@ -120,27 +114,10 @@ namespace Crypnostic
       this.lastUpdated = DateTime.Now;
       this.isInactive = isInactive;
       this.orderBook = new OrderBook(this);
+      this.lastTrade = new LastTrade(this);
     }
     #endregion
-
-    #region Public API
-    /// <summary>Get's the most recent successful trade for this pair.</summary>
-    /// <param name="maxCacheAgeInSeconds">
-    /// Use the cache unless the last refresh was more than this ago.
-    /// </param>
-    // TODO move to last trade?
-    public async Task<LastTrade> GetLastTradeAsync(
-      int maxCacheAgeInSeconds)
-    {
-      if ((DateTime.Now - lastTrade.dateCreated).TotalSeconds > maxCacheAgeInSeconds)
-      {
-        await exchange.RefreshLastTrade(this);
-      }
-
-      return lastTrade;
-    }
-    #endregion
-
+    
     #region Internal Write API
     internal void Update(
       decimal askPriceOrOfferYouCanBuy,

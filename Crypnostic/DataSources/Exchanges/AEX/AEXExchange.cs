@@ -105,7 +105,7 @@ namespace Crypnostic.Internal
 
           if (pair != null && ticker.Value.ticker != null)
           {
-            pair.lastTrade = new LastTrade(ticker.Value.ticker.last);
+            pair.lastTrade.Update(ticker.Value.ticker.last);
           }
         }
       }

@@ -74,7 +74,7 @@ namespace Crypnostic.Internal
 
         if (pair != null)
         {
-          pair.lastTrade = new LastTrade(
+          pair.lastTrade.Update(
             new decimal(ticker.lastDealPrice));
         }
       }

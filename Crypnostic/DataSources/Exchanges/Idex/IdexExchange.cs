@@ -136,7 +136,7 @@ namespace Crypnostic.Internal
 
         if (pair != null)
         {
-          pair.lastTrade = new LastTrade(Parse(ticker.Value.last));
+          pair.lastTrade.Update(Parse(ticker.Value.last));
         }
       }
     }

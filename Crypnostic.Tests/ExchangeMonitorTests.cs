@@ -56,6 +56,19 @@ namespace Crypnostic.Tests
       Assert.IsTrue(orderBook.bidsOrOffersYouCanSell[0].price >= orderBook.bidsOrOffersYouCanSell[1].price);
     }
 
+    [TestMethod()]
+    public async Task LastTrade()
+    {
+      CrypnosticConfig config = new CrypnosticConfig(exchangeName);
+      monitor = new CrypnosticController(config);
+      await monitor.StartAsync();
+
+      TradingPair tradingPair = popularQuoteCoin.GetTradingPair(popularBaseCoin, exchangeName);
+      LastTrade lastTrade = tradingPair.lastTrade;
+      await lastTrade.RefreshAsync();
+      Assert.IsTrue(lastTrade.price > 0);
+    }
+
 
 
     [TestMethod()]
@@ -64,7 +77,7 @@ namespace Crypnostic.Tests
       monitor = new CrypnosticController(
         new CrypnosticConfig(exchangeName));
       await monitor.StartAsync();
-      
+
       TradingPair tradingPair = popularQuoteCoin.GetTradingPair(popularBaseCoin, exchangeName);
 
       int count = 0;
@@ -76,6 +89,32 @@ namespace Crypnostic.Tests
         {
           lastPrice = book.bidsOrOffersYouCanSell[0].price;
           lastVolume = book.bidsOrOffersYouCanSell[0].volume;
+          count++;
+        }
+      };
+
+      while (count < 2)
+      {
+        await Task.Delay(10);
+      }
+    }
+
+    [TestMethod()]
+    public async Task LastPriceAutoUpdates()
+    {
+      monitor = new CrypnosticController(
+        new CrypnosticConfig(exchangeName));
+      await monitor.StartAsync();
+
+      TradingPair tradingPair = popularQuoteCoin.GetTradingPair(popularBaseCoin, exchangeName);
+
+      int count = 0;
+      decimal lastPrice = 0;
+      tradingPair.lastTrade.onUpdate += (trade) =>
+      {
+        if (trade.price != lastPrice)
+        {
+          lastPrice = trade.price;
           count++;
         }
       };

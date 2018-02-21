@@ -55,6 +55,8 @@ namespace Crypnostic
 
     internal readonly HashSet<OrderBook> autoUpdatingBooks = new HashSet<OrderBook>();
 
+    internal readonly HashSet<LastTrade> autoLastTrades = new HashSet<LastTrade>();
+
     readonly AutoUpdateWithThrottle autoUpdate;
 
     readonly HashSet<string> blacklistedTickerLower = new HashSet<string>();
@@ -203,6 +205,10 @@ namespace Crypnostic
       {
         await orderBook.RefreshAsync();
       }
+      foreach (LastTrade lastTrade in autoLastTrades)
+      {
+        await lastTrade.RefreshAsync();
+      }
     }
     #endregion
 
@@ -229,7 +235,7 @@ namespace Crypnostic
     internal virtual Task RefreshLastTrade(
       TradingPair tradingPair)
     {
-      return null;
+      return Task.CompletedTask;
     }
 
     /// <summary>
