@@ -1,13 +1,11 @@
 ﻿using System;
 using Binance.API.Csharp.Client;
 using Binance.API.Csharp.Client.Models.Market;
-using Crypnostic.Exchanges.Binance;
 using RestSharp;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
 using System.Diagnostics;
-using Crypnostic.Exchanges;
 
 namespace Crypnostic
 {

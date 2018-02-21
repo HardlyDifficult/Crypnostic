@@ -3,10 +3,9 @@ using System.Threading.Tasks;
 using RestSharp;
 using HD;
 using System.Collections.Generic;
-using Crypnostic.Exchanges.AEX;
 using System.Diagnostics;
 
-namespace Crypnostic.Exchanges
+namespace Crypnostic
 {
   /// <remarks>
   /// https://www.aex.com/page/api_detailed.html

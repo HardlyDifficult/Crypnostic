@@ -1,6 +1,4 @@
 ﻿using HD;
-using Crypnostic.Exchanges;
-using Crypnostic.Exchanges.GDax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

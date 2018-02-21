@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Crypnostic.CoinMarketCap
+namespace Crypnostic
 {
   public class CoinMarketCapTickerJson
   {

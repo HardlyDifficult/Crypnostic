@@ -14,7 +14,7 @@ namespace Crypnostic.Tests
     {
       monitor = new CrypnosticController(
         new CrypnosticConfig());
-      await monitor.Start();
+      await monitor.StartAsync();
 
       int count = monitor.allCoins.Count();
       Assert.IsTrue(count > 600); // Cryptopia is the largest with about 500
@@ -28,7 +28,7 @@ namespace Crypnostic.Tests
           ExchangeName.Binance,
           ExchangeName.Cryptopia,
           ExchangeName.Kucoin));
-      await monitor.Start();
+      await monitor.StartAsync();
 
       Coin omg = Coin.FromName("OmiseGO");
       int count = omg.allTradingPairs.Count();

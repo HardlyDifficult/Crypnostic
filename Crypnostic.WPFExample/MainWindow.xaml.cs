@@ -30,7 +30,7 @@ namespace Crypnostic.WPFExamples
         ExchangeName.Cryptopia,
         ExchangeName.Kucoin);
       exchangeMonitor = new CrypnosticController(config);
-      await exchangeMonitor.Start();
+      await exchangeMonitor.StartAsync();
     }
 
     void AddButton_OnClick(

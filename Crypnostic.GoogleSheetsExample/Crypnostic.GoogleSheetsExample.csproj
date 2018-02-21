@@ -115,13 +115,13 @@
       <Project>{c4ea014d-bd4d-4a1a-b517-3656eba47723}</Project>
       <Name>Crypnostic</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HardlyCommon\Hardly.Common.csproj">
+    <ProjectReference Include="..\Hardly.Common\Hardly.Common.csproj">
       <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
       <Name>Hardly.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HardlyDifficult.Google.Sheets\HardlyDifficult.Google.Sheets.csproj">
+    <ProjectReference Include="..\Hardly.Google.Sheets\Hardly.Google.Sheets.csproj">
       <Project>{6c848a5b-9006-4bb7-9e26-c7cd3bdce36c}</Project>
-      <Name>HardlyDifficult.Google.Sheets</Name>
+      <Name>Hardly.Google.Sheets</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

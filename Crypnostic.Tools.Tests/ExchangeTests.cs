@@ -18,7 +18,7 @@ namespace Crypnostic.Tests
           ExchangeName.Binance,
           ExchangeName.Cryptopia,
           ExchangeName.Kucoin));
-      await monitor.Start();
+      await monitor.StartAsync();
 
       Coin ark = Coin.FromName("Ark");
       TradingPair pair = Coin.bitcoin.FindBestOffer(ark, OrderType.Sell);

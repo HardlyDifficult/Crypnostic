@@ -3,7 +3,7 @@
 //using System.Collections.Generic;
 //using System.Threading.Tasks;
 //using HD;
-//using Crypnostic.Exchanges;
+//using Crypnostic.DataSources.Exchanges;
 
 //namespace Crypnostic
 //{

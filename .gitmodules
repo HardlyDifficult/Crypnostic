@@ -2,15 +2,15 @@
 	path = Binance.API.Csharp.Client
 	url = https://github.com/morpheums/Binance.API.Csharp.Client.git
 	branch = master
-[submodule "HardlyCommon"]
-	path = HardlyCommon
-	url = https://github.com/hardlydifficult/HardlyCommon
-	branch = master
 [submodule "CryptopiaApi-Csharp"]
 	path = CryptopiaApi-Csharp
 	url = https://github.com/hardlydifficult/CryptopiaApi-Csharp.git
 	branch = master
-[submodule "HardlyDifficult.Google.Sheets"]
-	path = HardlyDifficult.Google.Sheets
-	url = https://github.com/hardlydifficult/HardlyDifficult.Google.Sheets.git
+[submodule "Hardly.Google.Sheets"]
+	path = Hardly.Google.Sheets
+	url = https://github.com/hardlydifficult/Hardly.Google.Sheets.git
+	branch = master
+[submodule "Hardly.Common"]
+	path = Hardly.Common
+	url = https://github.com/hardlydifficult/Hardly.Common.git
 	branch = master

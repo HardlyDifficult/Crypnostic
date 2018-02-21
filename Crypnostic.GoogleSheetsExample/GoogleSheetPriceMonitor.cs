@@ -83,7 +83,7 @@ namespace Crypnostic.GoogleSheetsExamples
       }
 
       exchangeMonitor = new CrypnosticController(config);
-      await exchangeMonitor.Start();
+      await exchangeMonitor.StartAsync();
 
       RefreshTimer_Elapsed(null, null);
     }

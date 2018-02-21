@@ -101,7 +101,7 @@
       <Project>{30296406-237d-4b4b-8b5a-bdd18f0c2f53}</Project>
       <Name>CryptopiaApi</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HardlyCommon\Hardly.Common.csproj">
+    <ProjectReference Include="..\Hardly.Common\Hardly.Common.csproj">
       <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
       <Name>Hardly.Common</Name>
     </ProjectReference>

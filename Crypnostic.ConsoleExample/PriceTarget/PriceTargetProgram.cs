@@ -10,7 +10,7 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
     {
       using (PriceTarget priceTarget = new PriceTarget())
       {
-        priceTarget.Start().Wait();
+        priceTarget.Start();
         while (true)
         {
           if (Console.ReadLine().Equals("Quit", StringComparison.InvariantCultureIgnoreCase))

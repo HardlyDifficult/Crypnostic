@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Crypnostic.Exchanges.Idex;
-using Crypnostic.Exchanges.Kucoin;
 using RestSharp;
 using HD;
 
-namespace Crypnostic.Exchanges
+namespace Crypnostic
 {
   /// <remarks>
   /// https://github.com/AuroraDAO/idex-api-docs

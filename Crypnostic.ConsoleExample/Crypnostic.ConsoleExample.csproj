@@ -56,6 +56,10 @@
       <Project>{c4ea014d-bd4d-4a1a-b517-3656eba47723}</Project>
       <Name>Crypnostic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Hardly.Common\Hardly.Common.csproj">
+      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
+      <Name>Hardly.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

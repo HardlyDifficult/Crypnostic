@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Crypnostic.CoinMarketCap
+namespace Crypnostic
 {
   /// <summary>
   /// https://coinmarketcap.com/api/
@@ -84,7 +84,7 @@ namespace Crypnostic.CoinMarketCap
 
         tickerLowerToCoin[ticker.symbol.ToLowerInvariant()] = coin;
 
-        coin.coinMarketCapData = new Data.MarketCap(
+        coin.coinMarketCapData = new MarketCap(
           ticker.symbol,
           int.Parse(ticker.rank),
           ticker.price_btc.ToNullableDecimal(),

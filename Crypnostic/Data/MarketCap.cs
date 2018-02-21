@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Crypnostic.Data
+namespace Crypnostic
 {
   /// <summary>
   /// Data about a coin from CoinMarketCap.

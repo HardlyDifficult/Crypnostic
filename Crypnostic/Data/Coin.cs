@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using Crypnostic.CoinMarketCap;
-using Crypnostic.Data;
 using HD;
 
 namespace Crypnostic

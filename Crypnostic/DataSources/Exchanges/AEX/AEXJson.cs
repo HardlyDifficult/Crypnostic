@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Crypnostic.Exchanges.AEX
+namespace Crypnostic
 {
   public class AexCoinJson
   {

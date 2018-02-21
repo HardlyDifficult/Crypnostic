@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using HD;
 using System.Diagnostics;
 
-namespace Crypnostic.Exchanges
+namespace Crypnostic
 {
   /// <summary>
   /// A simple helper as Rest requests are common when working with Exchanges.

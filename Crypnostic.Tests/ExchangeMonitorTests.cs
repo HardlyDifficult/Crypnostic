@@ -29,7 +29,7 @@ namespace Crypnostic.Tests
     {
       CrypnosticConfig config = new CrypnosticConfig(exchangeName);
       monitor = new CrypnosticController(config);
-      await monitor.Start();
+      await monitor.StartAsync();
 
       Assert.IsTrue(popularQuoteCoin.hasValidTradingPairs);
     }
@@ -39,7 +39,7 @@ namespace Crypnostic.Tests
     {
       CrypnosticConfig config = new CrypnosticConfig(exchangeName);
       monitor = new CrypnosticController(config);
-      await monitor.Start();
+      await monitor.StartAsync();
 
       TradingPair tradingPair = popularQuoteCoin.GetTradingPair(popularBaseCoin, exchangeName);
       OrderBook orderBook = await tradingPair.GetOrderBook();

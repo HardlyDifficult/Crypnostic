@@ -18,7 +18,7 @@ namespace Crypnostic.Tests.Exchanges
     {
       monitor = new CrypnosticController(
         new CrypnosticConfig(exchangeName));
-      await monitor.Start();
+      await monitor.StartAsync();
       Coin doge = Coin.FromName("Dogecoin");
       Assert.IsTrue(doge != null);
 

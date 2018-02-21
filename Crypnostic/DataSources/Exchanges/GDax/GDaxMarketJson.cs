@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Crypnostic.Exchanges.GDax
+namespace Crypnostic
 {
 
   public class GDaxProductListJson

@@ -37,9 +37,9 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
       monitor = new CrypnosticController(config);
     }
 
-    public async Task Start()
+    public void Start()
     {
-      await monitor.Start();
+      monitor.Start();
 
       AddMonitor("Monero");
       AddMonitor("OmiseGO");

@@ -1,5 +1,4 @@
 ﻿using Common.Logging;
-using Crypnostic.CoinMarketCap;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -110,13 +109,18 @@ namespace Crypnostic
       }
     }
 
+    public void Start()
+    {
+      StartAsync().Wait();
+    }
+
     /// <summary>
     /// Completes an initial download from every exchange (before returning)
     /// and then starts auto-refreshing.
     /// </summary>
-    public async Task Start()
+    public async Task StartAsync()
     {
-      log.Trace(nameof(Start));
+      log.Trace(nameof(StartAsync));
 
       List<Task> taskList = new List<Task>();
 
