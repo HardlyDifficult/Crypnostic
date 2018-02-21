@@ -244,7 +244,7 @@ namespace Crypnostic
     protected async Task AddTicker(
       Coin coin,
       string ticker,
-      bool isCoinActive)
+      bool isInactive)
     {
       Debug.Assert(string.IsNullOrWhiteSpace(ticker) == false);
 
@@ -263,13 +263,13 @@ namespace Crypnostic
       {
         await semaphore.WaitAsync();
 
-        if (isCoinActive)
+        if (isInactive)
         {
-          inactiveCoins.Remove(coin);
+          inactiveCoins.Add(coin);
         }
         else
         {
-          inactiveCoins.Add(coin);
+          inactiveCoins.Remove(coin);
         }
 
         if (tickerLowerToCoin.ContainsKey(ticker))

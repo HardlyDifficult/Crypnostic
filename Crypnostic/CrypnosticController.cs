@@ -29,6 +29,11 @@ namespace Crypnostic
         return fullNameLowerToCoin.Values;
       }
     }
+    
+    /// <summary>
+    /// In priority order, so first exchange is my most preferred trading platform.
+    /// </summary>
+    public readonly Exchange[] exchangeList;
     #endregion
 
     #region Internal/Private Data
@@ -65,11 +70,6 @@ namespace Crypnostic
 
     readonly SemaphoreSlim semaphore1 = new SemaphoreSlim(1);
     readonly SemaphoreSlim semaphore2 = new SemaphoreSlim(1);
-
-    /// <summary>
-    /// In priority order, so first exchange is my most preferred trading platform.
-    /// </summary>
-    readonly Exchange[] exchangeList;
 
     internal readonly CoinMarketCapAPI coinMarketCap;
     #endregion

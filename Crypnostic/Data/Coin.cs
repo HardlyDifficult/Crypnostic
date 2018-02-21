@@ -89,6 +89,7 @@ namespace Crypnostic
     /// The app will attempt to load this data on Start,
     /// and will then refresh periodically.
     /// </summary>
+    // TODO make readonly and refresh with an event
     public MarketCap coinMarketCapData;
     #endregion
 
@@ -159,6 +160,23 @@ namespace Crypnostic
       get
       {
         return tradingPairs.Values;
+      }
+    }
+
+    public bool isActiveAnywhere
+    {
+      get
+      {
+        for (int i = 0; i < CrypnosticController.instance.exchangeList.Length; i++)
+        {
+          Exchange exchange = CrypnosticController.instance.exchangeList[i];
+          if(exchange.IsCoinActive(this))
+          {
+            return true; 
+          }
+        }
+
+        return false;
       }
     }
     #endregion

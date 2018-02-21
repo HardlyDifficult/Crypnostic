@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Crypnostic.Internal
@@ -11,6 +12,7 @@ namespace Crypnostic.Internal
     public string rank { get; set; }
     public string price_usd { get; set; }
     public string price_btc { get; set; }
+    [JsonProperty("24h_volume_usd")]
     public string _24h_volume_usd { get; set; }
     public string market_cap_usd { get; set; }
     public string available_supply { get; set; }

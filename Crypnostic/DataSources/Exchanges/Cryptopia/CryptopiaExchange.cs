@@ -80,6 +80,7 @@ namespace Crypnostic.Internal
         new[] { "MAZA", "MazaCoin" },
         new[] { "Monkey Project", "MonkeyProject" },
         new[] { "MyBit Token", "MyBit" },
+        new [] { "NamoCoin", "NAMO COIN" },
         new[] { "Opal", "Opalcoin" },
         new[] { "Ormeus Coin", "OrmeusCoin" },
         new[] { "Pascal Lite", "PascalLite" },
@@ -90,6 +91,7 @@ namespace Crypnostic.Internal
         new[] { "Royal Kingdom Coin", "RoyalKingdomCoin" },
         new[] { "StrikeBitClub", "SBC Coin" },
         new[] { "SHACoin", "SHACoin2" },
+        new [] { "Sphre AIR", "Sphre" },
         new[] { "Social Send", "SocialSend" },
         new[] { "Steneum Coin", "Steneum" },
         new[] { "Swing", "Swingcoin" },
@@ -111,12 +113,12 @@ namespace Crypnostic.Internal
         { // De-listed coins should not be considered at all..
           continue;
         }
-        bool isCoinActive = true;
+        bool isInactive = false;
         if (product.Status != "OK")
         {
-          isCoinActive = false;
+          isInactive = true;
         }
-        await AddTicker(await CreateFromName(product.Name), product.Symbol, isCoinActive);
+        await AddTicker(await CreateFromName(product.Name), product.Symbol, isInactive);
       }
 
       await throttle.WaitTillReady();
