@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
 
-  public class GDaxProductListJson
+  internal class GDaxProductListJson
   {
     public GDaxProductJson[] data { get; set; }
   }
 
-  public class GDaxProductJson
+  internal class GDaxProductJson
   {
     public string id { get; set; }
     public string base_currency { get; set; }
@@ -19,7 +19,7 @@ namespace Crypnostic
     public string status { get; set; }
   }
 
-  public class GDaxProductTickerJson
+  internal class GDaxProductTickerJson
   {
     public int trade_id { get; set; }
     public string price { get; set; }
@@ -31,7 +31,7 @@ namespace Crypnostic
   }
 
 
-  public class GDaxDepthListJson
+  internal class GDaxDepthListJson
   {
     //public long sequence { get; set; }
     public string[][] bids { get; set; }

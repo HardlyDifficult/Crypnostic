@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
 
-  public class IdexTickerInfoJson
+  internal class IdexTickerInfoJson
   {
     public int decimals { get; set; }
     public string address { get; set; }
     public string name { get; set; }
   }
 
-  public class IdexReturnTickerJson
+  internal class IdexReturnTickerJson
   {
     public string last { get; set; }
     public string high { get; set; }
@@ -24,18 +24,18 @@ namespace Crypnostic
   }
 
 
-  public class IdexRequestForMarket
+  internal class IdexRequestForMarket
   {
     public string market { get; set; }
   }
 
-  public partial class IdexDepthListJson
+  internal partial class IdexDepthListJson
   {
     public IdexDepthJson[] Asks { get; set; }
     public IdexDepthJson[] Bids { get; set; }
   }
 
-  public partial class IdexDepthJson
+  internal partial class IdexDepthJson
   {
     //public long Timestamp { get; set; }
     public string Price { get; set; }

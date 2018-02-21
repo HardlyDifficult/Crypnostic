@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using HD;
 using System.Diagnostics;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
   /// <summary>
   /// </summary>

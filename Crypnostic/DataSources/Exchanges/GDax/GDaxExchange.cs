@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
   /// <remarks>
   /// https://docs.gdax.com/#introduction

@@ -126,7 +126,7 @@ namespace Crypnostic
     /// <param name="maxCacheAgeInSeconds">
     /// Use the cache unless the last refresh was more than this ago.
     /// </param>
-    public async Task<LastTrade> GetLastTrade(
+    public async Task<LastTrade> GetLastTradeAsync(
       int maxCacheAgeInSeconds)
     {
       if ((DateTime.Now - lastTrade.dateCreated).TotalSeconds > maxCacheAgeInSeconds)
@@ -143,7 +143,7 @@ namespace Crypnostic
     /// <param name="maxCacheAgeInSeconds">
     /// Use the cache unless the last refresh was more than this ago.
     /// </param>
-    public async Task<OrderBook> GetOrderBook(
+    public async Task<OrderBook> GetOrderBookAsync(
       TimeSpan maxCacheAgeInSeconds = default(TimeSpan))
     {
       if ((DateTime.Now - orderBook.dateCreated) < maxCacheAgeInSeconds)

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
-  public class KucoinTickerListJson
+  internal class KucoinTickerListJson
   {
     public class TickerJson
     {
@@ -31,7 +31,7 @@ namespace Crypnostic
     public TickerJson[] data { get; set; }
   }
 
-  public class KucoinProductListJson
+  internal class KucoinProductListJson
   {
     public class ProductJson
     {
@@ -57,7 +57,7 @@ namespace Crypnostic
   }
 
 
-  public class KucoinDepthListJson
+  internal class KucoinDepthListJson
   {
     public bool success { get; set; }
     public string code { get; set; }
@@ -66,7 +66,7 @@ namespace Crypnostic
     public KuCoinDepthJson data { get; set; }
   }
 
-  public class KuCoinDepthJson
+  internal class KuCoinDepthJson
   {
     public decimal[][] SELL { get; set; }
     public decimal[][] BUY { get; set; }

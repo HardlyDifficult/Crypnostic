@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
-  public class AexCoinJson
+  internal class AexCoinJson
   {
     public AexTickerJson ticker { get; set; }
   }
 
-  public class AexTickerJson
+  internal class AexTickerJson
   {
     public decimal high { get; set; }
     public decimal low { get; set; }
@@ -18,7 +18,7 @@ namespace Crypnostic
   }
 
 
-  public class AexDepthJson
+  internal class AexDepthJson
   {
     public decimal[][] bids { get; set; }
     public decimal[][] asks { get; set; }

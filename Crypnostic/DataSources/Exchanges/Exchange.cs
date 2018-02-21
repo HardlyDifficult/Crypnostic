@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading;
 using Common.Logging;
+using Crypnostic.Internal;
 
 namespace Crypnostic
 {
@@ -137,7 +138,7 @@ namespace Crypnostic
     #region Events
     async Task OnAutoUpdate()
     {
-      await Refresh(TimeSpan.Zero);
+      await RefreshAsync(TimeSpan.Zero);
     }
     #endregion
 
@@ -182,7 +183,7 @@ namespace Crypnostic
     /// 
     /// Call AddTradingPair for each pair supported.
     /// </remarks>
-    public async Task Refresh(
+    public async Task RefreshAsync(
       TimeSpan timeBetweenTickersRefresh)
     {
       if (tickerLowerToCoin.Count == 0

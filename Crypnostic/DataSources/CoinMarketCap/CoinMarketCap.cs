@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
   /// <summary>
   /// https://coinmarketcap.com/api/

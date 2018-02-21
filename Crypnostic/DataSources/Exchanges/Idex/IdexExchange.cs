@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using RestSharp;
 using HD;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
   /// <remarks>
   /// https://github.com/AuroraDAO/idex-api-docs

@@ -5,7 +5,7 @@ using HD;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
   /// <remarks>
   /// https://www.aex.com/page/api_detailed.html

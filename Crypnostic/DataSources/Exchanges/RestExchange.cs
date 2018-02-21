@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using HD;
 using System.Diagnostics;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
   /// <summary>
   /// A simple helper as Rest requests are common when working with Exchanges.
   /// </summary>
-  public abstract class RestExchange : Exchange
+  internal abstract class RestExchange : Exchange
   {
     readonly IRestClient restClient;
 

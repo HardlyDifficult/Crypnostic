@@ -1,4 +1,5 @@
 ﻿using Common.Logging;
+using Crypnostic.Internal;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -108,12 +109,7 @@ namespace Crypnostic
         exchangeList[i] = exchange;
       }
     }
-
-    public void Start()
-    {
-      StartAsync().Wait();
-    }
-
+    
     /// <summary>
     /// Completes an initial download from every exchange (before returning)
     /// and then starts auto-refreshing.

@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
-  public class BinanceProductListJson
+  internal class BinanceProductListJson
   {
     public BinanceProductJson[] data { get; set; }
   }
 
-  public class BinanceProductJson
+  internal class BinanceProductJson
   {
     public string quoteAsset { get; set; }
     public string quoteAssetName { get; set; }
@@ -40,7 +40,7 @@ namespace Crypnostic
 
 
 
-  public class BinanceTradeJson
+  internal class BinanceTradeJson
   {
     public int id { get; set; }
     public string price { get; set; }
@@ -51,7 +51,7 @@ namespace Crypnostic
   }
 
 
-  public class BinanceDepthJson
+  internal class BinanceDepthJson
   {
     //public int lastUpdateId { get; set; }
     public object[][] bids { get; set; }

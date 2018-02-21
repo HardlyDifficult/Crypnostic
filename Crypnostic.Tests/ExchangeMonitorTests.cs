@@ -42,7 +42,7 @@ namespace Crypnostic.Tests
       await monitor.StartAsync();
 
       TradingPair tradingPair = popularQuoteCoin.GetTradingPair(popularBaseCoin, exchangeName);
-      OrderBook orderBook = await tradingPair.GetOrderBook();
+      OrderBook orderBook = await tradingPair.GetOrderBookAsync();
       Assert.IsTrue(orderBook.asksOrOffersYouCanBuy.Length > 0);
       Assert.IsTrue(orderBook.asksOrOffersYouCanBuy[0].price > 0);
       Assert.IsTrue(orderBook.asksOrOffersYouCanBuy[0].volume > 0);

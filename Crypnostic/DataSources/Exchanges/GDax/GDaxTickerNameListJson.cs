@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
-  public class GDaxTickerNameListJson
+  internal class GDaxTickerNameListJson
   {
     public GDaxTickerNameJson[] Property1 { get; set; }
   }
 
-  public class GDaxTickerNameJson
+  internal class GDaxTickerNameJson
   {
     public string id { get; set; }
     public string name { get; set; }

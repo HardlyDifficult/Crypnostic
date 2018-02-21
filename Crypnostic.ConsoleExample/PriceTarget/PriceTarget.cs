@@ -39,7 +39,7 @@ namespace Crypnostic.ConsoleExamples.PriceTarget
 
     public void Start()
     {
-      monitor.Start();
+      monitor.StartAsync().Wait();
 
       AddMonitor("Monero");
       AddMonitor("OmiseGO");

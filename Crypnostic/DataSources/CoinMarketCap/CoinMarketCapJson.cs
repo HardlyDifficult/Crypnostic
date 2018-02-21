@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
-  public class CoinMarketCapTickerJson
+  internal class CoinMarketCapTickerJson
   {
     public string id { get; set; }
     public string name { get; set; }

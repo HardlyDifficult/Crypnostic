@@ -6,7 +6,7 @@ using System.Linq;
 using static Crypnostic.GoogleSheetsExamples.AboutCoin;
 using System.Threading.Tasks;
 using Crypnostic.Tools;
-using HardlyDifficult.Google.Sheets;
+using Hardly.Google.Sheets;
 using HD;
 
 namespace Crypnostic.GoogleSheetsExamples

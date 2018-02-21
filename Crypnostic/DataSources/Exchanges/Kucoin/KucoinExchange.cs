@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Crypnostic
+namespace Crypnostic.Internal
 {
   /// <remarks>
   /// https://kucoinapidocs.docs.apiary.io/#
