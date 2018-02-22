@@ -84,6 +84,14 @@ namespace Crypnostic
         return false;
       }
     }
+
+    public IEnumerable<Coin> allCoins
+    {
+      get
+      {
+        return coinToTickerLower.Keys;
+      }
+    }
     #endregion
 
     #region Init
@@ -191,6 +199,8 @@ namespace Crypnostic
     public async Task RefreshAsync(
       TimeSpan timeBetweenTickersRefresh)
     {
+      log.Info("Refresh begin for " + exchangeName);
+
       if (tickerLowerToCoin.Count == 0
         || DateTime.Now - lastLoadTickerNames > timeBetweenTickersRefresh)
       {
@@ -199,17 +209,35 @@ namespace Crypnostic
         onStatusUpdate?.Invoke(this);
       }
 
-      await RefreshTradingPairs();
+      // How-to do this better (events may change these lists anytime)
+      OrderBook[] booksToUpdate = autoUpdatingBooks.ToArray();
+      LastTrade[] tradesToUpdate = autoLastTrades.ToArray();
+
+      Task[] taskList = new Task[1 + (booksToUpdate?.Length ?? 0) + (tradesToUpdate?.Length ?? 0)];
+      int i = 0;
+
+      taskList[i++] = RefreshTradingPairs();
+
+      if (booksToUpdate != null)
+      {
+        foreach (OrderBook orderBook in booksToUpdate)
+        {
+          taskList[i++] = orderBook.RefreshAsync();
+        }
+      }
+      if (tradesToUpdate != null)
+      {
+        foreach (LastTrade lastTrade in tradesToUpdate)
+        {
+          taskList[i++] = lastTrade.RefreshAsync();
+        }
+      }
+
+      await Task.WhenAll(taskList);
+
       onPriceUpdate?.Invoke(this);
 
-      foreach (OrderBook orderBook in autoUpdatingBooks)
-      {
-        await orderBook.RefreshAsync();
-      }
-      foreach (LastTrade lastTrade in autoLastTrades)
-      {
-        await lastTrade.RefreshAsync();
-      }
+      log.Info("Refresh end for " + exchangeName);
     }
     #endregion
 

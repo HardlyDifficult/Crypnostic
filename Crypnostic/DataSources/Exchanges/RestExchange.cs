@@ -51,6 +51,7 @@ namespace Crypnostic.Internal
       if(status != HttpStatusCode.OK)
       {
         log.Error(status);
+        throttle.BackOff();
         // TODO backoff if 400's
         return null;
       }

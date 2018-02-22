@@ -28,7 +28,7 @@ namespace Crypnostic.Tests.Exchanges
     {
       get
       {
-        return Coin.FromName("Ardor");
+        return Coin.FromName("Dogecoin");
       }
     } 
   }

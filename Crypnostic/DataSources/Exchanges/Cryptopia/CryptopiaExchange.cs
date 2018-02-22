@@ -163,6 +163,7 @@ namespace Crypnostic.Internal
       OrderBook orderBook)
     {
       MarketOrdersRequest ordersRequest = new MarketOrdersRequest(pairId);
+      await throttle.WaitTillReady();
       MarketOrdersResponse ordersResponse = await publicApi.GetMarketOrders(ordersRequest);
 
       Order[] bids = ExtractOrders(ordersResponse.Data.Buy);

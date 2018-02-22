@@ -11,22 +11,12 @@ using HD;
 
 namespace Crypnostic.GoogleSheetsExamples
 {
-  /// <summary>
-  /// TODO
-  ///  - Add buy targets
-  ///  - Add total 24-volume seen (and total from coinmarketcap)
-  ///     - or maybe the max of the two?
-  /// </summary>
   public class GoogleSheetPriceMonitor
   {
     const string dataDumpTab = "Crypnostic";
     const string settingsTab = "CrypnosticSettings";
 
     decimal minCap;
-
-    // TODO USD goal
-    const decimal arbPurchasePriceETH = 1m;
-    const decimal arbPurchasePriceBTC = .1m;
 
     readonly GoogleSheet sheet;
 
@@ -77,9 +67,9 @@ namespace Crypnostic.GoogleSheetsExamples
       }
 
       IList<IList<object>> settingsMinCap = await sheet.Read(settingsTab, "C2");
-      if(settingsMinCap != null && settingsMinCap.Count > 0 && settingsMinCap[0].Count > 0)
+      if (settingsMinCap != null && settingsMinCap.Count > 0 && settingsMinCap[0].Count > 0)
       {
-        minCap = decimal.Parse(settingsMinCap[0][0].ToString().RemoveCruftFromNumber());
+        decimal.TryParse(settingsMinCap[0][0].ToString().RemoveCruftFromNumber(), out minCap);
       }
 
       exchangeMonitor = new CrypnosticController(config);
@@ -112,7 +102,7 @@ namespace Crypnostic.GoogleSheetsExamples
       for (int i = 0; i < allCoinList.Count; i++)
       {
         Coin coin = allCoinList[i];
-        if(coin.coinMarketCapData == null 
+        if (coin.coinMarketCapData == null
           || coin.coinMarketCapData.marketCapUsd == null
           || coin.coinMarketCapData.marketCapUsd.Value < minCap)
         {
@@ -120,10 +110,7 @@ namespace Crypnostic.GoogleSheetsExamples
         }
 
         AboutCoin about = DescribeCoin(coin.fullName);
-        if (about != null)
-        {
-          results.Add(about.ToArray());
-        }
+        results.Add(about.ToArray());
       }
 
       for (int i = 0; i < 100; i++)
@@ -137,7 +124,7 @@ namespace Crypnostic.GoogleSheetsExamples
     async Task ConsiderAlarming()
     {
       IList<IList<object>> alarmData = await sheet.Read(settingsTab, "B2");
-      if(alarmData == null)
+      if (alarmData == null)
       {
         return;
       }
@@ -169,12 +156,17 @@ namespace Crypnostic.GoogleSheetsExamples
         return about;
       }
 
-      if (coin.hasValidTradingPairs == false) //&& coin.coinMarketCapData == null)
+      about.columns[(int)Column.CoinName] = coin.fullName;
+
+      if (coin.coinMarketCapData != null)
       {
-        return null;
+        about.columns[(int)Column.MarketCapUSD] = coin.coinMarketCapData.marketCapUsd?.ToString() ?? "?";
       }
 
-      about.columns[(int)Column.CoinName] = coin.fullName;
+      if (coin.hasValidTradingPairs == false) //&& coin.coinMarketCapData == null)
+      {
+        return about;
+      }
 
       TradingPair bestBtcBid = coin.FindBestOffer(Coin.bitcoin, OrderType.Sell);
       if (bestBtcBid != null)
@@ -188,11 +180,6 @@ namespace Crypnostic.GoogleSheetsExamples
       {
         about.columns[(int)Column.BestAskBTC] = bestBtcAsk.askPriceOrOfferYouCanBuy.ToString();
         about.columns[(int)Column.BestAskBTCExchange] = bestBtcAsk.exchange.exchangeName.ToString();
-      }
-
-      if (coin.coinMarketCapData != null)
-      {
-        about.columns[(int)Column.MarketCapUSD] = coin.coinMarketCapData.marketCapUsd?.ToString() ?? "?";
       }
 
       return about;
