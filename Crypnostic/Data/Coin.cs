@@ -210,7 +210,7 @@ namespace Crypnostic
     /// </param>
     public static Coin FromTicker(
       string ticker,
-      ExchangeName? onExchange)
+      ExchangeName? onExchange = null)
     {
       Debug.Assert(string.IsNullOrWhiteSpace(ticker) == false);
 

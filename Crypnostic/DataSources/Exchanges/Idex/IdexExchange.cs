@@ -30,7 +30,8 @@ namespace Crypnostic.Internal
         "SGT", // Creates dupe coin name. This one has no volume
         "INDIOLD", // Replaced by "Indi"
         "PPT2", // Creates dupe coin name. This one has no volume
-        "DVIP" // Blocked from the Idex front end
+        "DVIP", // Blocked from the Idex front end
+        "IPM" // Appears to be an unlisted dupe of InsurePal / IPL
         );
 
       CrypnosticController.instance.AddCoinAlias(
