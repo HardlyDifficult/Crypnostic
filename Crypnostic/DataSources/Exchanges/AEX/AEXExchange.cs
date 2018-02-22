@@ -4,6 +4,8 @@ using RestSharp;
 using HD;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
+using Common.Logging;
 
 namespace Crypnostic.Internal
 {
@@ -12,6 +14,8 @@ namespace Crypnostic.Internal
   /// </remarks>
   internal class AEXExchange : RestExchange
   {
+    static readonly ILog log = LogManager.GetLogger<AEXExchange>();
+
     readonly IRestClient wwwClient;
 
     readonly HashSet<string> marketList = new HashSet<string>();
@@ -37,7 +41,13 @@ namespace Crypnostic.Internal
     protected override async Task RefreshTickers()
     {
       await throttle.WaitTillReady();
-      string jsContent = await wwwClient.AsyncDownload("page/statics/js/lib/commonFun.js");
+      (HttpStatusCode status, string jsContent) = await wwwClient.AsyncDownload("page/statics/js/lib/commonFun.js");
+      if(status != HttpStatusCode.OK)
+      {
+        log.Error(status);
+        // TODO retry
+        return;
+      }
       string nameListJs = jsContent.GetBetween("all_name={", "}");
       string[] nameList = nameListJs.Split(',');
       for (int i = 0; i < nameList.Length; i++)

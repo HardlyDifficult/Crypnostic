@@ -126,7 +126,8 @@ namespace Crypnostic
       }
 
       this.exchangeName = exchangeName;
-      this.throttle = new Throttle(TimeSpan.FromMinutes(2 * 1.0 / maxRequestsPerMinute));
+      this.throttle = new Throttle(TimeSpan.FromMinutes(2 * 1.0 / maxRequestsPerMinute),
+        TimeSpan.FromMinutes(1));
       this.autoUpdate = new AutoUpdateWithThrottle(OnAutoUpdate,
         timeBetweenAutoUpdates,
         throttle,
@@ -366,15 +367,25 @@ namespace Crypnostic
       Debug.Assert(baseCoin != null);
       Debug.Assert(string.IsNullOrWhiteSpace(quoteCoinTicker) == false);
 
+      if (tickerLowerToCoin.TryGetValue(quoteCoinTicker.ToLowerInvariant(),
+        out Coin quoteCoin) == false)
+      { // May be missing due to book's listing status
+        return null;
+      }
+
+      return await AddTradingPair(quoteCoin, baseCoin, askPriceOrOfferYouCanBuy, bidPriceOrOfferYouCanSell, isInactive);
+    }
+
+    internal async Task<TradingPair> AddTradingPair(
+      Coin quoteCoin,
+      Coin baseCoin,
+      decimal askPriceOrOfferYouCanBuy,
+      decimal bidPriceOrOfferYouCanSell,
+      bool? isInactive)
+    {
       try
       {
         await semaphore.WaitAsync();
-
-        if (tickerLowerToCoin.TryGetValue(quoteCoinTicker.ToLowerInvariant(),
-          out Coin quoteCoin) == false)
-        { // May be missing due to book's listing status
-          return null;
-        }
 
         TradingPair pair = await quoteCoin.AddPair(this,
           baseCoin,

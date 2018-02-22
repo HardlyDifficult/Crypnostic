@@ -4,6 +4,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Crypnostic.Internal
@@ -36,7 +37,7 @@ namespace Crypnostic.Internal
       restClient = new RestClient("https://api.coinmarketcap.com");
 
       // Please limit requests to no more than 10 per minute.
-      throttle = new Throttle(TimeSpan.FromMinutes(2 * 1 / 10));
+      throttle = new Throttle(TimeSpan.FromMinutes(2 * 1 / 10), TimeSpan.FromMinutes(1));
       autoUpdate = new AutoUpdateWithThrottle(
         Refresh,
         TimeSpan.FromMinutes(10),
@@ -53,8 +54,15 @@ namespace Crypnostic.Internal
     #region Helpers
     async Task Refresh()
     {
-      List<CoinMarketCapTickerJson> resultList = await restClient.AsyncDownload
-        <List<CoinMarketCapTickerJson>>("v1/ticker/?limit=0");
+      (HttpStatusCode status, List<CoinMarketCapTickerJson> resultList)
+        = await restClient.AsyncDownload<List<CoinMarketCapTickerJson>>("v1/ticker/?limit=0");
+      if(status != HttpStatusCode.OK)
+      {
+        log.Error(status);
+        // TODO backoff if 400's
+        return;
+      }
+
       if (resultList == null)
       { // Parsing error, it may work on the next refresh
         log.Error("Refresh failed");

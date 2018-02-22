@@ -3,6 +3,8 @@ using System;
 using System.Threading.Tasks;
 using HD;
 using System.Diagnostics;
+using System.Net;
+using Common.Logging;
 
 namespace Crypnostic.Internal
 {
@@ -11,6 +13,8 @@ namespace Crypnostic.Internal
   /// </summary>
   internal abstract class RestExchange : Exchange
   {
+    static readonly ILog log = LogManager.GetLogger<RestExchange>();
+
     readonly IRestClient restClient;
 
     readonly Method method;
@@ -33,18 +37,23 @@ namespace Crypnostic.Internal
     protected async Task<T> Get<T>(
       string resource,
       object jsonObject = null)
-      where T : new()
+      where T : class, new()
     {
       Debug.Assert(string.IsNullOrWhiteSpace(resource) == false);
 
       await throttle.WaitTillReady();
 
-      T result = await restClient.AsyncDownload<T>(resource, 
+      (HttpStatusCode status, T result) = await restClient.AsyncDownload<T>(resource, 
         method: method, 
         jsonObject: jsonObject,
         cancellationToken: CrypnosticController.instance.cancellationTokenSource.Token);
 
-      throttle.SetLastUpdateTime(); // <- kinda overkill
+      if(status != HttpStatusCode.OK)
+      {
+        log.Error(status);
+        // TODO backoff if 400's
+        return null;
+      }
 
       return result;
     }

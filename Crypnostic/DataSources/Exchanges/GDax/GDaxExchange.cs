@@ -3,6 +3,7 @@ using RestSharp;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HD;
+using System.Diagnostics;
 
 namespace Crypnostic.Internal
 {
@@ -51,6 +52,17 @@ namespace Crypnostic.Internal
         bool isInactive = product.status.Equals("online",
           StringComparison.InvariantCultureIgnoreCase) == false;
 
+        // GDax is backwards base vs quote
+        Coin quoteCoin = Coin.FromTicker(product.base_currency, exchangeName);
+        Coin baseCoin = Coin.FromTicker(product.quote_currency, exchangeName); 
+
+        Debug.Assert(quoteCoin != Coin.usd);
+
+        if(quoteCoin == null || baseCoin == null)
+        {
+          continue;
+        }
+
         GDaxProductTickerJson productTicker
           = await Get<GDaxProductTickerJson>($"products/{product.id}/ticker");
         if(productTicker == null)
@@ -58,7 +70,7 @@ namespace Crypnostic.Internal
           continue;
         }
 
-        TradingPair pair = await AddTradingPair(product.quote_currency, product.base_currency,
+        TradingPair pair = await AddTradingPair(quoteCoin, baseCoin,
           decimal.Parse(productTicker.ask),
           decimal.Parse(productTicker.bid),
           isInactive);

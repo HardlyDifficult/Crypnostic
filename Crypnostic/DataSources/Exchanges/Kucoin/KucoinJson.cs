@@ -15,12 +15,12 @@ namespace Crypnostic.Internal
       //public double change { get; set; } may be null?
       public string coinTypePair { get; set; }
       public int sort { get; set; }
-      public double feeRate { get; set; }
-      public double volValue { get; set; }
-      public double high { get; set; }
+      public double? feeRate { get; set; }
+      public double? volValue { get; set; }
+      public double? high { get; set; }
       public long datetime { get; set; }
-      public double vol { get; set; }
-      public double low { get; set; }
+      public double? vol { get; set; }
+      public double? low { get; set; }
       //public double changeRate { get; set; }
     }
 
