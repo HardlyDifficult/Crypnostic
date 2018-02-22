@@ -130,8 +130,8 @@ namespace Crypnostic
 
       for (int i = 1; i < orders.Length; i++)
       {
-        Debug.Assert(isGoingUp && orders[1].price > orders[0].price
-          || isGoingUp == false && orders[1].price < orders[0].price);
+        Debug.Assert(isGoingUp && orders[1].price >= orders[0].price
+          || isGoingUp == false && orders[1].price <= orders[0].price);
       }
     }
   }
