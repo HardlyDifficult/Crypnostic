@@ -368,10 +368,11 @@ namespace Crypnostic
         return null;
       }
 
-      Debug.Assert(askPrice == 0
-        || bidPrice == 0
-        || askPrice >= bidPrice
-        || supportsOverlappingBooks);
+      // Even Cryptopia was failing occasionally
+      //Debug.Assert(askPrice == 0
+      //  || bidPrice == 0
+      //  || askPrice >= bidPrice
+      //  || supportsOverlappingBooks);
 
       if (tickerLowerToCoin.TryGetValue(baseCoinTicker.ToLowerInvariant(),
         out Coin baseCoin) == false)
