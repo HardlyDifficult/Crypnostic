@@ -25,7 +25,7 @@ namespace Crypnostic
     public readonly Coin baseCoin;
 
     public readonly Coin quoteCoin;
-    
+
     public decimal askPriceOrOfferYouCanBuy
     {
       get; private set;
@@ -49,7 +49,7 @@ namespace Crypnostic
     #region Internal Data
     static readonly ILog log = LogManager.GetLogger<TradingPair>();
 
-    
+
     bool _isInactive;
     #endregion
 
@@ -115,9 +115,12 @@ namespace Crypnostic
       this.isInactive = isInactive;
       this.orderBook = new OrderBook(this);
       this.lastTrade = new LastTrade(this);
+
+      quoteCoin.tradingPairs.Add((exchange.exchangeName, baseCoin), this);
+      quoteCoin.OnPriceUpdate(this);
     }
     #endregion
-    
+
     #region Internal Write API
     internal void Update(
       decimal askPriceOrOfferYouCanBuy,

@@ -209,15 +209,15 @@ namespace Crypnostic
         onStatusUpdate?.Invoke(this);
       }
 
+      await RefreshTradingPairs();
+
       // How-to do this better (events may change these lists anytime)
       OrderBook[] booksToUpdate = autoUpdatingBooks.ToArray();
       LastTrade[] tradesToUpdate = autoLastTrades.ToArray();
 
-      Task[] taskList = new Task[1 + (booksToUpdate?.Length ?? 0) + (tradesToUpdate?.Length ?? 0)];
+      Task[] taskList = new Task[(booksToUpdate?.Length ?? 0) + (tradesToUpdate?.Length ?? 0)];
       int i = 0;
-
-      taskList[i++] = RefreshTradingPairs();
-
+      
       if (booksToUpdate != null)
       {
         foreach (OrderBook orderBook in booksToUpdate)

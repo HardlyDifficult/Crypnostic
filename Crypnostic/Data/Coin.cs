@@ -108,7 +108,7 @@ namespace Crypnostic
     /// 
     /// TradingPairs are updated (not replaced) periodically.
     /// </summary>
-    readonly Dictionary<(ExchangeName, Coin baseCoin), TradingPair> tradingPairs
+    internal readonly Dictionary<(ExchangeName, Coin baseCoin), TradingPair> tradingPairs
       = new Dictionary<(ExchangeName, Coin baseCoin), TradingPair>();
     #endregion
 
@@ -262,6 +262,12 @@ namespace Crypnostic
     }
     #endregion
 
+    internal void OnPriceUpdate(
+      TradingPair tradingPair)
+    {
+      onPriceUpdate?.Invoke(this, tradingPair);
+    }
+
     #region Public Read
     public TradingPair GetTradingPair(
       Coin baseCoin,
@@ -309,7 +315,6 @@ namespace Crypnostic
         else
         {
           pair = new TradingPair(exchange, baseCoin, this, askPrice, bidPrice);
-          AddPair(pair);
           onNewTradingPairListed?.Invoke(this, pair);
         }
 
@@ -349,7 +354,6 @@ namespace Crypnostic
         if (tradingPairs.TryGetValue(key, out TradingPair pair) == false)
         {
           pair = new TradingPair(exchange, baseCoin, this, 0, 0, isInactive);
-          AddPair(pair);
         }
 
         if (pair.isInactive != isInactive)
@@ -362,18 +366,6 @@ namespace Crypnostic
       {
         semaphore.Release();
       }
-    }
-
-    void AddPair(
-      TradingPair pair)
-    {
-      Debug.Assert(pair != null);
-      Debug.Assert(pair.quoteCoin == this);
-      Debug.Assert(tradingPairs.ContainsKey((pair.exchange.exchangeName, pair.baseCoin)) == false);
-
-      tradingPairs.Add((pair.exchange.exchangeName, pair.baseCoin), pair);
-
-      onPriceUpdate?.Invoke(this, pair);
     }
     #endregion
 
