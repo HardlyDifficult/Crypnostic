@@ -7,7 +7,7 @@ namespace Crypnostic
     AEX,
     Binance,
     Cryptopia,
-    //EtherDelta,
+    EtherDelta,
     GDax,
     Idex,
     Kucoin,

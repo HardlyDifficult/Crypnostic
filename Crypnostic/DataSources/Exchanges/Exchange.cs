@@ -104,8 +104,8 @@ namespace Crypnostic
           return new BinanceExchange();
         case ExchangeName.Cryptopia:
           return new CryptopiaExchange();
-        //case ExchangeName.EtherDelta:
-        //  return new EtherDeltaExchange();
+        case ExchangeName.EtherDelta:
+          return new EtherDeltaExchange();
         case ExchangeName.Kucoin:
           return new KucoinExchange();
         case ExchangeName.GDax:

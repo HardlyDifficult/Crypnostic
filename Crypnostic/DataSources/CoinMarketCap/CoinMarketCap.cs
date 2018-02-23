@@ -56,7 +56,7 @@ namespace Crypnostic.Internal
     {
       (HttpStatusCode status, List<CoinMarketCapTickerJson> resultList)
         = await restClient.AsyncDownload<List<CoinMarketCapTickerJson>>("v1/ticker/?limit=0");
-      if(status != HttpStatusCode.OK)
+      if (status != HttpStatusCode.OK)
       {
         log.Error(status);
         throttle.BackOff();
@@ -91,7 +91,12 @@ namespace Crypnostic.Internal
           lastUpdated = default(DateTime);
         }
 
-        tickerLowerToCoin[ticker.symbol.ToLowerInvariant()] = coin;
+        string symbol = ticker.symbol.ToLowerInvariant();
+
+        if (tickerLowerToCoin.ContainsKey(symbol) == false)
+        {
+          tickerLowerToCoin[symbol] = coin;
+        }
 
         coin.coinMarketCapData = new MarketCap(
           ticker.symbol,

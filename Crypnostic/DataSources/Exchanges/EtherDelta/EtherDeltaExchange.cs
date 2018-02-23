@@ -1,88 +1,110 @@
-﻿//using System;
-//using RestSharp;
-//using System.Collections.Generic;
-//using System.Threading.Tasks;
-//using HD;
-//using Crypnostic.DataSources.Exchanges;
+﻿using System;
+using RestSharp;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using HD;
 
-//namespace Crypnostic
-//{
-//  /// <summary>
-//  /// TODO EtherDelta lastTrade
-//  /// </summary>
-//  /// <remarks>
-//  /// https://github.com/etherdelta/etherdelta.github.io/blob/master/docs/API_OLD.md
-//  /// </remarks>
-//  internal class EtherDeltaExchange : RestExchange
-//  {
-//    public override bool supportsOverlappingBooks
-//    {
-//      get
-//      {
-//        return true;
-//      }
-//    }
+namespace Crypnostic.Internal
+{
+  /// <summary>
+  /// TODO EtherDelta lastTrade
+  /// </summary>
+  /// <remarks>
+  /// https://github.com/etherdelta/etherdelta.github.io/blob/master/docs/API_OLD.md
+  /// </remarks>
+  internal class EtherDeltaExchange : RestExchange
+  {
+    public override bool supportsOverlappingBooks
+    {
+      get
+      {
+        return true;
+      }
+    }
 
-//    /// <summary>
-//    /// No stated throttle limit, going with the same as Crytpopia
-//    /// </summary>
-//    /// <param name="exchangeMonitor"></param>
-//    public EtherDeltaExchange(
-//      ExchangeMonitor exchangeMonitor)
-//      : base(exchangeMonitor, ExchangeName.EtherDelta, 1_000_000 / 1_440,
-//          "https://api.etherdelta.com")
-//    {
-//    }
+    /// <summary>
+    /// No stated throttle limit, going with the same as Crytpopia
+    /// </summary>
+    public EtherDeltaExchange()
+      : base(ExchangeName.EtherDelta, "https://api.forkdelta.com", 5)
+    {
+      AddBlacklistedTicker(
+        "0x75c79b88f" // not NEO's Gas
+        );
+    }
 
-//    public override async Task LoadTickerNames()
-//    {
-//      // how to LoadTickerNames from EtherDelta?
-//      await Task.Delay(0);
-//    }
+    protected override async Task RefreshTickers()
+    {
+      EtherDeltaMainConfigJson json = await Get<EtherDeltaMainConfigJson>(
+        "https://forkdelta.github.io/config/main.json");
+      for (int i = 0; i < json.tokens.Length; i++)
+      {
+        Token token = json.tokens[i];
+        Coin coin = Coin.FromTicker(token.name);
+        if (coin == null)
+        { // If coinmarketcap does not have the ticker, I don't know what to do
+          continue;
+        }
+        await AddTicker(coin, token.addr.Substring(0, 9), false);
+      }
+    }
 
-//    protected override async Task GetAllTradingPairs()
-//    {
-//      Dictionary<string, Dictionary<string, object>> tickerList;
-//      while (true)
-//      {
-//        try
-//        {
-//          tickerList =
-//            await Get<Dictionary<string, Dictionary<string, object>>>("returnTicker");
+    protected override async Task RefreshTradingPairs()
+    {
+      Dictionary<string, Dictionary<string, object>> tickerList;
+      tickerList =
+        await Get<Dictionary<string, Dictionary<string, object>>>("returnTicker");
 
-//          if (tickerList != null)
-//          {
-//            break;
-//          }
-//        }
-//        catch
-//        {
-//          await Task.Delay(3500 + ExchangeMonitor.instance.random.Next(2000));
-//        }
-//      }
+      if (tickerList == null)
+      {
+        return;
+      }
 
-//      foreach (var ticker in tickerList)
-//      {
-//        AddTradingPair(baseCoinTicker: "ETH",
-//          quoteCoinTicker: ticker.Key.GetAfter("_"),
-//          askPrice: Convert.ToDecimal(ticker.Value["ask"]),
-//          bidPrice: Convert.ToDecimal(ticker.Value["bid"]), 
-//          isInactive: false);
-//      }
-//    }
+      foreach (var ticker in tickerList)
+      {
+        string askString = ticker.Value["ask"]?.ToString();
+        if (string.IsNullOrWhiteSpace(askString))
+        {
+          askString = "0";
+        }
+        string bidString = ticker.Value["bid"]?.ToString();
+        if (string.IsNullOrWhiteSpace(bidString))
+        {
+          bidString = "0";
+        }
 
-//    protected override string GetPairId(
-//      string quoteSymbol, 
-//      string baseSymbol)
-//    {
-//      return $"{quoteSymbol.ToUpperInvariant()}-{baseSymbol.ToUpperInvariant()}";
-//    }
+        try
+        {
+          decimal.TryParse(askString, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out decimal ask);
+          decimal.TryParse(bidString, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out decimal bid);
 
-//    protected override Task<OrderBook> GetOrderBookInternal(
-//      string pairId)
-//    {
-//      // TODO
-//      return null;
-//    }
-//  }
-//}
+
+          await AddTradingPair(
+            ticker.Key.GetAfter("_"),
+            Coin.ethereum,
+            ask,
+            bid,
+            false);
+        }
+        catch (Exception e)
+        {
+          Console.WriteLine();
+        }
+      }
+    }
+
+    protected override string GetPairId(
+      string quoteSymbol,
+      string baseSymbol)
+    {
+      return $"{quoteSymbol.ToUpperInvariant()}-{baseSymbol.ToUpperInvariant()}";
+    }
+
+    protected override Task UpdateOrderBook(
+      string pairId,
+      OrderBook orderBook)
+    {
+      throw new NotImplementedException();
+    }
+  }
+}
