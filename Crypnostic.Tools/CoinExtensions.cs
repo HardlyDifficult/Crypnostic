@@ -17,7 +17,7 @@ namespace Crypnostic.Tools
       this Coin quoteCoin,
       Coin baseCoin,
       OrderType orderType,
-      ExchangeName[] onlyOnTheseExchanges = null)
+      IEnumerable<ExchangeName> onlyOnTheseExchanges)
     {
       TradingPair bestPair = null;
       decimal? bestValue = null;
@@ -33,15 +33,9 @@ namespace Crypnostic.Tools
           continue;
         }
 
-        if (onlyOnTheseExchanges != null)
+        if (Includes(onlyOnTheseExchanges, pair.exchange.exchangeName) == false)
         { // Filter by exchange (optional)
-          for (int i = 0; i < onlyOnTheseExchanges.Length; i++)
-          {
-            if (pair.exchange.exchangeName != onlyOnTheseExchanges[i])
-            {
-              continue;
-            }
-          }
+          continue;
         }
 
         decimal value = orderType == OrderType.Buy
@@ -63,6 +57,27 @@ namespace Crypnostic.Tools
       }
 
       return bestPair;
+    }
+
+    static bool Includes(
+      IEnumerable<ExchangeName> onlyOnTheseExchanges, ExchangeName exchange)
+    {
+      if (onlyOnTheseExchanges == null)
+      {
+        return true;
+      }
+
+      bool foundFilter = false;
+      foreach (ExchangeName exchangeName in onlyOnTheseExchanges)
+      {
+        if (exchangeName == exchange)
+        {
+          return true;
+        }
+        foundFilter = true;
+      }
+
+      return foundFilter == false;
     }
   }
 }

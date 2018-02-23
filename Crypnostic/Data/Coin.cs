@@ -273,7 +273,8 @@ namespace Crypnostic
       Coin baseCoin,
       ExchangeName exchangeName)
     {
-      return tradingPairs[(exchangeName, baseCoin)];
+      tradingPairs.TryGetValue((exchangeName, baseCoin), out TradingPair value);
+      return value;
     }
 
     /// <summary>
