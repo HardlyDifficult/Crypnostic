@@ -138,6 +138,10 @@ namespace Crypnostic.Internal
 
       await throttle.WaitTillReady();
       MarketsResponse tickerList = await publicApi.GetMarkets(new MarketsRequest());
+      if(tickerList == null)
+      {
+        return;
+      }
       foreach (MarketResult ticker in tickerList.Data)
       {
         TradingPair pair = await AddTradingPair(baseCoinTicker: ticker.Label.GetAfter(tradingPairSeparator),

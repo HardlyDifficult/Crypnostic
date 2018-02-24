@@ -128,10 +128,12 @@ namespace Crypnostic
     {
       Debug.Assert(askPriceOrOfferYouCanBuy >= 0);
       Debug.Assert(bidPriceOrOfferYouCanSell >= 0);
-      Debug.Assert(exchange.supportsOverlappingBooks
-        || askPriceOrOfferYouCanBuy == 0
-        || bidPriceOrOfferYouCanSell == 0
-        || askPriceOrOfferYouCanBuy >= bidPriceOrOfferYouCanSell);
+
+      // Not holding true... 
+      //Debug.Assert(exchange.supportsOverlappingBooks
+      //  || askPriceOrOfferYouCanBuy == 0
+      //  || bidPriceOrOfferYouCanSell == 0
+      //  || askPriceOrOfferYouCanBuy >= bidPriceOrOfferYouCanSell);
 
       this.askPriceOrOfferYouCanBuy = askPriceOrOfferYouCanBuy;
       this.bidPriceOrOfferYouCanSell = bidPriceOrOfferYouCanSell;
