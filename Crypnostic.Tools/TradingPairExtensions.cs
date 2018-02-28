@@ -29,19 +29,22 @@ namespace Crypnostic.Tools
         return (purchasePriceInBase, purchasePriceInBase / tradingPair.askPriceOrOfferYouCanBuy);
       }
 
-      for (int i = 0; i < orderBook.asksOrOffersYouCanBuy.Length; i++)
+      if (orderBook.asksOrOffersYouCanBuy != null)
       {
-        Order order = orderBook.asksOrOffersYouCanBuy[i];
-        decimal purchaseAmountFromOrder = Math.Min(purchasePriceInBase,
-          order.price * order.volume);
-
-        purchaseAmount += purchaseAmountFromOrder;
-        quantity += purchaseAmountFromOrder / order.price;
-        purchasePriceInBase -= purchaseAmountFromOrder;
-
-        if (purchasePriceInBase <= 0)
+        for (int i = 0; i < orderBook.asksOrOffersYouCanBuy.Length; i++)
         {
-          break;
+          Order order = orderBook.asksOrOffersYouCanBuy[i];
+          decimal purchaseAmountFromOrder = Math.Min(purchasePriceInBase,
+            order.price * order.volume);
+
+          purchaseAmount += purchaseAmountFromOrder;
+          quantity += purchaseAmountFromOrder / order.price;
+          purchasePriceInBase -= purchaseAmountFromOrder;
+
+          if (purchasePriceInBase <= 0)
+          {
+            break;
+          }
         }
       }
 
@@ -57,7 +60,7 @@ namespace Crypnostic.Tools
       OrderBook orderBook = tradingPair.orderBook;
       try
       {
-      await orderBook.RefreshAsync();
+        await orderBook.RefreshAsync();
       }
       catch
       {
@@ -67,17 +70,20 @@ namespace Crypnostic.Tools
         return quantityOfCoin * tradingPair.bidPriceOrOfferYouCanSell;
       }
 
-      for (int i = 0; i < orderBook.bidsOrOffersYouCanSell.Length; i++)
+      if (orderBook.bidsOrOffersYouCanSell != null)
       {
-        Order order = orderBook.bidsOrOffersYouCanSell[i];
-        decimal sellAmountFromOrder = Math.Min(quantityOfCoin, order.volume);
-
-        sellAmount += sellAmountFromOrder * order.price;
-        quantityOfCoin -= sellAmountFromOrder;
-
-        if (quantityOfCoin <= 0)
+        for (int i = 0; i < orderBook.bidsOrOffersYouCanSell.Length; i++)
         {
-          break;
+          Order order = orderBook.bidsOrOffersYouCanSell[i];
+          decimal sellAmountFromOrder = Math.Min(quantityOfCoin, order.volume);
+
+          sellAmount += sellAmountFromOrder * order.price;
+          quantityOfCoin -= sellAmountFromOrder;
+
+          if (quantityOfCoin <= 0)
+          {
+            break;
+          }
         }
       }
 
